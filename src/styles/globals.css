@@ -1,0 +1,855 @@
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Original Alabuga Cosmos Colors */
+  --primary: #005DAC; /* Alabuga Blue */
+  --primary-600: #004A8A;
+  --primary-200: #6BA3E5;
+  --navy-accent: #283A97; /* Deep Navy */
+  --info: #00AEEF; /* Sky Blue */
+  --soft-cyan: #6ACFF6; /* Soft Cyan */
+  
+  /* Status Colors - Professional */
+  --rewards-amber: #F5B342; /* Professional Amber */
+  --success: #16A34A; /* Professional Green */
+  --warning: #F59E0B; /* Amber Warning */
+  --danger: #DC2626; /* Professional Red */
+  
+  /* Surface Colors - Light Cosmic */
+  --surface-light: #F8FAFE; /* Light Cosmic Blue */
+  --card: #FFFFFF; /* Pure White */
+  --elevated: #FEFEFF; /* Ultra Light Blue */
+  --border: #E1ECF7; /* Light Cosmic Border */
+  
+  /* Text Colors - Professional */
+  --text-primary: #1E293B; /* Dark Slate */
+  --text-secondary: #64748B; /* Slate Gray */
+  --text-icon: #475569; /* Icon Gray */
+  
+  /* Legacy compatibility */
+  --font-size: 16px;
+  --background: var(--surface-light);
+  --foreground: var(--text-primary);
+  --card-foreground: var(--text-primary);
+  --popover: var(--card);
+  --popover-foreground: var(--text-primary);
+  --primary-foreground: #ffffff;
+  --secondary: var(--navy-accent);
+  --secondary-foreground: var(--text-primary);
+  --muted: #F0F6FC;
+  --muted-foreground: var(--text-secondary);
+  --accent: var(--info);
+  --accent-foreground: var(--text-primary);
+  --destructive: var(--danger);
+  --destructive-foreground: #ffffff;
+  --input: #ffffff;
+  --input-background: var(--card);
+  --switch-background: #E2E8F0;
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --ring: var(--primary);
+  --chart-1: var(--primary);
+  --chart-2: var(--info);
+  --chart-3: var(--soft-cyan);
+  --chart-4: var(--rewards-amber);
+  --chart-5: var(--success);
+  --radius: 0.75rem;
+  --sidebar: var(--card);
+  --sidebar-foreground: var(--text-primary);
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: var(--muted);
+  --sidebar-accent-foreground: var(--text-primary);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--primary);
+}
+
+.dark {
+  /* Professional dark mode */
+  --background: #0F172A; /* Dark Slate */
+  --foreground: #F8FAFC; /* Light Text */
+  --card: #1E293B; /* Dark Card */
+  --card-foreground: #F8FAFC;
+  --popover: #1E293B;
+  --popover-foreground: #F8FAFC;
+  --primary: #3B82F6; /* Bright Blue */
+  --primary-foreground: #ffffff;
+  --secondary: #475569;
+  --secondary-foreground: #F8FAFC;
+  --muted: #334155;
+  --muted-foreground: #94A3B8;
+  --accent: #0EA5E9;
+  --accent-foreground: #ffffff;
+  --destructive: #EF4444;
+  --destructive-foreground: #ffffff;
+  --border: #334155;
+  --input: #1E293B;
+  --ring: var(--primary);
+  --sidebar: #1E293B;
+  --sidebar-foreground: #F8FAFC;
+  --sidebar-primary: #3B82F6;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #334155;
+  --sidebar-accent-foreground: #F8FAFC;
+  --sidebar-border: #334155;
+  --sidebar-ring: #3B82F6;
+}
+
+@theme inline {
+  --color-primary: var(--primary);
+  --color-primary-600: var(--primary-600);
+  --color-primary-200: var(--primary-200);
+  --color-navy-accent: var(--navy-accent);
+  --color-info: var(--info);
+  --color-soft-cyan: var(--soft-cyan);
+  --color-rewards-amber: var(--rewards-amber);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --color-surface-light: var(--surface-light);
+  --color-elevated: var(--elevated);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-icon: var(--text-icon);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-input-background: var(--input-background);
+  --color-switch-background: var(--switch-background);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply text-foreground;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    min-height: 100vh;
+  }
+
+  /* Mobile optimization */
+  @media (max-width: 768px) {
+    body {
+      /* Clean mobile design */
+    }
+  }
+}
+
+/**
+ * Alabuga Typography Scale
+ */
+@layer base {
+  :where(:not(:has([class*=" text-"]), :not(:has([class^="text-"])))) {
+    h1 {
+      font-size: 2.5rem; /* 40px Display */
+      font-weight: var(--font-weight-medium);
+      line-height: 1.2;
+    }
+
+    h2 {
+      font-size: 2rem; /* 32px Display */
+      font-weight: var(--font-weight-medium);
+      line-height: 1.25;
+    }
+
+    h3 {
+      font-size: 1.5rem; /* 24px Display */
+      font-weight: var(--font-weight-medium);
+      line-height: 1.33;
+    }
+
+    h4 {
+      font-size: 1rem; /* 16px Body */
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    p {
+      font-size: 1rem; /* 16px Body */
+      font-weight: var(--font-weight-normal);
+      line-height: 1.5;
+    }
+
+    .text-body-sm {
+      font-size: 0.875rem; /* 14px Body */
+      line-height: 1.43;
+    }
+
+    .text-caption {
+      font-size: 0.75rem; /* 12px Caption */
+      line-height: 1.33;
+    }
+
+    .text-mono {
+      font-size: 0.8125rem; /* 13px Mono */
+      font-family: 'JetBrains Mono', 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+      line-height: 1.38;
+    }
+
+    label {
+      font-size: 1rem;
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    button {
+      font-size: 1rem;
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    input {
+      font-size: 1rem;
+      font-weight: var(--font-weight-normal);
+      line-height: 1.5;
+    }
+  }
+}
+
+/**
+ * Cosmic Theme Utilities
+ */
+@layer utilities {
+  /* Light Cosmic Background - Beautiful Starfield */
+  .cosmic-starfield-bg {
+    background: 
+      /* Enhanced nebula clouds - more visible */
+      radial-gradient(ellipse 800px 600px at 20% 40%, rgba(106, 207, 246, 0.15) 0%, transparent 60%),
+      radial-gradient(ellipse 600px 800px at 80% 20%, rgba(0, 174, 240, 0.12) 0%, transparent 60%),
+      radial-gradient(ellipse 1000px 400px at 50% 80%, rgba(0, 93, 172, 0.08) 0%, transparent 60%),
+      radial-gradient(ellipse 400px 600px at 70% 10%, rgba(106, 207, 246, 0.06) 0%, transparent 50%),
+      
+      /* Scattered stars pattern - more prominent */
+      radial-gradient(circle at 15% 15%, rgba(255, 255, 255, 0.9) 1.5px, transparent 1.5px),
+      radial-gradient(circle at 85% 25%, rgba(255, 255, 255, 0.7) 1px, transparent 1px),
+      radial-gradient(circle at 70% 60%, rgba(255, 255, 255, 0.8) 1.2px, transparent 1.2px),
+      radial-gradient(circle at 25% 75%, rgba(255, 255, 255, 0.6) 1px, transparent 1px),
+      radial-gradient(circle at 95% 85%, rgba(255, 255, 255, 0.9) 1.5px, transparent 1.5px),
+      radial-gradient(circle at 45% 35%, rgba(255, 255, 255, 0.5) 0.8px, transparent 0.8px),
+      radial-gradient(circle at 5% 90%, rgba(255, 255, 255, 0.7) 1.2px, transparent 1.2px),
+      radial-gradient(circle at 90% 5%, rgba(255, 255, 255, 0.6) 1px, transparent 1px),
+      
+      /* Additional twinkling cosmic stars - enhanced */
+      radial-gradient(circle at 35% 20%, rgba(106, 207, 246, 1) 0.8px, transparent 0.8px),
+      radial-gradient(circle at 65% 80%, rgba(0, 174, 240, 0.9) 0.6px, transparent 0.6px),
+      radial-gradient(circle at 80% 40%, rgba(255, 255, 255, 1) 0.8px, transparent 0.8px),
+      radial-gradient(circle at 20% 70%, rgba(106, 207, 246, 0.8) 0.6px, transparent 0.6px),
+      radial-gradient(circle at 60% 30%, rgba(0, 174, 240, 0.7) 0.5px, transparent 0.5px),
+      radial-gradient(circle at 30% 60%, rgba(106, 207, 246, 0.6) 0.5px, transparent 0.5px),
+      
+      /* Base enhanced cosmic gradient - more noticeable */
+      linear-gradient(135deg, 
+        #F0F8FF 0%, 
+        #F6FBFF 20%, 
+        #EBF6FF 40%, 
+        #F3F9FF 60%, 
+        #F8FCFF 80%, 
+        #F0F8FF 100%);
+        
+    /* Animated subtle particle effects */
+    animation: cosmic-drift 20s ease-in-out infinite alternate;
+  }
+
+  @keyframes cosmic-drift {
+    0% {
+      background-position: 
+        20% 40%, 80% 20%, 50% 80%,
+        15% 15%, 85% 25%, 70% 60%, 25% 75%, 95% 85%, 45% 35%, 5% 90%, 90% 5%,
+        35% 20%, 65% 80%, 80% 40%, 20% 70%,
+        0% 0%;
+    }
+    100% {
+      background-position: 
+        22% 42%, 82% 22%, 52% 82%,
+        17% 17%, 87% 27%, 72% 62%, 27% 77%, 97% 87%, 47% 37%, 7% 92%, 92% 7%,
+        37% 22%, 67% 82%, 82% 42%, 22% 72%,
+        0% 0%;
+    }
+  }
+
+  /* Responsive cosmic background for mobile */
+  @media (max-width: 768px) {
+    .cosmic-starfield-bg {
+      animation: none; /* Disable animation on mobile for performance */
+      background: 
+        radial-gradient(ellipse 400px 300px at 20% 40%, rgba(106, 207, 246, 0.12) 0%, transparent 50%),
+        radial-gradient(ellipse 300px 400px at 80% 20%, rgba(0, 174, 240, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 15% 15%, rgba(255, 255, 255, 0.8) 1px, transparent 1px),
+        radial-gradient(circle at 85% 25%, rgba(255, 255, 255, 0.6) 1px, transparent 1px),
+        radial-gradient(circle at 70% 60%, rgba(255, 255, 255, 0.7) 1px, transparent 1px),
+        radial-gradient(circle at 25% 75%, rgba(255, 255, 255, 0.5) 1px, transparent 1px),
+        radial-gradient(circle at 35% 20%, rgba(106, 207, 246, 0.8) 0.6px, transparent 0.6px),
+        radial-gradient(circle at 65% 80%, rgba(0, 174, 240, 0.7) 0.5px, transparent 0.5px),
+        linear-gradient(135deg, #F0F8FF 0%, #F6FBFF 50%, #F0F8FF 100%);
+    }
+  }
+
+  .cosmic-gradient {
+    background: linear-gradient(135deg, var(--navy-accent) 0%, var(--primary) 50%, var(--info) 100%);
+  }
+  
+  .cosmic-gradient-subtle {
+    background: linear-gradient(135deg, rgba(40, 58, 151, 0.05) 0%, rgba(0, 93, 172, 0.08) 50%, rgba(0, 174, 240, 0.05) 100%);
+  }
+
+  .cosmic-backdrop {
+    background: radial-gradient(ellipse at center, rgba(0, 93, 172, 0.1) 0%, rgba(40, 58, 151, 0.05) 50%, transparent 100%);
+  }
+
+  .stellar-glow {
+    box-shadow: 0 0 20px rgba(106, 207, 246, 0.3), 0 0 40px rgba(0, 174, 240, 0.2);
+  }
+
+  .nebula-border {
+    border: 1px solid transparent;
+    background: linear-gradient(var(--card), var(--card)) padding-box,
+                linear-gradient(135deg, var(--soft-cyan), var(--info), var(--primary)) border-box;
+  }
+  
+  .orbital-border {
+    border: 1px solid var(--border);
+    position: relative;
+    background: var(--card);
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.08), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  }
+  
+  .orbital-border::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    padding: 1px;
+    background: linear-gradient(135deg, var(--soft-cyan), transparent, var(--info));
+    border-radius: inherit;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: xor;
+    pointer-events: none;
+    opacity: 0.2;
+  }
+
+  .orbital-border-enhanced {
+    border: 1px solid var(--border);
+    position: relative;
+    background: var(--card);
+    box-shadow: 0 2px 8px rgba(0, 93, 172, 0.08), 0 1px 3px rgba(0, 0, 0, 0.06);
+  }
+  
+  .orbital-border-enhanced::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    padding: 1px;
+    background: linear-gradient(135deg, var(--soft-cyan), var(--info), var(--primary), transparent);
+    border-radius: inherit;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: xor;
+    pointer-events: none;
+    opacity: 0.3;
+    animation: orbit-glow 3s ease-in-out infinite alternate;
+  }
+
+  @keyframes orbit-glow {
+    0% { opacity: 0.2; }
+    100% { opacity: 0.4; }
+  }
+
+  @keyframes stellar-pulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+  }
+
+  @keyframes cosmic-float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-5px); }
+  }
+
+  .stellar-pulse {
+    animation: stellar-pulse 2s ease-in-out infinite;
+  }
+
+  .cosmic-float {
+    animation: cosmic-float 4s ease-in-out infinite;
+  }
+  
+  .elevation-cosmic {
+    box-shadow: 0 4px 12px rgba(0, 93, 172, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+  }
+
+  .elevation-cosmic-enhanced {
+    box-shadow: 0 8px 25px rgba(0, 93, 172, 0.12), 0 4px 8px rgba(0, 0, 0, 0.06);
+  }
+  
+  .cockpit-line {
+    position: relative;
+  }
+  
+  .cockpit-line::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    width: 1px;
+    height: 60%;
+    background: linear-gradient(to bottom, transparent, var(--soft-cyan), transparent);
+    transform: translateY(-50%);
+  }
+
+  /* Enhanced card readability - Improved backgrounds */
+  .card-enhanced {
+    background: var(--card);
+    border: 1px solid var(--border);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
+    transition: all 0.2s ease;
+  }
+
+  .card-enhanced:hover {
+    box-shadow: 0 4px 12px rgba(0, 93, 172, 0.08), 0 2px 6px rgba(0, 0, 0, 0.08);
+    border-color: var(--border);
+  }
+
+  /* Mission Cards - Enhanced cosmic design */
+  .mission-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  .mission-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, 
+      rgba(0, 93, 172, 0.02) 0%, 
+      transparent 30%, 
+      transparent 70%, 
+      rgba(0, 174, 240, 0.02) 100%);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .mission-card:hover::before {
+    opacity: 1;
+  }
+
+  .mission-card:hover {
+    box-shadow: 0 6px 16px rgba(0, 93, 172, 0.1), 0 2px 8px rgba(0, 0, 0, 0.08);
+    border-color: var(--primary);
+    transform: translateY(-1px);
+  }
+
+  /* Store Cards - Enhanced cosmic gradients */
+  .store-card {
+    background: linear-gradient(135deg, var(--card) 0%, rgba(0, 93, 172, 0.02) 100%);
+    border: 1px solid var(--border);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  .store-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--soft-cyan), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .store-card:hover::after {
+    opacity: 0.6;
+  }
+
+  .store-card:hover {
+    background: linear-gradient(135deg, var(--card) 0%, rgba(0, 93, 172, 0.04) 100%);
+    box-shadow: 0 6px 20px rgba(0, 93, 172, 0.1);
+    border-color: var(--primary);
+    transform: translateY(-2px);
+  }
+
+  /* Badge system improvements - Enhanced cosmic design */
+  .badge-card {
+    background: var(--card);
+    border: 2px solid var(--border);
+    box-shadow: 0 2px 8px rgba(0, 93, 172, 0.08);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .badge-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(106, 207, 246, 0.1), transparent);
+    transform: rotate(45deg);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .badge-card:hover::before {
+    opacity: 1;
+  }
+
+  .badge-card:hover {
+    border-color: var(--primary);
+    box-shadow: 0 6px 20px rgba(0, 93, 172, 0.15);
+    transform: translateY(-2px);
+  }
+
+  .badge-earned {
+    background: linear-gradient(135deg, var(--card) 0%, rgba(0, 93, 172, 0.05) 100%);
+    border-color: var(--primary);
+  }
+
+  .badge-earned::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 0;
+    height: 0;
+    border-left: 20px solid transparent;
+    border-top: 20px solid var(--success);
+  }
+
+  .badge-locked {
+    background: var(--muted);
+    opacity: 0.6;
+    filter: grayscale(0.5);
+  }
+
+  /* Progress Cards - Enhanced cosmic theme */
+  .progress-card {
+    background: linear-gradient(135deg, var(--card) 0%, rgba(0, 174, 240, 0.02) 100%);
+    border: 1px solid var(--border);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+    position: relative;
+  }
+
+  .progress-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, 
+      transparent 0%, 
+      rgba(0, 174, 240, 0.05) 50%, 
+      transparent 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .progress-card:hover::before {
+    opacity: 1;
+  }
+
+  .progress-card:hover {
+    background: linear-gradient(135deg, var(--card) 0%, rgba(0, 174, 240, 0.04) 100%);
+    box-shadow: 0 4px 12px rgba(0, 174, 240, 0.1);
+  }
+
+  /* Admin Cards - Professional cosmic design */
+  .admin-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    position: relative;
+  }
+
+  .admin-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--primary), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .admin-card:hover::after {
+    opacity: 0.5;
+  }
+
+  .admin-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-color: var(--primary);
+  }
+
+  /* Mission launch animation - Enhanced */
+  .mission-launch-btn {
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .mission-launch-btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+    transition: all 0.3s ease;
+    transform: translate(-50%, -50%);
+  }
+
+  .mission-launch-btn:hover::before {
+    width: 100%;
+    height: 100%;
+  }
+
+  .mission-launch-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 25px rgba(0, 93, 172, 0.3);
+  }
+
+  /* Clean status indicators - Enhanced */
+  .status-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .status-indicator::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+  }
+
+  .status-indicator:hover::before {
+    left: 100%;
+  }
+
+  .status-active {
+    background: rgba(22, 163, 74, 0.1);
+    color: rgb(22, 163, 74);
+    border: 1px solid rgba(22, 163, 74, 0.2);
+  }
+
+  .status-pending {
+    background: rgba(245, 158, 11, 0.1);
+    color: rgb(245, 158, 11);
+    border: 1px solid rgba(245, 158, 11, 0.2);
+  }
+
+  .status-inactive {
+    background: rgba(107, 114, 128, 0.1);
+    color: rgb(107, 114, 128);
+    border: 1px solid rgba(107, 114, 128, 0.2);
+  }
+
+  /* Skill tree visual improvements - Enhanced cosmic */
+  .skill-tree-node {
+    background: var(--card);
+    border: 2px solid var(--border);
+    border-radius: 0.75rem;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  .skill-tree-node::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    background: linear-gradient(135deg, var(--soft-cyan), var(--info), var(--primary));
+    border-radius: inherit;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: -1;
+  }
+
+  .skill-tree-node:hover::before {
+    opacity: 0.2;
+  }
+
+  .skill-tree-node:hover {
+    border-color: var(--primary);
+    box-shadow: 0 4px 12px rgba(0, 93, 172, 0.15);
+    transform: translateY(-2px);
+  }
+
+  .skill-tree-connection {
+    border-left: 2px dashed var(--border);
+    opacity: 0.6;
+    position: relative;
+  }
+
+  .skill-tree-connection::before {
+    content: '';
+    position: absolute;
+    left: -1px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--soft-cyan), var(--info));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .skill-tree-connection:hover::before {
+    opacity: 0.6;
+  }
+
+  /* Enhanced cosmic backgrounds for special elements */
+  .cosmic-hero {
+    background: linear-gradient(135deg, 
+      var(--navy-accent) 0%,
+      var(--primary) 30%,
+      var(--info) 70%,
+      var(--soft-cyan) 100%);
+    position: relative;
+  }
+
+  .cosmic-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.3;
+  }
+
+  .cosmic-event-card {
+    background: linear-gradient(135deg, var(--card) 0%, rgba(106, 207, 246, 0.05) 100%);
+    border: 1px solid rgba(106, 207, 246, 0.2);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cosmic-event-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--soft-cyan), transparent);
+    animation: cosmic-sweep 3s ease-in-out infinite;
+  }
+
+  @keyframes cosmic-sweep {
+    0% { left: -100%; }
+    50% { left: 100%; }
+    100% { left: -100%; }
+  }
+
+  /* Mobile-first improvements - Enhanced */
+  @media (max-width: 768px) {
+    .orbital-border::before,
+    .orbital-border-enhanced::before {
+      opacity: 0.1;
+    }
+    
+    .orbital-border,
+    .orbital-border-enhanced {
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+    .side-sheet-content {
+      padding-left: 0.75rem;
+      padding-right: 0.75rem;
+    }
+
+    .mission-card:hover,
+    .store-card:hover,
+    .badge-card:hover {
+      transform: none;
+    }
+
+    .mission-launch-btn:hover {
+      transform: scale(1.02);
+    }
+
+    /* Reduced animations on mobile */
+    .cosmic-float,
+    .stellar-pulse {
+      animation: none;
+    }
+  }
+
+  /* Dark mode adjustments - Enhanced */
+  .dark .card-enhanced {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+  }
+
+  .dark .card-enhanced:hover {
+    box-shadow: 0 4px 12px rgba(0, 174, 240, 0.15), 0 2px 6px rgba(0, 0, 0, 0.2);
+  }
+
+  .dark .mission-card {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(135deg, var(--card) 0%, rgba(0, 174, 240, 0.02) 100%);
+  }
+
+  .dark .mission-card:hover {
+    box-shadow: 0 6px 16px rgba(0, 174, 240, 0.2), 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  .dark .cosmic-gradient {
+    background: linear-gradient(135deg, var(--navy-accent) 0%, var(--soft-cyan) 50%, var(--info) 100%);
+  }
+
+  .dark .orbital-border::before,
+  .dark .orbital-border-enhanced::before {
+    background: linear-gradient(135deg, var(--soft-cyan), transparent, var(--info));
+    opacity: 0.3;
+  }
+}
+
+html {
+  font-size: var(--font-size);
+}
