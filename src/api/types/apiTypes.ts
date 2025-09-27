@@ -34,17 +34,16 @@ export interface UserResponse {
 export interface HRUserRegistrationRequest {
   login: string;
   password: string;
-  firstName: string;
-  lastName: string;
-  role: string;
+  firstName: string | null;
+  lastName: string | null;
 }
 
 // Типы для регистрации кандидатов
 export interface CandidateUserRegistrationRequest {
   login: string;
   password: string;
-  firstName: string;
-  lastName: string;
+  firstName: string | null;
+  lastName: string | null;
 }
 
 // Типы для HTTP методов
@@ -66,4 +65,260 @@ export interface ErrorResponse {
     details?: any;
   };
   status: number;
+}
+
+// ===== ВАЛИДАЦИЯ =====
+export interface ValidationError {
+  loc: (string | number)[];
+  msg: string;
+  type: string;
+}
+
+export interface HTTPValidationError {
+  detail: ValidationError[];
+}
+
+// ===== ENUM ТИПЫ =====
+export enum MissionCategoryEnum {
+  QUEST = 'quest',
+  RECRUITING = 'recruiting',
+  LECTURE = 'lecture',
+  SIMULATOR = 'simulator'
+}
+
+export enum ArtifactRarityEnum {
+  COMMON = 'common',
+  UNCOMMON = 'uncommon',
+  RARE = 'rare',
+  EPIC = 'epic',
+  LEGENDARY = 'legendary'
+}
+
+// ===== СЕЗОНЫ =====
+export interface SeasonResponse {
+  id: number;
+  name: string;
+  startDate: string; // ISO date-time
+  endDate: string; // ISO date-time
+}
+
+export interface SeasonCreateRequest {
+  name: string;
+  startDate: string; // ISO date-time
+  endDate: string; // ISO date-time
+}
+
+export interface SeasonUpdateRequest {
+  name: string;
+  startDate: string; // ISO date-time
+  endDate: string; // ISO date-time
+}
+
+export interface SeasonsResponse {
+  values: SeasonResponse[];
+}
+
+// ===== МИССИИ =====
+export interface MissionResponse {
+  id: number;
+  title: string;
+  description: string;
+  rewardXp: number;
+  rewardMana: number;
+  rankRequirement: number;
+  seasonId: number;
+  category: string;
+  tasks: MissionTaskResponse[];
+  rewardArtifacts: ArtifactResponse[];
+  rewardCompetencies: CompetencyRewardResponse[];
+  rewardSkills: SkillRewardResponse[];
+}
+
+export interface MissionCreateRequest {
+  title: string;
+  description: string;
+  rewardXp: number;
+  rewardMana: number;
+  rankRequirement: number;
+  seasonId: number;
+  category: MissionCategoryEnum;
+}
+
+export interface MissionUpdateRequest {
+  title: string;
+  description: string;
+  rewardXp: number;
+  rewardMana: number;
+  rankRequirement: number;
+  seasonId: number;
+  category: MissionCategoryEnum;
+}
+
+export interface MissionsResponse {
+  values: MissionResponse[];
+}
+
+// ===== РАНГИ =====
+export interface RankResponse {
+  id: number;
+  name: string;
+  requiredXp: number;
+  requiredMissions?: MissionResponse[];
+  requiredCompetencies?: RankCompetencyRequirementResponse[];
+}
+
+export interface RankCreateRequest {
+  name: string;
+  requiredXp: number;
+}
+
+export interface RankUpdateRequest {
+  name: string;
+  requiredXp: number;
+}
+
+export interface RanksResponse {
+  values: RankResponse[];
+}
+
+// ===== КОМПЕТЕНЦИИ =====
+export interface CompetencyResponse {
+  id: number;
+  name: string;
+  maxLevel: number;
+  skills: SkillResponse[];
+}
+
+export interface CompetencyCreateRequest {
+  name: string;
+  maxLevel: number;
+}
+
+export interface CompetencyUpdateRequest {
+  name: string;
+  maxLevel: number;
+}
+
+export interface CompetenciesResponse {
+  values: CompetencyResponse[];
+}
+
+export interface RankCompetencyRequirementResponse {
+  competency: CompetencyResponse;
+  minLevel: number;
+}
+
+// ===== НАВЫКИ =====
+export interface SkillResponse {
+  id: number;
+  name: string;
+  maxLevel: number;
+}
+
+export interface SkillCreateRequest {
+  name: string;
+  maxLevel: number;
+}
+
+export interface SkillUpdateRequest {
+  name: string;
+  maxLevel: number;
+}
+
+export interface SkillsResponse {
+  values: SkillResponse[];
+}
+
+export interface SkillRewardResponse {
+  skill: SkillResponse;
+  levelIncrease: number;
+}
+
+export interface SkillRewardAddRequest {
+  levelIncrease: number;
+}
+
+// ===== ЗАДАЧИ =====
+export interface TaskResponse {
+  id: number;
+  title: string;
+  description: string;
+}
+
+export interface TaskCreateRequest {
+  title: string;
+  description: string;
+}
+
+export interface TaskUpdateRequest {
+  title: string;
+  description: string;
+}
+
+export interface TasksResponse {
+  values: TaskResponse[];
+}
+
+// ===== АРТЕФАКТЫ =====
+export interface ArtifactResponse {
+  id: number;
+  title: string;
+  description: string;
+  rarity: ArtifactRarityEnum;
+  imageUrl: string;
+}
+
+export interface ArtifactCreateRequest {
+  title: string;
+  description: string;
+  rarity: ArtifactRarityEnum;
+  imageUrl: string;
+}
+
+export interface ArtifactUpdateRequest {
+  title: string;
+  description: string;
+  rarity: ArtifactRarityEnum;
+  imageUrl: string;
+}
+
+export interface ArtifactsResponse {
+  values: ArtifactResponse[];
+}
+
+// ===== ДОПОЛНИТЕЛЬНЫЕ ТИПЫ ИЗ OPENAPI =====
+
+// Типы для добавления компетенций к рангу
+export interface AddRequiredCompetencyToRankRequest {
+  minLevel: number;
+}
+
+// Типы для наград компетенций
+export interface CompetencyRewardResponse {
+  competency: CompetencyResponse;
+  levelIncrease: number;
+}
+
+export interface CompetencyRewardAddRequest {
+  levelIncrease: number;
+}
+
+// Типы для задач миссий
+export interface MissionTaskResponse {
+  id: number;
+  title: string;
+  description: string;
+}
+
+// Типы для загрузки файлов
+export interface BodyUploadFileMediaPost {
+  file: string; // binary format
+}
+
+export interface FileObjectResponse {
+  key: string;
+  url: string;
+  size: number | null;
+  etag: string;
+  contentType: string | null;
 }
