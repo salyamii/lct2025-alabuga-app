@@ -14,9 +14,10 @@ interface CompetencyActions {
   createCompetency: (competency: Competency) => Promise<void>;
   updateCompetency: (competency: Competency) => Promise<void>;
   deleteCompetency: (id: number) => Promise<void>;
+  clearCompetencies: () => void;
 }
 
-export const useCompetencyStore = create<CompetencyState & CompetencyActions>((set, get) => ({
+export const useCompetencyStore = create<CompetencyState & CompetencyActions>((set: (partial: Partial<CompetencyState & CompetencyActions>) => void, get: () => CompetencyState & CompetencyActions) => ({
   competencies: [],
   isLoading: false,
   error: null,
@@ -36,7 +37,7 @@ export const useCompetencyStore = create<CompetencyState & CompetencyActions>((s
     try {
       const competency = await competencyService.getCompetency(id);
       const currentCompetencies = get().competencies;
-      const exists = currentCompetencies.some(c => c.id === competency.data.id);
+      const exists = currentCompetencies.some((c: Competency) => c.id === competency.data.id);
       if (!exists) {
         set({ competencies: [...currentCompetencies, competency.data] });
       }
@@ -57,7 +58,7 @@ export const useCompetencyStore = create<CompetencyState & CompetencyActions>((s
   updateCompetency: async (competency: Competency) => {
     try {
       const updatedCompetency = await competencyService.updateCompetency(competency.id, competency);
-      set({ competencies: get().competencies.map(c => c.id === competency.id ? updatedCompetency.data : c) });
+      set({ competencies: get().competencies.map((c: Competency) => c.id === competency.id ? updatedCompetency.data : c) });
     } catch (error: any) {
       set({ error: error.message || 'Не удалось обновить компетенцию', isLoading: false });
     }
@@ -66,9 +67,13 @@ export const useCompetencyStore = create<CompetencyState & CompetencyActions>((s
   deleteCompetency: async (id: number) => {
     try {
       await competencyService.deleteCompetency(id);
-      set({ competencies: get().competencies.filter(c => c.id !== id) });
+      set({ competencies: get().competencies.filter((c: Competency) => c.id !== id) });
     } catch (error: any) {
       set({ error: error.message || 'Не удалось удалить компетенцию', isLoading: false });
     }
-  }
+  },
+
+  clearCompetencies: () => {
+    set({ competencies: [], isLoading: false, error: null });
+  },
 }));

@@ -14,9 +14,10 @@ interface TaskActions {
   createTask: (task: Task) => Promise<void>;
   updateTask: (task: Task) => Promise<void>;
   deleteTask: (id: number) => Promise<void>;
+  clearTasks: () => void;
 }
 
-export const useTaskStore = create<TaskState & TaskActions>((set, get) => ({
+export const useTaskStore = create<TaskState & TaskActions>((set: (partial: Partial<TaskState & TaskActions>) => void, get: () => TaskState & TaskActions) => ({
   tasks: [],
   isLoading: false,
   error: null,
@@ -36,7 +37,7 @@ export const useTaskStore = create<TaskState & TaskActions>((set, get) => ({
     try {
       const task = await taskService.getTask(id);
       const currentTasks = get().tasks;
-      const exists = currentTasks.some(t => t.id === task.data.id);
+      const exists = currentTasks.some((t: Task) => t.id === task.data.id);
       if (!exists) {
         set({ tasks: [...currentTasks, task.data] });
       }
@@ -65,7 +66,7 @@ export const useTaskStore = create<TaskState & TaskActions>((set, get) => ({
         description: task.description
       };
       const updatedTask = await taskService.updateTask(task.id, taskData);
-      set({ tasks: get().tasks.map(t => t.id === task.id ? updatedTask.data : t) });
+      set({ tasks: get().tasks.map((t: Task) => t.id === task.id ? updatedTask.data : t) });
     } catch (error: any) {
       set({ error: error.message || 'Не удалось обновить задачу' });
     }
@@ -74,9 +75,13 @@ export const useTaskStore = create<TaskState & TaskActions>((set, get) => ({
   deleteTask: async (id: number) => {
     try {
       await taskService.deleteTask(id);
-      set({ tasks: get().tasks.filter(t => t.id !== id) });
+      set({ tasks: get().tasks.filter((t: Task) => t.id !== id) });
     } catch (error: any) {
       set({ error: error.message || 'Не удалось удалить задачу' });
     }
+  },
+
+  clearTasks: () => {
+    set({ tasks: [], isLoading: false, error: null });
   },
 }));

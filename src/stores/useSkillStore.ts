@@ -14,9 +14,10 @@ interface SkillActions {
   createSkill: (skill: Skill) => Promise<void>;
   updateSkill: (skill: Skill) => Promise<void>;
   deleteSkill: (id: number) => Promise<void>;
+  clearSkills: () => void;
 }
 
-export const useSkillStore = create<SkillState & SkillActions>((set, get) => ({
+export const useSkillStore = create<SkillState & SkillActions>((set: (partial: Partial<SkillState & SkillActions>) => void, get: () => SkillState & SkillActions) => ({
   skills: [],
   isLoading: false,
   error: null,
@@ -36,7 +37,7 @@ export const useSkillStore = create<SkillState & SkillActions>((set, get) => ({
     try {
       const skill = await skillService.getSkill(id);
       const currentSkills = get().skills;
-      const exists = currentSkills.some(s => s.id === skill.data.id);
+      const exists = currentSkills.some((s: Skill) => s.id === skill.data.id);
       if (!exists) {
         set({ skills: [...currentSkills, skill.data] });
       }
@@ -65,7 +66,7 @@ export const useSkillStore = create<SkillState & SkillActions>((set, get) => ({
         maxLevel: skill.maxLevel
       };
       const updatedSkill = await skillService.updateSkill(skill.id, skillData);
-      set({ skills: get().skills.map(s => s.id === skill.id ? updatedSkill.data : s) });
+      set({ skills: get().skills.map((s: Skill) => s.id === skill.id ? updatedSkill.data : s) });
     } catch (error: any) {
       set({ error: error.message || 'Не удалось обновить навык' });
     }
@@ -74,9 +75,13 @@ export const useSkillStore = create<SkillState & SkillActions>((set, get) => ({
   deleteSkill: async (id: number) => {
     try {
       await skillService.deleteSkill(id);
-      set({ skills: get().skills.filter(s => s.id !== id) });
+      set({ skills: get().skills.filter((s: Skill) => s.id !== id) });
     } catch (error: any) {
       set({ error: error.message || 'Не удалось удалить навык' });
     }
+  },
+
+  clearSkills: () => {
+    set({ skills: [], isLoading: false, error: null });
   },
 }));

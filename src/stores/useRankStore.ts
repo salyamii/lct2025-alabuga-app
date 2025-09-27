@@ -14,9 +14,10 @@ interface RankActions {
   createRank: (rank: Rank) => Promise<void>;
   updateRank: (rank: Rank) => Promise<void>;
   deleteRank: (id: number) => Promise<void>;
+  clearRanks: () => void;
 }
 
-export const useRankStore = create<RankState & RankActions>((set, get) => ({
+export const useRankStore = create<RankState & RankActions>((set: (partial: Partial<RankState & RankActions>) => void, get: () => RankState & RankActions) => ({
   ranks: [],
   isLoading: false,
   error: null,
@@ -36,7 +37,7 @@ export const useRankStore = create<RankState & RankActions>((set, get) => ({
     try {
       const rank = await rankService.getRank(id);
       const currentRanks = get().ranks;
-      const exists = currentRanks.some(r => r.id === rank.data.id);
+      const exists = currentRanks.some((r: Rank) => r.id === rank.data.id);
       if (!exists) {
         set({ ranks: [...currentRanks, rank.data] });
       }
@@ -65,7 +66,7 @@ export const useRankStore = create<RankState & RankActions>((set, get) => ({
         requiredXp: rank.requiredXp
       };
       const updatedRank = await rankService.updateRank(rank.id, rankData);
-      set({ ranks: get().ranks.map(r => r.id === rank.id ? updatedRank.data : r) });
+      set({ ranks: get().ranks.map((r: Rank) => r.id === rank.id ? updatedRank.data : r) });
     } catch (error: any) {
       set({ error: error.message || 'Не удалось обновить ранг' });
     }
@@ -74,9 +75,13 @@ export const useRankStore = create<RankState & RankActions>((set, get) => ({
   deleteRank: async (id: number) => {
     try {
       await rankService.deleteRank(id);
-      set({ ranks: get().ranks.filter(r => r.id !== id) });
+      set({ ranks: get().ranks.filter((r: Rank) => r.id !== id) });
     } catch (error: any) {
       set({ error: error.message || 'Не удалось удалить ранг' });
     }
+  },
+
+  clearRanks: () => {
+    set({ ranks: [], isLoading: false, error: null });
   },
 }));

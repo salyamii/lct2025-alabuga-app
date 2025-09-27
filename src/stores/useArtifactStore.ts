@@ -16,9 +16,10 @@ interface ArtifactActions {
   createArtifact: (artifact: Artifact) => Promise<void>;
   updateArtifact: (artifact: Artifact) => Promise<void>;
   deleteArtifact: (id: number) => Promise<void>;
+  clearArtifacts: () => void;
 }
 
-export const useArtifactStore = create<ArtifactState & ArtifactActions>((set, get) => ({
+export const useArtifactStore = create<ArtifactState & ArtifactActions>((set: (partial: Partial<ArtifactState & ArtifactActions>) => void, get: () => ArtifactState & ArtifactActions) => ({
   artifacts: [],
   isLoading: false,
   error: null,
@@ -38,7 +39,7 @@ export const useArtifactStore = create<ArtifactState & ArtifactActions>((set, ge
     try {
       const artifact = await artifactService.getArtifact(id);
       const currentArtifacts = get().artifacts;
-      const exists = currentArtifacts.some(a => a.id === artifact.data.id);
+      const exists = currentArtifacts.some((a: Artifact) => a.id === artifact.data.id);
       if (!exists) {
         set({ artifacts: [...currentArtifacts, artifact.data] });
       }
@@ -59,7 +60,7 @@ export const useArtifactStore = create<ArtifactState & ArtifactActions>((set, ge
   updateArtifact: async (artifact: Artifact) => {
     try {
       const updatedArtifact = await artifactService.updateArtifact(artifact.id, artifact);
-      set({ artifacts: get().artifacts.map(a => a.id === artifact.id ? updatedArtifact.data : a) });
+      set({ artifacts: get().artifacts.map((a: Artifact) => a.id === artifact.id ? updatedArtifact.data : a) });
     } catch (error: any) {
       set({ error: error.message || 'Не удалось обновить артефакт' });
     }
@@ -68,9 +69,13 @@ export const useArtifactStore = create<ArtifactState & ArtifactActions>((set, ge
   deleteArtifact: async (id: number) => {
     try {
       await artifactService.deleteArtifact(id);
-      set({ artifacts: get().artifacts.filter(a => a.id !== id) });
+      set({ artifacts: get().artifacts.filter((a: Artifact) => a.id !== id) });
     } catch (error: any) {
       set({ error: error.message || 'Не удалось удалить артефакт' });
     }
+  },
+
+  clearArtifacts: () => {
+    set({ artifacts: [], isLoading: false, error: null });
   },
 }));

@@ -46,7 +46,7 @@ export class MediaService {
 
   // Получить URL для скачивания файла
   getDownloadUrl(key: string): string {
-    const baseURL = httpClient.defaults.baseURL || '';
+    const baseURL = httpClient.getBaseURL();
     return `${baseURL}${API_ENDPOINTS.MEDIA.DOWNLOAD(key)}`;
   }
 

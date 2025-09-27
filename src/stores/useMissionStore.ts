@@ -15,9 +15,10 @@ interface MissionActions {
   createMission: (mission: Mission) => Promise<void>;
   updateMission: (mission: Mission) => Promise<void>;
   deleteMission: (id: number) => Promise<void>;
+  clearMissions: () => void;
 }
 
-export const useMissionStore = create<MissionState & MissionActions>((set, get) => ({
+export const useMissionStore = create<MissionState & MissionActions>((set: (partial: Partial<MissionState & MissionActions>) => void, get: () => MissionState & MissionActions) => ({
   missions: [],
   isLoading: false,
   error: null,
@@ -37,7 +38,7 @@ export const useMissionStore = create<MissionState & MissionActions>((set, get) 
     try {
       const mission = await missionService.getMission(id);
       const currentMissions = get().missions;
-      const exists = currentMissions.some(m => m.id === mission.data.id);
+      const exists = currentMissions.some((m: Mission) => m.id === mission.data.id);
       if (!exists) {
         set({ missions: [...currentMissions, mission.data] });
       }
@@ -76,7 +77,7 @@ export const useMissionStore = create<MissionState & MissionActions>((set, get) 
         category: mission.category as MissionCategoryEnum
       };
       const updatedMission = await missionService.updateMission(mission.id, missionData);
-      set({ missions: get().missions.map(m => m.id === mission.id ? updatedMission.data : m) });
+      set({ missions: get().missions.map((m: Mission) => m.id === mission.id ? updatedMission.data : m) });
     } catch (error: any) {
       set({ error: error.message || 'Не удалось обновить миссию' });
     }
@@ -85,9 +86,13 @@ export const useMissionStore = create<MissionState & MissionActions>((set, get) 
   deleteMission: async (id: number) => {
     try {
       await missionService.deleteMission(id);
-      set({ missions: get().missions.filter(m => m.id !== id) });
+      set({ missions: get().missions.filter((m: Mission) => m.id !== id) });
     } catch (error: any) {
       set({ error: error.message || 'Не удалось удалить миссию' });
     }
+  },
+
+  clearMissions: () => {
+    set({ missions: [], isLoading: false, error: null });
   },
 }));

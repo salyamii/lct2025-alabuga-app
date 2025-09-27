@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { authService } from '../services/authService';
+import { useDataLoader } from './useDataLoader';
 import { 
   UserResponse, 
   UserLoginRequest, 
@@ -16,6 +17,8 @@ interface UseAuthState {
 }
 
 export function useAuth() {
+  const { loadAllData, clearAllData } = useDataLoader();
+  
   const [state, setState] = useState<UseAuthState>({
     user: null,
     isAuthenticated: false,
@@ -35,6 +38,9 @@ export function useAuth() {
             loading: false,
             error: null,
           });
+          
+          // Загружаем данные после успешной проверки авторизации
+          await loadAllData();
         } catch (error) {
           setState({
             user: null,
@@ -54,7 +60,7 @@ export function useAuth() {
     };
 
     checkAuth();
-  }, []);
+  }, []); // Убираем loadAllData из зависимостей
 
   const login = useCallback(async (credentials: UserLoginRequest) => {
     setState(prev => ({ ...prev, loading: true, error: null }));
@@ -70,6 +76,10 @@ export function useAuth() {
         loading: false,
         error: null,
       });
+      
+      // Загружаем данные после успешного логина
+      await loadAllData();
+      
       return response;
     } catch (error) {
       setState(prev => ({
@@ -79,7 +89,7 @@ export function useAuth() {
       }));
       throw error;
     }
-  }, []);
+  }, []); // Убираем loadAllData из зависимостей
 
   const logout = useCallback(async () => {
     setState(prev => ({ ...prev, loading: true }));
@@ -89,6 +99,9 @@ export function useAuth() {
     } catch (error) {
       // Игнорируем ошибки при выходе
     } finally {
+      // Очищаем данные из всех сторов при выходе
+      clearAllData();
+      
       setState({
         user: null,
         isAuthenticated: false,
@@ -96,7 +109,7 @@ export function useAuth() {
         error: null,
       });
     }
-  }, []);
+  }, [clearAllData]);
 
   const registerHR = useCallback(async (userData: HRUserRegistrationRequest) => {
     setState(prev => ({ ...prev, loading: true, error: null }));

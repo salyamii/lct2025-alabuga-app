@@ -33,6 +33,7 @@ export {
 export { useApi } from './hooks/useApi';
 export { useAuth } from './hooks/useAuth';
 export { useAuthRoute } from './hooks/useAuthRoute';
+export { useDataLoader } from './hooks/useDataLoader';
 
 // Экспорт контекста
 export { AuthProvider, useAuthContext } from './context/AuthContext';

@@ -14,9 +14,10 @@ interface SeasonActions {
   createSeason: (season: Season) => Promise<void>;
   updateSeason: (season: Season) => Promise<void>;
   deleteSeason: (id: number) => Promise<void>;
+  clearSeasons: () => void;
 }
 
-export const useSeasonStore = create<SeasonState & SeasonActions>((set, get) => ({
+export const useSeasonStore = create<SeasonState & SeasonActions>((set: (partial: Partial<SeasonState & SeasonActions>) => void, get: () => SeasonState & SeasonActions) => ({
   seasons: [],
   isLoading: false,
   error: null,
@@ -36,7 +37,7 @@ export const useSeasonStore = create<SeasonState & SeasonActions>((set, get) => 
     try {
       const season = await seasonService.getSeason(id);
       const currentSeasons = get().seasons;
-      const exists = currentSeasons.some(s => s.id === season.data.id);
+      const exists = currentSeasons.some((s: Season) => s.id === season.data.id);
       if (!exists) {
         set({ seasons: [...currentSeasons, season.data] });
       }
@@ -59,7 +60,7 @@ export const useSeasonStore = create<SeasonState & SeasonActions>((set, get) => 
     try {
       const seasonData = Season.toUpdateRequest(season);
       const updatedSeason = await seasonService.updateSeason(season.id, seasonData);
-      set({ seasons: get().seasons.map(s => s.id === season.id ? updatedSeason.data : s) });
+      set({ seasons: get().seasons.map((s: Season) => s.id === season.id ? updatedSeason.data : s) });
     } catch (error: any) {
       set({ error: error.message || 'Не удалось обновить сезон' });
     }
@@ -68,9 +69,13 @@ export const useSeasonStore = create<SeasonState & SeasonActions>((set, get) => 
   deleteSeason: async (id: number) => {
     try {
       await seasonService.deleteSeason(id);
-      set({ seasons: get().seasons.filter(s => s.id !== id) });
+      set({ seasons: get().seasons.filter((s: Season) => s.id !== id) });
     } catch (error: any) {
       set({ error: error.message || 'Не удалось удалить сезон' });
     }
+  },
+
+  clearSeasons: () => {
+    set({ seasons: [], isLoading: false, error: null });
   },
 }));

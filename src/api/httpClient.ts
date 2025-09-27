@@ -126,8 +126,8 @@ class HttpClient {
       } else if (error.code === 'ENOTFOUND') {
         message = 'Сервер не найден';
         code = 'DNS_ERROR';
-      } else if (error.code === 'ECONNABORTED') {
-        message = 'Таймаут подключения';
+      } else if (error.code === 'ECONNABORTED' || error.message?.includes('timeout')) {
+        message = `Таймаут подключения (${error.config?.timeout || 30000}ms)`;
         code = 'TIMEOUT_ERROR';
       }
       
@@ -166,6 +166,11 @@ class HttpClient {
       ...this.client.defaults.headers,
       ...headers,
     };
+  }
+
+  // Метод для получения базового URL
+  getBaseURL(): string {
+    return this.client.defaults.baseURL || '';
   }
 
 }

@@ -14,7 +14,7 @@ interface UserActions {
   updateUser: (user: User) => void;
 }
 
-export const useUserStore = create<UserState & UserActions>((set, get) => ({
+export const useUserStore = create<UserState & UserActions>((set: (partial: Partial<UserState & UserActions>) => void, get: () => UserState & UserActions) => ({
   user: null,
   isLoading: false,
   error: null,
