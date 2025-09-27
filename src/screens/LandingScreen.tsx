@@ -75,10 +75,6 @@ export function LandingScreen() {
             lastName,
             role: "HR"
           });
-          toast.success('Регистрация HR успешна!', {
-            description: 'Теперь вы можете войти в систему',
-            duration: 4000
-          });
         } else {
           await registerCandidate({
             login,
@@ -86,17 +82,9 @@ export function LandingScreen() {
             firstName,
             lastName
           });
-          toast.success('Регистрация кандидата успешна!', {
-            description: 'Теперь вы можете войти в систему',
-            duration: 4000
-          });
         }
       } 
       await loginUser({ login, password });
-      toast.success('Успешный вход!', {
-        description: 'Добро пожаловать в систему',
-        duration: 3000
-      });
     } catch (error) {
       // Ошибка уже обрабатывается в контексте и useEffect
       console.error('Ошибка авторизации:', error);
