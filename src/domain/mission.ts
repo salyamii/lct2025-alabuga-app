@@ -34,7 +34,8 @@ export class Mission {
         artifact.id,
         artifact.title,
         artifact.description,
-        artifact.rarity
+        artifact.rarity,
+        artifact.imageUrl
       )),
       (response.rewardCompetencies || []).map(rc => CompetencyReward.fromResponse(rc)),
       (response.rewardSkills || []).map(rs => SkillReward.fromResponse(rs))
