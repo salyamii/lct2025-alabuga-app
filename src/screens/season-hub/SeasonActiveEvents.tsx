@@ -14,11 +14,11 @@ interface CosmicEvent {
   gradient: string;
 }
 
-interface SeasonActiveEventsProps {
+interface SeasonHubActiveEventsProps {
   cosmicEvents: CosmicEvent[];
 }
 
-export function SeasonActiveEvents({ cosmicEvents }: SeasonActiveEventsProps) {
+export function SeasonHubActiveEvents({ cosmicEvents }: SeasonHubActiveEventsProps) {
   if (cosmicEvents.length === 0) {
     return null;
   }

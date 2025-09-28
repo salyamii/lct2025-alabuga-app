@@ -8,34 +8,36 @@ import {
   Zap,
   Award
 } from "lucide-react";
+import { MissionChain } from "../../domain/missionChain";
 
 interface MissionChainCardProps {
-  branch: {
-    id: string;
-    title: string;
-    description?: string;
-    rule: {
-      type: "ALL" | "ANY" | "MAND_AND_ANY";
-      display: string;
-    };
-    progress: {
-      completed: number;
-      total: number;
-    };
-    nextMission?: {
-      title: string;
-    } | null;
-    rewards?: {
-      xp?: number;
-      mana?: number;
-      artifacts?: string[];
-    };
-  };
-  onOpenBranch: (branchId: string) => void;
+  // missionChain: {
+  //   id: string;
+  //   title: string;
+  //   description?: string;
+  //   rule: {
+  //     type: "ALL" | "ANY" | "MAND_AND_ANY";
+  //     display: string;
+  //   };
+  //   progress: {  
+  //     completed: number;
+  //     total: number;
+  //   };
+  //   nextMission?: {
+  //     title: string;
+  //   } | null;
+  //   rewards?: {
+  //     xp?: number;
+  //     mana?: number;
+  //     artifacts?: string[];
+  //   };
+  // };
+  missionChain: MissionChain;
+  onOpenChain: (missionChainId: number) => void;
 }
 
-export function MissionChainCard({ branch, onOpenBranch }: MissionChainCardProps) {
-  const progressPercentage = Math.round((branch.progress.completed / branch.progress.total) * 100);
+export function MissionChainCard({ missionChain: missionChain, onOpenChain: onOpenChain }: MissionChainCardProps) {
+  const progressPercentage = Math.round((1 / missionChain.missions.length) * 100);
   
   const getRuleChipClass = (ruleType: string) => {
     switch (ruleType) {
@@ -52,13 +54,13 @@ export function MissionChainCard({ branch, onOpenBranch }: MissionChainCardProps
         {/* Header */}
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-base leading-tight">{branch.title}</h3>
+            <h3 className="font-semibold text-base leading-tight">{missionChain.name}</h3>
             <div className="flex items-center gap-2 mt-1">
               <Badge 
                 variant="outline" 
-                className={`text-xs ${getRuleChipClass(branch.rule.type)}`}
+                className={`text-xs ${getRuleChipClass("ALL")}`}
               >
-                {branch.rule.display}
+                {missionChain.missions.length} миссий
               </Badge>
             </div>
           </div>
@@ -68,38 +70,26 @@ export function MissionChainCard({ branch, onOpenBranch }: MissionChainCardProps
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">Прогресс</span>
-            <span>{branch.progress.completed} of {branch.progress.total} missions • {progressPercentage}%</span>
+            <span>{1} of {missionChain.missions.length} миссий • {progressPercentage}%</span>
           </div>
           <Progress value={progressPercentage} className="h-2" />
         </div>
 
-        {/* Next Mission */}
-        {branch.nextMission && (
-          <div className="text-sm">
-            <span className="text-muted-foreground">Следующее задание: </span>
-            <span className="font-medium">{branch.nextMission.title}</span>
-          </div>
-        )}
-
         {/* Rewards */}
-        {branch.rewards && (
+        {missionChain.rewardXp && missionChain.rewardMana && (
           <div className="flex items-center gap-2 flex-wrap">
-            {branch.rewards.xp && (
               <Badge variant="outline" className="text-xs">
                 <Star className="w-3 h-3 mr-1" />
-                {branch.rewards.xp} XP
-              </Badge>
-            )}
-            {branch.rewards.mana && (
+              {missionChain.rewardXp} XP
+            </Badge>
               <Badge variant="outline" className="text-xs text-rewards-amber border-rewards-amber/20">
                 <Zap className="w-3 h-3 mr-1" />
-                {branch.rewards.mana} Мана
+                {missionChain.rewardMana} Мана
               </Badge>
-            )}
-            {branch.rewards.artifacts && branch.rewards.artifacts.length > 0 && (
+            {(
               <Badge variant="outline" className="text-xs">
                 <Award className="w-3 h-3 mr-1" />
-                {branch.rewards.artifacts.length} Артефакты
+                2 Артефакты
               </Badge>
             )}
           </div>
@@ -110,7 +100,7 @@ export function MissionChainCard({ branch, onOpenBranch }: MissionChainCardProps
           variant="secondary"
           size="sm" 
           className="w-full"
-          onClick={() => onOpenBranch(branch.id)}
+          onClick={() => onOpenChain(missionChain.id)}
         >
           Открыть цепочку
           <ChevronRight className="w-4 h-4 ml-2" />

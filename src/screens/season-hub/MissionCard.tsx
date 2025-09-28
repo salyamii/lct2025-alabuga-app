@@ -2,66 +2,79 @@ import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/ca
 import { Badge } from "../../components/ui/badge";
 import { Button } from "../../components/ui/button";
 import { Clock, Coins, ChevronRight, MapPin, Users, Star, Shield, Zap, Rocket } from "lucide-react";
+import { Mission } from "../../domain/mission";
 
 interface MissionCardProps {
-  mission: {
-    id: string;
-    title: string;
-    purpose: string;
-    tags: string[];
-    timeEstimate: string;
-    rewards: {
-      mana: number;
-      xp: number;
-    };
-    location?: string;
-    participants?: number;
-    maxParticipants?: number;
-    difficulty: "Cadet" | "Navigator" | "Commander" | "Admiral" | "Fleet Admiral";
-    isPaired?: boolean;
-    isGroupMission?: boolean;
-    mentorRatingRequired?: boolean;
-    requiresTeam?: boolean;
-    steps: number;
-    proofs: number;
-    episode?: number;
-    isLocked?: boolean;
-  };
-  onLaunch: (missionId: string) => void;
-  onViewDetails: (missionId: string) => void;
+  // mission: {
+  //   id: string;
+  //   title: string;
+  //   purpose: string;
+  //   tags: string[];
+  //   timeEstimate: string;
+  //   rewards: {
+  //     mana: number;
+  //     xp: number;
+  //   };
+  //   location?: string;
+  //   participants?: number;
+  //   maxParticipants?: number;
+  //   difficulty: "Cadet" | "Navigator" | "Commander" | "Admiral" | "Fleet Admiral";
+  //   isPaired?: boolean;
+  //   isGroupMission?: boolean;
+  //   mentorRatingRequired?: boolean;
+  //   requiresTeam?: boolean;
+  //   steps: number;
+  //   proofs: number;
+  //   episode?: number;
+  //   isLocked?: boolean;
+  // };
+  mission: Mission;
+  onLaunch: (missionId: number) => void;
+  onViewDetails: (missionId: number) => void;
 }
 
 export function MissionCard({ mission, onLaunch, onViewDetails }: MissionCardProps) {
   const difficultyColors = {
-    "Cadet": "bg-green-500/15 text-green-700 border-green-500/20",
-    "Navigator": "bg-blue-500/15 text-blue-700 border-blue-500/20", 
-    "Commander": "bg-purple-500/15 text-purple-700 border-purple-500/20",
-    "Admiral": "bg-orange-500/15 text-orange-700 border-orange-500/20",
-    "Fleet Admiral": "bg-red-500/15 text-red-700 border-red-500/20"
+    1: "bg-green-500/15 text-green-700 border-green-500/20",
+    2: "bg-blue-500/15 text-blue-700 border-blue-500/20", 
+    3: "bg-purple-500/15 text-purple-700 border-purple-500/20",
+    4: "bg-orange-500/15 text-orange-700 border-orange-500/20",
+    5: "bg-red-500/15 text-red-700 border-red-500/20"
+  };
+
+  const difficultyCaptions = {
+    1: "Cadet",
+    2: "Navigator",
+    3: "Commander",
+    4: "Admiral",
+    5: "Fleet Admiral"
   };
 
   const getDifficultyIcon = () => {
-    switch (mission.difficulty) {
-      case "Cadet": return "🛸";
-      case "Navigator": return "🚀";
-      case "Commander": return "⭐";
-      case "Admiral": return "🌟";
-      case "Fleet Admiral": return "👑";
+    switch (mission.rankRequirement) {
+      case 1: return "🛸";
+      case 2: return "🚀";
+      case 3: return "⭐";
+      case 4: return "🌟";
+      case 5: return "👑";
       default: return "🚀";
     }
   };
 
+  const isGroupMission = mission.category === "Group";
+  const isPairedMission = mission.category === "Paired";
+
   return (
     <Card className={`group hover:elevation-cosmic transition-all duration-300 mission-card relative overflow-hidden ${
-      mission.isGroupMission ? 'border-info/30 bg-gradient-to-r from-card to-info/5' : ''
+      isGroupMission ? 'border-info/30 bg-gradient-to-r from-card to-info/5' : ''
     }`}>
       {/* Cosmic accent for group missions */}
-      {mission.isGroupMission && (
+      {isGroupMission && (
         <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-info/20 to-transparent"></div>
       )}
       
       {/* Special effects for high-tier missions */}
-      {(mission.difficulty === "Admiral" || mission.difficulty === "Fleet Admiral") && (
+      {(mission.rankRequirement === 4 || mission.rankRequirement === 5) && (
         <div className="absolute inset-0 bg-gradient-to-br from-rewards-amber/5 via-transparent to-primary/5 pointer-events-none"></div>
       )}
 
@@ -73,19 +86,19 @@ export function MissionCard({ mission, onLaunch, onViewDetails }: MissionCardPro
                 {mission.title}
               </CardTitle>
               <div className="flex items-center gap-1 shrink-0">
-                {mission.isPaired && (
+                {isPairedMission&& (
                   <Badge variant="outline" className="text-xs bg-soft-cyan/10 text-primary border-soft-cyan/30">
                     <Users className="w-3 h-3 mr-1" />
                     Paired
                   </Badge>
                 )}
-                {mission.isGroupMission && (
+                {isGroupMission && (
                   <Badge variant="outline" className="text-xs bg-info/10 text-info border-info/30">
                     <Shield className="w-3 h-3 mr-1" />
                     Squad
                   </Badge>
                 )}
-                {mission.mentorRatingRequired && (
+                {mission.rankRequirement === 1 && (
                   <Badge variant="outline" className="text-xs bg-rewards-amber/10 text-rewards-amber border-rewards-amber/30">
                     <Star className="w-3 h-3 mr-1" />
                     Rating
@@ -94,13 +107,13 @@ export function MissionCard({ mission, onLaunch, onViewDetails }: MissionCardPro
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Badge className={`text-xs border ${difficultyColors[mission.difficulty]} w-fit`}>
+              <Badge className={`text-xs border ${difficultyColors[mission.rankRequirement as keyof typeof difficultyColors]} w-fit`}>
                 <span className="mr-1">{getDifficultyIcon()}</span>
-                {mission.difficulty}
+                {difficultyCaptions[mission.rankRequirement as keyof typeof difficultyCaptions]}
               </Badge>
-              {mission.episode && (
+              { (
                 <Badge variant="secondary" className="text-xs">
-                  Episode {mission.episode}
+                  Season 1
                 </Badge>
               )}
             </div>
@@ -117,22 +130,22 @@ export function MissionCard({ mission, onLaunch, onViewDetails }: MissionCardPro
       </CardHeader>
       
       <CardContent className="space-y-4 relative">
-        <p className="text-muted-foreground text-sm leading-relaxed">{mission.purpose}</p>
+        <p className="text-muted-foreground text-sm leading-relaxed">{mission.description}</p>
         
         {/* Special notices for group missions */}
-        {mission.isGroupMission && (
+        {isGroupMission && (
           <div className="p-3 bg-info/5 border border-info/20 rounded-lg">
             <div className="flex items-start gap-2">
               <Users className="w-4 h-4 text-info mt-0.5 shrink-0" />
               <div className="space-y-1">
                 <p className="text-sm font-medium text-info">Squad Mission</p>
                 <p className="text-xs text-muted-foreground">
-                  {mission.requiresTeam 
-                    ? "Team coordination required. Mission cannot be completed solo."
-                    : "Better rewards when completed with squadmates."
+                  {mission.category === "Group" 
+                    ? "Для выполнения необходима команда, выполнить в одиночку невозможно."
+                    : "Лучшие награды при выполнении в команде."
                   }
                 </p>
-                {mission.mentorRatingRequired && (
+                {mission.rankRequirement === 1 && (
                   <p className="text-xs text-rewards-amber">
                     ⭐ Mentor evaluation required upon completion
                   </p>
@@ -143,34 +156,25 @@ export function MissionCard({ mission, onLaunch, onViewDetails }: MissionCardPro
         )}
         
         {/* Tags */}
-        <div className="flex flex-wrap gap-1.5">
+        {/* <div className="flex flex-wrap gap-1.5">
           {mission.tags.map((tag) => (
             <Badge key={tag} variant="secondary" className="text-xs bg-primary-200/60 text-primary-600 border-primary-200">
               {tag}
             </Badge>
           ))}
-        </div>
+        </div> */}
 
         {/* Mission Meta */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-3 border-t border-border">
           <div className="space-y-2">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Clock className="w-4 h-4 shrink-0" />
-              <span>{mission.timeEstimate}</span>
+              <span>{mission.tasks.length} заданий</span>
             </div>
-            {mission.location && (
+            {(
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <MapPin className="w-4 h-4 shrink-0" />
-                <span className="truncate">{mission.location}</span>
-              </div>
-            )}
-            {mission.participants !== undefined && (
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Users className="w-4 h-4 shrink-0" />
-                <span>
-                  {mission.participants}
-                  {mission.maxParticipants ? ` / ${mission.maxParticipants}` : ''} pilots
-                </span>
+                <span className="truncate">Сборочный цех</span>
               </div>
             )}
           </div>
@@ -179,13 +183,13 @@ export function MissionCard({ mission, onLaunch, onViewDetails }: MissionCardPro
             <div className="flex items-center gap-2 text-sm">
               <Coins className="w-4 h-4 text-rewards-amber shrink-0" />
               <span className="font-mono font-semibold text-foreground">
-                {mission.rewards.mana} Mana
-                {mission.isGroupMission && <span className="text-info ml-1">+Bonus</span>}
+                {mission.rewardMana} Мана
+                {isGroupMission && <span className="text-info ml-1">+Bonus</span>}
               </span>
             </div>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Zap className="w-4 h-4 text-primary shrink-0" />
-              <span>+{mission.rewards.xp} Flight XP</span>
+              <span>+{mission.rewardXp} XP</span>
             </div>
           </div>
         </div>
@@ -198,24 +202,24 @@ export function MissionCard({ mission, onLaunch, onViewDetails }: MissionCardPro
             onClick={() => onViewDetails(mission.id)}
             className="text-sm text-muted-foreground border-border flex-1 sm:flex-none"
           >
-            {mission.steps} Steps • {mission.proofs} Proofs
+            {mission.tasks.length} шагов • {mission.tasks.length} доказательств
           </Button>
           <Button 
             onClick={() => onLaunch(mission.id)}
             size="sm"
             className={`shrink-0 mission-launch-btn ${
-              mission.isGroupMission 
+              isGroupMission 
                 ? 'bg-info hover:bg-info/80 text-white' 
                 : 'bg-primary hover:bg-primary-600 text-white'
             }`}
-            disabled={mission.isLocked}
+            disabled={mission.rankRequirement > 2}
           >
             <Rocket className="w-4 h-4 mr-2" />
             <span className="hidden sm:inline">
-              {mission.isGroupMission ? 'Join Squad' : 'Launch Mission'}
+              {isGroupMission ? 'Присоединиться к команде' : 'Запустить миссию'}
             </span>
             <span className="sm:hidden">
-              {mission.isGroupMission ? 'Join' : 'Launch'}
+              {isGroupMission ? 'Присоединиться' : 'Запустить'}
             </span>
           </Button>
         </div>

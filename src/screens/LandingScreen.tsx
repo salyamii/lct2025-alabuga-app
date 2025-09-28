@@ -8,7 +8,12 @@ import { Rocket, Star, Users, Trophy, ArrowRight, User, Building2, Loader2 } fro
 import { useAuthContext } from '../api/context/AuthContext';
 import { toast } from '../components/ui/sonner';
 
-export function LandingScreen() {
+interface LandingScreenProps {
+  onLoginSuccess?: () => void;
+  onRegisterSuccess?: () => void;
+}
+
+export function LandingScreen({ onLoginSuccess, onRegisterSuccess }: LandingScreenProps) {
   const { login: loginUser, registerHR, registerCandidate, loading, error } = useAuthContext();
   const [isLogin, setIsLogin] = useState(true);
   const [login, setLogin] = useState("");
@@ -85,6 +90,13 @@ export function LandingScreen() {
         }
       } 
       await loginUser({ login, password });
+      
+      // Вызываем соответствующий callback только после успешной авторизации
+      if (!isLogin) {
+        onRegisterSuccess?.();
+      } else {
+        onLoginSuccess?.();
+      }
     } catch (error) {
       // Ошибка уже обрабатывается в контексте и useEffect
       console.error('Ошибка авторизации:', error);
@@ -289,17 +301,6 @@ export function LandingScreen() {
                   </button>
                 </div>
 
-                {/* Demo Access */}
-                <div className="pt-4 border-t border-border">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full"
-                    onClick={() => loginUser({ login: "demo_c", password: "demo_c" })}
-                  >
-                    Демо-доступ
-                  </Button>
-                </div>
               </CardContent>
             </Card>
           </div>

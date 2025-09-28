@@ -4,7 +4,7 @@ import { Badge } from "../../components/ui/badge";
 import { Button } from "../../components/ui/button";
 import { Progress } from "../../components/ui/progress";
 
-interface SeasonInfoProps {
+interface SeasonHubInfoProps {
   season: {
     id: string;
     name: string;
@@ -25,11 +25,11 @@ interface SeasonInfoProps {
   onSeasonSettings?: () => void;
 }
 
-export function SeasonInfo({ 
+export function SeasonHubInfo({ 
   season, 
   onSkillPathOpen, 
   onSeasonSettings 
-}: SeasonInfoProps) {
+}: SeasonHubInfoProps) {
   return (
     <Card className="cosmic-gradient text-white overflow-hidden relative">
       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-50"></div>
