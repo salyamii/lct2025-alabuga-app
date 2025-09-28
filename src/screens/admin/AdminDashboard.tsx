@@ -47,8 +47,16 @@ export function AdminDashboard() {
   ];
 
   return (
-    <>
-      <TabsContent value="dashboard" className="space-y-6">
+    <TabsContent value="dashboard" className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+            <h2 className="text-lg font-semibold">Панель управления</h2>
+            <p className="text-sm text-muted-foreground">
+              Обзор статистики и активности платформы
+            </p>
+          </div>
+        </div>
+
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Card className="card-enhanced">
@@ -152,7 +160,6 @@ export function AdminDashboard() {
             </div>
           </CardContent>
         </Card>
-      </TabsContent>
-    </>
+    </TabsContent>
   );
 }

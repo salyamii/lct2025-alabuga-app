@@ -47,10 +47,9 @@ export function AdminUsers({ onUserDetailOpen }: AdminUsersProps) {
     },
   ];
   return (
-    <>
-      <TabsContent value="users" className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
+    <TabsContent value="users" className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
             <h2 className="text-lg font-semibold">Управление пользователями</h2>
             <p className="text-sm text-muted-foreground">
               Управление учетными записями и правами пользователей
@@ -136,7 +135,6 @@ export function AdminUsers({ onUserDetailOpen }: AdminUsersProps) {
             </div>
           </CardContent>
         </Card>
-      </TabsContent>
-    </>
+    </TabsContent>
   );
 }

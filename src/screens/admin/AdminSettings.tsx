@@ -12,14 +12,15 @@ interface AdminSettingsProps {
 
 export function AdminSettings({ handleCreateReward, handleCreateBadge, handleManageStore }: AdminSettingsProps) {
     return (
-        <div>
-            <TabsContent value="settings" className="space-y-6">
+        <TabsContent value="settings" className="space-y-6">
+          <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-lg font-semibold">Настройки платформы</h2>
-              <p className="text-sm text-muted-foreground">
-                Настройка системных предпочтений и политик
-              </p>
-            </div>
+                  <h2 className="text-lg font-semibold">Настройки платформы</h2>
+                  <p className="text-sm text-muted-foreground">
+                    Настройка системных предпочтений и политик
+                  </p>
+                </div>
+              </div>
 
             {/* Management Actions */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -123,7 +124,6 @@ export function AdminSettings({ handleCreateReward, handleCreateBadge, handleMan
                 </CardContent>
               </Card>
             </div>
-          </TabsContent>
-        </div>
+        </TabsContent>
     );
 }
