@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { Rank } from '../domain';
 import rankService from '../api/services/rankService';
+import { RankCreateRequest, RankUpdateRequest } from '../api/types/apiTypes';
 
 interface RankState {
   ranks: Rank[];
@@ -11,8 +12,8 @@ interface RankState {
 interface RankActions {
   fetchRanks: () => Promise<void>;
   fetchRankById: (id: number) => Promise<void>;
-  createRank: (rank: Rank) => Promise<void>;
-  updateRank: (rank: Rank) => Promise<void>;
+  createRank: (rankData: RankCreateRequest) => Promise<Rank>;
+  updateRank: (id: number, rankData: RankUpdateRequest) => Promise<Rank>;
   deleteRank: (id: number) => Promise<void>;
   clearRanks: () => void;
 }
@@ -46,38 +47,44 @@ export const useRankStore = create<RankState & RankActions>((set: (partial: Part
     }
   },
 
-  createRank: async (rank: Rank) => {
+  createRank: async (rankData: RankCreateRequest) => {
     try {
-      const rankData = {
-        name: rank.name,
-        requiredXp: rank.requiredXp
-      };
+      set({ isLoading: true, error: null });
       const newRank = await rankService.createRank(rankData);
-      set({ ranks: [...get().ranks, newRank.data] });
+      set({ ranks: [...get().ranks, newRank.data], isLoading: false });
+      return newRank.data;
     } catch (error: any) {
-      set({ error: error.message || 'Не удалось создать ранг' });
+      set({ error: error.message || 'Не удалось создать ранг', isLoading: false });
+      throw error;
     }
   },
 
-  updateRank: async (rank: Rank) => {
+  updateRank: async (id: number, rankData: RankUpdateRequest) => {
     try {
-      const rankData = {
-        name: rank.name,
-        requiredXp: rank.requiredXp
-      };
-      const updatedRank = await rankService.updateRank(rank.id, rankData);
-      set({ ranks: get().ranks.map((r: Rank) => r.id === rank.id ? updatedRank.data : r) });
+      set({ isLoading: true, error: null });
+      const updatedRank = await rankService.updateRank(id, rankData);
+      set({ 
+        ranks: get().ranks.map((r: Rank) => r.id === id ? updatedRank.data : r),
+        isLoading: false 
+      });
+      return updatedRank.data;
     } catch (error: any) {
-      set({ error: error.message || 'Не удалось обновить ранг' });
+      set({ error: error.message || 'Не удалось обновить ранг', isLoading: false });
+      throw error;
     }
   },
 
   deleteRank: async (id: number) => {
     try {
+      set({ isLoading: true, error: null });
       await rankService.deleteRank(id);
-      set({ ranks: get().ranks.filter((r: Rank) => r.id !== id) });
+      set({ 
+        ranks: get().ranks.filter((r: Rank) => r.id !== id),
+        isLoading: false 
+      });
     } catch (error: any) {
-      set({ error: error.message || 'Не удалось удалить ранг' });
+      set({ error: error.message || 'Не удалось удалить ранг', isLoading: false });
+      throw error;
     }
   },
 

@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { Task } from '../domain';
 import taskService from '../api/services/taskService';
+import { TaskCreateRequest, TaskUpdateRequest } from '../api/types/apiTypes';
 
 interface TaskState {
   tasks: Task[];
@@ -11,8 +12,8 @@ interface TaskState {
 interface TaskActions {
   fetchTasks: () => Promise<void>;
   fetchTaskById: (id: number) => Promise<void>;
-  createTask: (task: Task) => Promise<void>;
-  updateTask: (task: Task) => Promise<void>;
+  createTask: (taskData: TaskCreateRequest) => Promise<Task>;
+  updateTask: (id: number, taskData: TaskUpdateRequest) => Promise<Task>;
   deleteTask: (id: number) => Promise<void>;
   clearTasks: () => void;
 }
@@ -46,38 +47,44 @@ export const useTaskStore = create<TaskState & TaskActions>((set: (partial: Part
     }
   },
 
-  createTask: async (task: Task) => {
+  createTask: async (taskData: TaskCreateRequest) => {
     try {
-      const taskData = {
-        title: task.title,
-        description: task.description
-      };
+      set({ isLoading: true, error: null });
       const newTask = await taskService.createTask(taskData);
-      set({ tasks: [...get().tasks, newTask.data] });
+      set({ tasks: [...get().tasks, newTask.data], isLoading: false });
+      return newTask.data;
     } catch (error: any) {
-      set({ error: error.message || 'Не удалось создать задачу' });
+      set({ error: error.message || 'Не удалось создать задачу', isLoading: false });
+      throw error;
     }
   },
 
-  updateTask: async (task: Task) => {
+  updateTask: async (id: number, taskData: TaskUpdateRequest) => {
     try {
-      const taskData = {
-        title: task.title,
-        description: task.description
-      };
-      const updatedTask = await taskService.updateTask(task.id, taskData);
-      set({ tasks: get().tasks.map((t: Task) => t.id === task.id ? updatedTask.data : t) });
+      set({ isLoading: true, error: null });
+      const updatedTask = await taskService.updateTask(id, taskData);
+      set({ 
+        tasks: get().tasks.map((t: Task) => t.id === id ? updatedTask.data : t),
+        isLoading: false 
+      });
+      return updatedTask.data;
     } catch (error: any) {
-      set({ error: error.message || 'Не удалось обновить задачу' });
+      set({ error: error.message || 'Не удалось обновить задачу', isLoading: false });
+      throw error;
     }
   },
 
   deleteTask: async (id: number) => {
     try {
+      set({ isLoading: true, error: null });
       await taskService.deleteTask(id);
-      set({ tasks: get().tasks.filter((t: Task) => t.id !== id) });
+      set({ 
+        tasks: get().tasks.filter((t: Task) => t.id !== id),
+        isLoading: false 
+      });
     } catch (error: any) {
-      set({ error: error.message || 'Не удалось удалить задачу' });
+      set({ error: error.message || 'Не удалось удалить задачу', isLoading: false });
+      throw error;
     }
   },
 

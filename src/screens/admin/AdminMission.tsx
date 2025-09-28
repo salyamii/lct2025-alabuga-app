@@ -9,6 +9,9 @@ import { Eye, Edit, MoreHorizontal, Trash2 } from "lucide-react";
 import { CardContent } from "../../components/ui/card";
 import { Progress } from "../../components/ui/progress";
 import { useState } from "react";
+import { useMissionStore } from "../../stores/useMissionStore";
+import { useMissionChainStore } from "../../stores/useMissionChainStore";
+import { useSeasonStore } from "../../stores/useSeasonStore";
 
 interface AdminMissionProps {
   handleCreateMission: () => void;
@@ -23,32 +26,36 @@ export function AdminMission({
   setSelectedChain,
   setChainCreationOpen,
 }: AdminMissionProps) {
-  const missions = [
-    {
-      id: "mission-1",
-      title: "Web Development Basics",
-      status: "active",
-      participants: 500,
-      completionRate: 90,
-      createdDate: "2024-01-01",
-    },
-    {
-      id: "mission-2",
-      title: "Advanced JavaScript",
-      status: "completed",
-      participants: 300,
-      completionRate: 100,
-      createdDate: "2023-12-01",
-    },
-    {
-      id: "mission-3",
-      title: "Data Structures and Algorithms",
-      status: "upcoming",
-      participants: 0,
-      completionRate: 0,
-      createdDate: "2024-06-01",
-    },
-  ];
+
+  const { missions } = useMissionStore();
+  const { missionChains } = useMissionChainStore();
+  const { currentSeason } = useSeasonStore();
+  // const missions = [
+  //   {
+  //     id: "mission-1",
+  //     title: "Web Development Basics",
+  //     status: "active",
+  //     participants: 500,
+  //     completionRate: 90,
+  //     createdDate: "2024-01-01",
+  //   },
+  //   {
+  //     id: "mission-2",
+  //     title: "Advanced JavaScript",
+  //     status: "completed",
+  //     participants: 300,
+  //     completionRate: 100,
+  //     createdDate: "2023-12-01",
+  //   },
+  //   {
+  //     id: "mission-3",
+  //     title: "Data Structures and Algorithms",
+  //     status: "upcoming",
+  //     participants: 0,
+  //     completionRate: 0,
+  //     createdDate: "2024-06-01",
+  //   },
+  // ];
 
   // Mock data for mission chains
   const chains = [
@@ -315,19 +322,19 @@ export function AdminMission({
                           <h4 className="font-medium">{mission.title}</h4>
                           <Badge
                             variant={
-                              mission.status === "active"
+                              mission.seasonId === currentSeason?.id
                                 ? "default"
                                 : "secondary"
                             }
                             className="text-xs"
                           >
-                            {mission.status}
+                            {mission.seasonId === currentSeason?.id ? "Активная" : "Завершена"}
                           </Badge>
                         </div>
                         <div className="flex items-center gap-6 text-sm text-muted-foreground">
-                          <span>{mission.participants} участников</span>
-                          <span>{mission.completionRate}% завершено</span>
-                          <span>Создано {mission.createdDate}</span>
+                          <span>{500} участников</span>
+                          <span>{90}% завершено</span>
+                          <span>Создано 2024-01-01</span>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">

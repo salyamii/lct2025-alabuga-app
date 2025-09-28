@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { Season } from '../domain';
 import seasonService from '../api/services/seasonService';
+import { SeasonCreateRequest, SeasonUpdateRequest } from '../api/types/apiTypes';
 
 interface SeasonState {
   seasons: Season[];
@@ -12,8 +13,8 @@ interface SeasonState {
 interface SeasonActions {
   fetchSeasons: () => Promise<void>;
   fetchSeasonById: (id: number) => Promise<void>;
-  createSeason: (season: Season) => Promise<void>;
-  updateSeason: (season: Season) => Promise<void>;
+  createSeason: (seasonData: SeasonCreateRequest) => Promise<Season>;
+  updateSeason: (id: number, seasonData: SeasonUpdateRequest) => Promise<Season>;
   deleteSeason: (id: number) => Promise<void>;
   clearSeasons: () => void;
   setCurrentSeason: (season: Season | null) => void;
@@ -60,36 +61,43 @@ export const useSeasonStore = create<SeasonState & SeasonActions>((set: (partial
     }
   },
 
-  createSeason: async (season: Season) => {
+  createSeason: async (seasonData: SeasonCreateRequest) => {
     try {
-      const seasonData = Season.toCreateRequest(season);
+      set({ isLoading: true, error: null });
       const newSeason = await seasonService.createSeason(seasonData);
       const updatedSeasons = [...get().seasons, newSeason.data];
       set({ 
         seasons: updatedSeasons,
-        currentSeason: updatedSeasons.length === 1 ? newSeason.data : get().currentSeason
+        currentSeason: updatedSeasons.length === 1 ? newSeason.data : get().currentSeason,
+        isLoading: false
       });
+      return newSeason.data;
     } catch (error: any) {
-      set({ error: error.message || 'Не удалось создать сезон' });
+      set({ error: error.message || 'Не удалось создать сезон', isLoading: false });
+      throw error;
     }
   },
 
-  updateSeason: async (season: Season) => {
+  updateSeason: async (id: number, seasonData: SeasonUpdateRequest) => {
     try {
-      const seasonData = Season.toUpdateRequest(season);
-      const updatedSeason = await seasonService.updateSeason(season.id, seasonData);
+      set({ isLoading: true, error: null });
+      const updatedSeason = await seasonService.updateSeason(id, seasonData);
       const prevCurrentSeason = get().currentSeason;
       set({ 
-        seasons: get().seasons.map((s: Season) => s.id === season.id ? updatedSeason.data : s),
-        currentSeason: (prevCurrentSeason && prevCurrentSeason.id === season.id) ? updatedSeason.data : prevCurrentSeason
+        seasons: get().seasons.map((s: Season) => s.id === id ? updatedSeason.data : s),
+        currentSeason: (prevCurrentSeason && prevCurrentSeason.id === id) ? updatedSeason.data : prevCurrentSeason,
+        isLoading: false
       });
+      return updatedSeason.data;
     } catch (error: any) {
-      set({ error: error.message || 'Не удалось обновить сезон' });
+      set({ error: error.message || 'Не удалось обновить сезон', isLoading: false });
+      throw error;
     }
   },
 
   deleteSeason: async (id: number) => {
     try {
+      set({ isLoading: true, error: null });
       await seasonService.deleteSeason(id);
       const filteredSeasons = get().seasons.filter((s: Season) => s.id !== id);
       const prevCurrentSeason = get().currentSeason;
@@ -99,10 +107,12 @@ export const useSeasonStore = create<SeasonState & SeasonActions>((set: (partial
       }
       set({ 
         seasons: filteredSeasons,
-        currentSeason: newCurrentSeason
+        currentSeason: newCurrentSeason,
+        isLoading: false
       });
     } catch (error: any) {
-      set({ error: error.message || 'Не удалось удалить сезон' });
+      set({ error: error.message || 'Не удалось удалить сезон', isLoading: false });
+      throw error;
     }
   },
 

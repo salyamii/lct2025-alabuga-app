@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Button } from "../../components/ui/button";
 import {
   Tabs,
@@ -11,7 +10,9 @@ import { AdminUsers } from "./AdminUsers";
 import { AdminMission } from "./AdminMission";
 import { AdminSeason } from "./AdminSeason";
 import { AdminSettings } from "./AdminSettings";
+import { MissionCreationDrawer } from "./MissionCreationDrawer";
 import { ArrowLeft, Shield } from "lucide-react";
+import { useOverlayStore } from "../../stores/useOverlayStore";
 
 interface AdminScreenProps {
   onBack: () => void;
@@ -19,37 +20,31 @@ interface AdminScreenProps {
 }
 
 export function AdminScreen({ onBack, onUserDetailOpen }: AdminScreenProps) {
-  const [missionCreationOpen, setMissionCreationOpen] = useState(false);
-  const [badgeCreationOpen, setBadgeCreationOpen] = useState(false);
-  const [rewardCreationOpen, setRewardCreationOpen] = useState(false);
-  const [storeManagementOpen, setStoreManagementOpen] = useState(false);
-  const [chainCreationOpen, setChainCreationOpen] = useState(false);
-  const [selectedChain, setSelectedChain] = useState<any>(null);
-  const [seasonCreationOpen, setSeasonCreationOpen] = useState(false);
-
-  const handleCreateMission = () => {
-    setMissionCreationOpen(true);
-  };
-
-  const handleCreateReward = () => {
-    setRewardCreationOpen(true);
-  };
-
-  const handleCreateBadge = () => {
-    setBadgeCreationOpen(true);
-  };
-
-  const handleManageStore = () => {
-    setStoreManagementOpen(true);
-  };
-
-  const handleCreateChain = () => {
-    setChainCreationOpen(true);
-  };
-
-  const handleCreateSeason = () => {
-    setSeasonCreationOpen(true);
-  };
+  const {
+    // Состояния оверлеев
+    missionCreationOpen,
+    badgeCreationOpen,
+    rewardCreationOpen,
+    storeManagementOpen,
+    chainCreationOpen,
+    seasonCreationOpen,
+    selectedChain,
+    
+    // Действия
+    openMissionCreation,
+    closeMissionCreation,
+    openBadgeCreation,
+    closeBadgeCreation,
+    openRewardCreation,
+    closeRewardCreation,
+    openStoreManagement,
+    closeStoreManagement,
+    openChainCreation,
+    closeChainCreation,
+    openSeasonCreation,
+    closeSeasonCreation,
+    setSelectedChain,
+  } = useOverlayStore();
 
   return (
     <div className="min-h-screen bg-background">
@@ -91,20 +86,20 @@ export function AdminScreen({ onBack, onUserDetailOpen }: AdminScreenProps) {
           <AdminDashboard />
 
           <AdminMission
-            handleCreateMission={handleCreateMission}
-            handleCreateChain={handleCreateChain}
+            handleCreateMission={openMissionCreation}
+            handleCreateChain={() => openChainCreation()}
             setSelectedChain={setSelectedChain}
-            setChainCreationOpen={setChainCreationOpen}
+            setChainCreationOpen={(open) => open ? openChainCreation() : closeChainCreation()}
           />
           
-          <AdminSeason handleCreateSeason={handleCreateSeason} />
+          <AdminSeason handleCreateSeason={openSeasonCreation} />
 
           <AdminUsers onUserDetailOpen={onUserDetailOpen} />
 
           <AdminSettings
-            handleCreateReward={handleCreateReward}
-            handleCreateBadge={handleCreateBadge}
-            handleManageStore={handleManageStore}
+            handleCreateReward={openRewardCreation}
+            handleCreateBadge={openBadgeCreation}
+            handleManageStore={openStoreManagement}
           />
         </Tabs>
       </div>
@@ -112,32 +107,27 @@ export function AdminScreen({ onBack, onUserDetailOpen }: AdminScreenProps) {
       {/* Drawers */}
       <MissionCreationDrawer
         open={missionCreationOpen}
-        onOpenChange={setMissionCreationOpen}
+        onOpenChange={(open) => open ? openMissionCreation() : closeMissionCreation()}
       />
 
       <BadgeCreationDrawer
         open={badgeCreationOpen}
-        onOpenChange={setBadgeCreationOpen}
+        onOpenChange={(open) => open ? openBadgeCreation() : closeBadgeCreation()}
       />
 
       <RewardCreationDrawer
         open={rewardCreationOpen}
-        onOpenChange={setRewardCreationOpen}
+        onOpenChange={(open) => open ? openRewardCreation() : closeRewardCreation()}
       />
 
       <StoreManagementDrawer
         open={storeManagementOpen}
-        onOpenChange={setStoreManagementOpen}
+        onOpenChange={(open) => open ? openStoreManagement() : closeStoreManagement()}
       />
 
       <MissionChainCreationDrawer
         open={chainCreationOpen}
-        onOpenChange={(open) => {
-          setChainCreationOpen(open);
-          if (!open) {
-            setSelectedChain(null);
-          }
-        }}
+        onOpenChange={(open) => open ? openChainCreation() : closeChainCreation()}
         editChain={selectedChain}
       />
     </div>
@@ -145,13 +135,6 @@ export function AdminScreen({ onBack, onUserDetailOpen }: AdminScreenProps) {
 }
 
 // Заглушки для компонентов Drawer
-const MissionCreationDrawer = ({
-  open,
-  onOpenChange,
-}: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}) => null;
 const BadgeCreationDrawer = ({
   open,
   onOpenChange,

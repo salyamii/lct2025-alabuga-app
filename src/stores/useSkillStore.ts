@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { Skill } from '../domain';
 import skillService from '../api/services/skillService';
+import { SkillCreateRequest, SkillUpdateRequest } from '../api/types/apiTypes';
 
 interface SkillState {
   skills: Skill[];
@@ -11,8 +12,8 @@ interface SkillState {
 interface SkillActions {
   fetchSkills: () => Promise<void>;
   fetchSkillById: (id: number) => Promise<void>;
-  createSkill: (skill: Skill) => Promise<void>;
-  updateSkill: (skill: Skill) => Promise<void>;
+  createSkill: (skillData: SkillCreateRequest) => Promise<Skill>;
+  updateSkill: (id: number, skillData: SkillUpdateRequest) => Promise<Skill>;
   deleteSkill: (id: number) => Promise<void>;
   clearSkills: () => void;
 }
@@ -46,38 +47,44 @@ export const useSkillStore = create<SkillState & SkillActions>((set: (partial: P
     }
   },
 
-  createSkill: async (skill: Skill) => {
+  createSkill: async (skillData: SkillCreateRequest) => {
     try {
-      const skillData = {
-        name: skill.name,
-        maxLevel: skill.maxLevel
-      };
+      set({ isLoading: true, error: null });
       const newSkill = await skillService.createSkill(skillData);
-      set({ skills: [...get().skills, newSkill.data] });
+      set({ skills: [...get().skills, newSkill.data], isLoading: false });
+      return newSkill.data;
     } catch (error: any) {
-      set({ error: error.message || 'Не удалось создать навык' });
+      set({ error: error.message || 'Не удалось создать навык', isLoading: false });
+      throw error;
     }
   },
 
-  updateSkill: async (skill: Skill) => {
+  updateSkill: async (id: number, skillData: SkillUpdateRequest) => {
     try {
-      const skillData = {
-        name: skill.name,
-        maxLevel: skill.maxLevel
-      };
-      const updatedSkill = await skillService.updateSkill(skill.id, skillData);
-      set({ skills: get().skills.map((s: Skill) => s.id === skill.id ? updatedSkill.data : s) });
+      set({ isLoading: true, error: null });
+      const updatedSkill = await skillService.updateSkill(id, skillData);
+      set({ 
+        skills: get().skills.map((s: Skill) => s.id === id ? updatedSkill.data : s),
+        isLoading: false 
+      });
+      return updatedSkill.data;
     } catch (error: any) {
-      set({ error: error.message || 'Не удалось обновить навык' });
+      set({ error: error.message || 'Не удалось обновить навык', isLoading: false });
+      throw error;
     }
   },
 
   deleteSkill: async (id: number) => {
     try {
+      set({ isLoading: true, error: null });
       await skillService.deleteSkill(id);
-      set({ skills: get().skills.filter((s: Skill) => s.id !== id) });
+      set({ 
+        skills: get().skills.filter((s: Skill) => s.id !== id),
+        isLoading: false 
+      });
     } catch (error: any) {
-      set({ error: error.message || 'Не удалось удалить навык' });
+      set({ error: error.message || 'Не удалось удалить навык', isLoading: false });
+      throw error;
     }
   },
 

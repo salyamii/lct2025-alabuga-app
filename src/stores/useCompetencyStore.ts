@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { Competency } from '../domain';
 import competencyService from '../api/services/competencyService';
+import { CompetencyCreateRequest, CompetencyUpdateRequest } from '../api/types/apiTypes';
 
 interface CompetencyState {
   competencies: Competency[];
@@ -11,8 +12,8 @@ interface CompetencyState {
 interface CompetencyActions {
   fetchCompetencies: () => Promise<void>;
   fetchCompetencyById: (id: number) => Promise<void>;
-  createCompetency: (competency: Competency) => Promise<void>;
-  updateCompetency: (competency: Competency) => Promise<void>;
+  createCompetency: (competencyData: CompetencyCreateRequest) => Promise<Competency>;
+  updateCompetency: (id: number, competencyData: CompetencyUpdateRequest) => Promise<Competency>;
   deleteCompetency: (id: number) => Promise<void>;
   clearCompetencies: () => void;
 }
@@ -46,30 +47,44 @@ export const useCompetencyStore = create<CompetencyState & CompetencyActions>((s
     }
   },
 
-  createCompetency: async (competency: Competency) => {
+  createCompetency: async (competencyData: CompetencyCreateRequest) => {
     try {
-      const newCompetency = await competencyService.createCompetency(competency);
-      set({ competencies: [...get().competencies, newCompetency.data] });
+      set({ isLoading: true, error: null });
+      const newCompetency = await competencyService.createCompetency(competencyData);
+      set({ competencies: [...get().competencies, newCompetency.data], isLoading: false });
+      return newCompetency.data;
     } catch (error: any) {
       set({ error: error.message || 'Не удалось создать компетенцию', isLoading: false });
+      throw error;
     }
   },
 
-  updateCompetency: async (competency: Competency) => {
+  updateCompetency: async (id: number, competencyData: CompetencyUpdateRequest) => {
     try {
-      const updatedCompetency = await competencyService.updateCompetency(competency.id, competency);
-      set({ competencies: get().competencies.map((c: Competency) => c.id === competency.id ? updatedCompetency.data : c) });
+      set({ isLoading: true, error: null });
+      const updatedCompetency = await competencyService.updateCompetency(id, competencyData);
+      set({ 
+        competencies: get().competencies.map((c: Competency) => c.id === id ? updatedCompetency.data : c),
+        isLoading: false 
+      });
+      return updatedCompetency.data;
     } catch (error: any) {
       set({ error: error.message || 'Не удалось обновить компетенцию', isLoading: false });
+      throw error;
     }
   },
 
   deleteCompetency: async (id: number) => {
     try {
+      set({ isLoading: true, error: null });
       await competencyService.deleteCompetency(id);
-      set({ competencies: get().competencies.filter((c: Competency) => c.id !== id) });
+      set({ 
+        competencies: get().competencies.filter((c: Competency) => c.id !== id),
+        isLoading: false 
+      });
     } catch (error: any) {
       set({ error: error.message || 'Не удалось удалить компетенцию', isLoading: false });
+      throw error;
     }
   },
 
