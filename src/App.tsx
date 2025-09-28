@@ -13,7 +13,10 @@ import { StoreHub } from './screens/store/StoreHub';
 import { OnboardingScreen } from './screens/OnboardingScreen';
 import { AdminHubWrapper } from './screens/admin/AdminHubWrapper';
 import { MentorshipScreen } from './screens/mentor-hub/MentorHub';
-import { UserProfileHub } from './screens/profile/UserProfileHub';
+import { UserProfileHub } from './screens/profile-hub/UserProfileHub';
+import { ProgressHub } from './screens/progress-hub/ProgressHub';
+import { SettingsScreenWrapper } from './screens/settings/SettingsScreenWrapper';
+import { NotificationScreenWrapper } from './screens/notifications/NotificationScreenWrapper';
 
 // Компонент приложения с проверкой авторизации
 const AppContent: React.FC = () => {
@@ -58,7 +61,7 @@ const AppContent: React.FC = () => {
         } />
       </Route>
       <Route path="/progress" element={<AppLayout />}>
-        <Route index element={<MainContent />} />
+        <Route index element={<ProgressHub onMissionDetails={() => {}} />} />
       </Route>
       <Route path="/store" element={<AppLayout />}>
         <Route index element={<StoreHub />} />
@@ -73,6 +76,8 @@ const AppContent: React.FC = () => {
         <Route index element={<MentorshipScreen onBack={() => {}} />} />
       </Route>
       <Route path="/admin" element={<AdminHubWrapper />} />
+      <Route path="/settings" element={<SettingsScreenWrapper />} />
+      <Route path="/notifications" element={<NotificationScreenWrapper />} />
       <Route path="*" element={<Navigate to={shouldShowOnboarding ? "/onboarding" : "/season-hub"} replace />} />
     </Routes>
   ) : (

@@ -27,7 +27,7 @@ const PATH_TO_TAB: Record<string, keyof typeof TAB_TO_PATH> = {
 export default function AppLayout() {
   const { push } = useNavigation();
   const { pathname } = useLocation();
-  const { isTopNavigationVisible, openAdminPanel } = useNavigationStore();
+  const { isTopNavigationVisible, openAdminPanel, openSettings, openNotifications } = useNavigationStore();
 
   const isMobile = useIsMobile();
 
@@ -47,14 +47,24 @@ export default function AppLayout() {
     push('/admin');
   };
 
+  const handleSettingsOpen = () => {
+    openSettings();
+    push('/settings');
+  };
+
+  const handleNotificationsOpen = () => {
+    openNotifications();
+    push('/notifications');
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       { !isMobile && isTopNavigationVisible && <DesktopNavigationTopBar
         activeTab={activeTab}
         onTabChange={handleTabChange}
         onAdminOpen={handleAdminOpen}
-        onNotificationsOpen={() => {}}
-        onSettingsOpen={() => {}}
+        onNotificationsOpen={handleNotificationsOpen}
+        onSettingsOpen={handleSettingsOpen}
       />}
       <main className={`flex-1 ${isMobile ? 'pb-16' : ''}`}>
         <Outlet />
