@@ -36,15 +36,8 @@ export {
 } from './interceptors/authInterceptor';
 
 // Экспорт хуков
-export { useApi } from './hooks/useApi';
-export { useAuth } from './hooks/useAuth';
-export { useAuthRoute } from './hooks/useAuthRoute';
+export { useAuth } from './hooks/useAuth';;
 export { useDataLoader } from './hooks/useDataLoader';
 
 // Экспорт контекста
 export { AuthProvider, useAuthContext } from './context/AuthContext';
-
-// Экспорт компонентов для роутинга
-export { ProtectedRoute } from './components/AuthGuard';
-export { PublicRoute } from './components/PublicRoute';
-export { RoleRoute } from './components/RoleRoute';
