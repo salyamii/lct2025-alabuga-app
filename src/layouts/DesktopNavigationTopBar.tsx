@@ -106,11 +106,11 @@ interface DesktopNavigationTopBarProps {
               <Tabs value={activeTab} onValueChange={onTabChange} className="w-full">
                 <TabsList className="flex w-full bg-white/10 border-white/20 h-12 gap-1">
                   <TabsTrigger 
-                    value="missions" 
+                    value="season" 
                     className="flex-1 min-w-0 flex items-center justify-center gap-2 whitespace-nowrap data-[state=active]:bg-white/20 data-[state=active]:text-white text-white/80"
                   >
                     <Rocket className="w-4 h-4" />
-                    <span className="hidden sm:inline truncate">Миссии</span>
+                    <span className="hidden sm:inline truncate">Сезон</span>
                   </TabsTrigger>
                   <TabsTrigger 
                     value="progress" 

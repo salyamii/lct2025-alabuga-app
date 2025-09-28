@@ -70,4 +70,27 @@ export class Season {
     
     return errors;
   }
+
+  // Метод для вычисления оставшихся дней сезона
+  getRemainingDays(): number {
+    const now = new Date();
+    const endDate = new Date(this.endDate);
+    
+    // Если сезон уже закончился
+    if (now >= endDate) {
+      return 0;
+    }
+    
+    // Вычисляем разность в миллисекундах и конвертируем в дни
+    const timeDiff = endDate.getTime() - now.getTime();
+    const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+    
+    return daysDiff;
+  }
+
+  // Метод для проверки, активен ли сезон
+  isActive(): boolean {
+    const now = new Date();
+    return now >= this.startDate && now <= this.endDate;
+  }
 }

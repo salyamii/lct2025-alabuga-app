@@ -11,7 +11,7 @@ interface MobileNavigationBottomBarProps {
   export function MobileNavigationBottomBar({ activeTab, onTabChange, className = "" }: MobileNavigationBottomBarProps) {
 
     const tabs = [
-        { id: "missions", label: "Миссии", icon: Rocket },
+        { id: "season", label: "Сезон", icon: Rocket },
         { id: "progress", label: "Прогресс", icon: Trophy },
         { id: "store", label: "Магазин", icon: Store },
         { id: "badges", label: "Значки", icon: Award },

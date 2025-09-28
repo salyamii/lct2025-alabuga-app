@@ -7,6 +7,7 @@ import { NavigationProvider } from './navigation/Navigation';
 import { Route } from 'react-router-dom';
 import { Navigate, Routes } from 'react-router-dom';
 import AppLayout from './layouts/AppLayout';
+import { SeasonHub } from './screens/season-hub/SeasonHub';
 
 // Компонент приложения с проверкой авторизации
 const AppContent: React.FC = () => {
@@ -14,21 +15,42 @@ const AppContent: React.FC = () => {
 
   return isAuthenticated ? (
     <Routes>
-      <Route path="/" element={<Navigate to="/app" replace />} />
-      <Route path="/app/*" element={<AppLayout />}>
-        <Route index element={<MainContent />} />
-        <Route path="missions" element={<MainContent />} />
-        <Route path="progress" element={<MainContent />} />
-        <Route path="store" element={<MainContent />} />
-        <Route path="badges" element={<MainContent />} />
-        <Route path="profile" element={<MainContent />} />
-        <Route path="mentors" element={<MainContent />} />
+      <Route path="/" element={<Navigate to="/season-hub" replace />} />
+      <Route path="/season-hub" element={<AppLayout />}>
+        <Route index element={
+          <SeasonHub
+            onSkillPathOpen={() => {}}
+            onMissionLaunch={() => {}}
+            onMissionDetails={() => {}}
+            onSquadronDetails={() => {}}
+            onShipLogOpen={() => {}}
+            onMentorRatingOpen={() => {}}
+            onSeasonSettings={() => {}}
+            onBranchOpen={() => {}}
+          />
+        } />
       </Route>
-      <Route path="*" element={<Navigate to="/app" replace />} />
+      <Route path="/progress" element={<AppLayout />}>
+        <Route index element={<MainContent />} />
+      </Route>
+      <Route path="/store" element={<AppLayout />}>
+        <Route index element={<MainContent />} />
+      </Route>
+      <Route path="/badges" element={<AppLayout />}>
+        <Route index element={<MainContent />} />
+      </Route>
+      <Route path="/profile" element={<AppLayout />}>
+        <Route index element={<MainContent />} />
+      </Route>
+      <Route path="/mentors" element={<AppLayout />}>
+        <Route index element={<MainContent />} />
+      </Route>
+      <Route path="*" element={<Navigate to="/season-hub" replace />} />
     </Routes>
   ) : (
     <Routes>
       <Route path="/" element={<LandingScreen />} />
+      <Route path="/auth" element={<LandingScreen />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

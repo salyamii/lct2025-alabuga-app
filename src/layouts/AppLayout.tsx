@@ -6,7 +6,7 @@ import { useIsMobile } from '../components/ui/use-mobile';
 import { MobileNavigationBottomBar } from './MobileNavigationBottomBar';
 
 const TAB_TO_PATH = {
-  missions: 'missions',
+  season: 'season-hub',
   progress: 'progress',
   store: 'store',
   badges: 'badges',
@@ -15,13 +15,12 @@ const TAB_TO_PATH = {
 } as const;
 
 const PATH_TO_TAB: Record<string, keyof typeof TAB_TO_PATH> = {
-  '': 'missions',
-  missions: 'missions',
-  progress: 'progress',
-  store: 'store',
-  badges: 'badges',
-  profile: 'profile',
-  mentors: 'mentors',
+  'season-hub': 'season',
+  'progress': 'progress',
+  'store': 'store',
+  'badges': 'badges',
+  'profile': 'profile',
+  'mentors': 'mentors',
 };
 
 export default function AppLayout() {
@@ -31,14 +30,14 @@ export default function AppLayout() {
   const isMobile = useIsMobile();
 
   const activeTab = useMemo(() => {
-    const afterApp = pathname.replace(/^\/app\/?/, '');
-    const seg = afterApp.split('/')[0] || '';
-    return PATH_TO_TAB[seg] ?? 'missions';
+    // Получаем первый сегмент пути (после /)
+    const seg = pathname.split('/')[1] || '';
+    return PATH_TO_TAB[seg] ?? 'season';
   }, [pathname]);
 
   const handleTabChange = (tab: string) => {
-    const seg = (TAB_TO_PATH as any)[tab] ?? 'missions';
-    push(`/app/${seg}`);
+    const seg = (TAB_TO_PATH as any)[tab] ?? 'season-hub';
+    push(`/${seg}`);
   };
 
   return (

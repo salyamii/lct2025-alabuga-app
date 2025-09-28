@@ -11,7 +11,7 @@ export class Mission {
     public readonly rewardXp: number,
     public readonly rewardMana: number,
     public readonly rankRequirement: number,
-    public readonly branchId: number,
+    public readonly seasonId: number,
     public readonly category: string,
     public readonly tasks: MissionTask[] = [],
     public readonly rewardArtifacts: Artifact[] = [],
@@ -27,7 +27,7 @@ export class Mission {
       response.rewardXp,
       response.rewardMana,
       response.rankRequirement,
-      1, // default branch id
+      response.seasonId,
       response.category,
       response.tasks?.map(task => MissionTask.fromResponse(task)) || [],
       (response.rewardArtifacts || []).map(artifact => new Artifact(

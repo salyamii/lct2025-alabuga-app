@@ -12,6 +12,7 @@ interface MissionState {
 interface MissionActions {
   fetchMissions: () => Promise<void>;
   fetchMissionById: (id: number) => Promise<void>;
+  getMissionsBySeasonId: (seasonId: number) => Mission[];
   createMission: (mission: Mission) => Promise<void>;
   updateMission: (mission: Mission) => Promise<void>;
   deleteMission: (id: number) => Promise<void>;
@@ -47,6 +48,10 @@ export const useMissionStore = create<MissionState & MissionActions>((set: (part
     }
   },
 
+  getMissionsBySeasonId: (seasonId: number) => {
+    return get().missions.filter((mission: Mission) => mission.seasonId === seasonId);
+  },
+
   createMission: async (mission: Mission) => {
     try {
       const missionData = {
@@ -55,7 +60,7 @@ export const useMissionStore = create<MissionState & MissionActions>((set: (part
         rewardXp: mission.rewardXp,
         rewardMana: mission.rewardMana,
         rankRequirement: mission.rankRequirement,
-        seasonId: mission.branchId,
+        seasonId: mission.seasonId,
         category: mission.category as MissionCategoryEnum
       };
       const newMission = await missionService.createMission(missionData);
@@ -73,7 +78,7 @@ export const useMissionStore = create<MissionState & MissionActions>((set: (part
         rewardXp: mission.rewardXp,
         rewardMana: mission.rewardMana,
         rankRequirement: mission.rankRequirement,
-        seasonId: mission.branchId,
+        seasonId: mission.seasonId,
         category: mission.category as MissionCategoryEnum
       };
       const updatedMission = await missionService.updateMission(mission.id, missionData);
