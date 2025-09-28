@@ -27,7 +27,7 @@ const PATH_TO_TAB: Record<string, keyof typeof TAB_TO_PATH> = {
 export default function AppLayout() {
   const { push } = useNavigation();
   const { pathname } = useLocation();
-  const { isTopNavigationVisible, openAdminPanel, openSettings, openNotifications } = useNavigationStore();
+  const { isTopNavigationVisible } = useNavigationStore();
 
   const isMobile = useIsMobile();
 
@@ -43,17 +43,14 @@ export default function AppLayout() {
   };
 
   const handleAdminOpen = () => {
-    openAdminPanel();
     push('/admin');
   };
 
   const handleSettingsOpen = () => {
-    openSettings();
     push('/settings');
   };
 
   const handleNotificationsOpen = () => {
-    openNotifications();
     push('/notifications');
   };
 
