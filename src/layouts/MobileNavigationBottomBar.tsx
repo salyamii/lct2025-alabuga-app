@@ -16,7 +16,7 @@ interface MobileNavigationBottomBarProps {
         { id: "store", label: "Магазин", icon: Store },
         { id: "badges", label: "Артефакты", icon: Award },
         { id: "profile", label: "Профиль", icon: User },
-        { id: "mentors", label: "Менторы", icon: Users },
+        { id: "mentors", label: "Ментор-хаб", icon: Users },
       ];
 
 
