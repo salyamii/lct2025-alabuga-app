@@ -4,6 +4,7 @@ import { useNavigation } from '../navigation/Navigation';
 import { DesktopNavigationTopBar } from './DesktopNavigationTopBar';
 import { useIsMobile } from '../components/ui/use-mobile';
 import { MobileNavigationBottomBar } from './MobileNavigationBottomBar';
+import { useNavigationStore } from '../stores/useNavigationStore';
 
 const TAB_TO_PATH = {
   season: 'season-hub',
@@ -26,6 +27,7 @@ const PATH_TO_TAB: Record<string, keyof typeof TAB_TO_PATH> = {
 export default function AppLayout() {
   const { push } = useNavigation();
   const { pathname } = useLocation();
+  const { isTopNavigationVisible, openAdminPanel } = useNavigationStore();
 
   const isMobile = useIsMobile();
 
@@ -40,12 +42,17 @@ export default function AppLayout() {
     push(`/${seg}`);
   };
 
+  const handleAdminOpen = () => {
+    openAdminPanel();
+    push('/admin');
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
-      { !isMobile && <DesktopNavigationTopBar
+      { !isMobile && isTopNavigationVisible && <DesktopNavigationTopBar
         activeTab={activeTab}
         onTabChange={handleTabChange}
-        onAdminOpen={() => {}}
+        onAdminOpen={handleAdminOpen}
         onNotificationsOpen={() => {}}
         onSettingsOpen={() => {}}
       />}

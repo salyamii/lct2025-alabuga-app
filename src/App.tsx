@@ -11,6 +11,7 @@ import { SeasonHub } from './screens/season-hub/SeasonHub';
 import { ArtifactsHub } from './screens/artifacts/ArtifactsHub';
 import { StoreHub } from './screens/store/StoreHub';
 import { OnboardingScreen } from './screens/OnboardingScreen';
+import { AdminHubWrapper } from './screens/admin/AdminHubWrapper';
 
 // Компонент приложения с проверкой авторизации
 const AppContent: React.FC = () => {
@@ -69,6 +70,7 @@ const AppContent: React.FC = () => {
       <Route path="/mentors" element={<AppLayout />}>
         <Route index element={<MainContent />} />
       </Route>
+      <Route path="/admin" element={<AdminHubWrapper />} />
       <Route path="*" element={<Navigate to={shouldShowOnboarding ? "/onboarding" : "/season-hub"} replace />} />
     </Routes>
   ) : (

@@ -7,6 +7,7 @@ import { useSeasonStore } from './useSeasonStore';
 import { useSkillStore } from './useSkillStore';
 import { useTaskStore } from './useTaskStore';
 import { useUserStore } from './useUserStore';
+import { useNavigationStore } from './useNavigationStore';
 
 export const useAppStore = () => ({
   user: useUserStore(),
@@ -18,4 +19,5 @@ export const useAppStore = () => ({
   skills: useSkillStore(),
   tasks: useTaskStore(),
   missionChains: useMissionChainStore(),
+  navigation: useNavigationStore(),
 });
