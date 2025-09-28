@@ -13,6 +13,7 @@ import { StoreHub } from './screens/store/StoreHub';
 import { OnboardingScreen } from './screens/OnboardingScreen';
 import { AdminHubWrapper } from './screens/admin/AdminHubWrapper';
 import { MentorshipScreen } from './screens/mentor-hub/MentorHub';
+import { UserProfileHub } from './screens/profile/UserProfileHub';
 
 // Компонент приложения с проверкой авторизации
 const AppContent: React.FC = () => {
@@ -66,7 +67,7 @@ const AppContent: React.FC = () => {
         <Route index element={<ArtifactsHub />} />
       </Route>
       <Route path="/profile" element={<AppLayout />}>
-        <Route index element={<MainContent />} />
+        <Route index element={<UserProfileHub onMentorshipOpen={() => { navigate('/mentors'); }} onSettingsOpen={() => {}} onGuildProgressOpen={() => {}} />} />
       </Route>
       <Route path="/mentors" element={<AppLayout />}>
         <Route index element={<MentorshipScreen onBack={() => {}} />} />

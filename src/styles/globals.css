@@ -378,7 +378,7 @@
     mask-composite: xor;
     pointer-events: none;
     opacity: 0.3;
-    animation: orbit-glow 3s ease-in-out infinite alternate;
+    animation: orbit-glow 6s ease-in-out infinite alternate;
   }
 
   @keyframes orbit-glow {
@@ -397,11 +397,11 @@
   }
 
   .stellar-pulse {
-    animation: stellar-pulse 2s ease-in-out infinite;
+    animation: stellar-pulse 4s ease-in-out infinite;
   }
 
   .cosmic-float {
-    animation: cosmic-float 4s ease-in-out infinite;
+    animation: cosmic-float 8s ease-in-out infinite;
   }
   
   .elevation-cosmic {
@@ -778,7 +778,7 @@
     width: 100%;
     height: 2px;
     background: linear-gradient(90deg, transparent, var(--soft-cyan), transparent);
-    animation: cosmic-sweep 3s ease-in-out infinite;
+    animation: cosmic-sweep 6s ease-in-out infinite;
   }
 
   @keyframes cosmic-sweep {
