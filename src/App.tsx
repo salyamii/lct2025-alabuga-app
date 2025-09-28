@@ -8,6 +8,7 @@ import { Route } from 'react-router-dom';
 import { Navigate, Routes } from 'react-router-dom';
 import AppLayout from './layouts/AppLayout';
 import { SeasonHub } from './screens/season-hub/SeasonHub';
+import { ArtifactsHub } from './screens/artifacts/ArtifactsHub';
 
 // Компонент приложения с проверкой авторизации
 const AppContent: React.FC = () => {
@@ -36,8 +37,8 @@ const AppContent: React.FC = () => {
       <Route path="/store" element={<AppLayout />}>
         <Route index element={<MainContent />} />
       </Route>
-      <Route path="/badges" element={<AppLayout />}>
-        <Route index element={<MainContent />} />
+      <Route path="/artifact-hub" element={<AppLayout />}>
+        <Route index element={<ArtifactsHub />} />
       </Route>
       <Route path="/profile" element={<AppLayout />}>
         <Route index element={<MainContent />} />

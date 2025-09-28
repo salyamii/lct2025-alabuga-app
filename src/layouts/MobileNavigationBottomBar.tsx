@@ -14,7 +14,7 @@ interface MobileNavigationBottomBarProps {
         { id: "season", label: "Сезон", icon: Rocket },
         { id: "progress", label: "Прогресс", icon: Trophy },
         { id: "store", label: "Магазин", icon: Store },
-        { id: "badges", label: "Значки", icon: Award },
+        { id: "badges", label: "Артефакты", icon: Award },
         { id: "profile", label: "Профиль", icon: User },
         { id: "mentors", label: "Менторы", icon: Users },
       ];

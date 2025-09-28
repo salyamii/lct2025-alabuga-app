@@ -131,7 +131,7 @@ interface DesktopNavigationTopBarProps {
                     className="flex-1 min-w-0 flex items-center justify-center gap-2 whitespace-nowrap data-[state=active]:bg-white/20 data-[state=active]:text-white text-white/80"
                   >
                     <Award className="w-4 h-4" />
-                    <span className="hidden sm:inline truncate">Значки</span>
+                    <span className="hidden sm:inline truncate">Артефакты</span>
                   </TabsTrigger>
                   <TabsTrigger 
                     value="profile" 

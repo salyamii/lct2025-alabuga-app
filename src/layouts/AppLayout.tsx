@@ -9,7 +9,7 @@ const TAB_TO_PATH = {
   season: 'season-hub',
   progress: 'progress',
   store: 'store',
-  badges: 'badges',
+  badges: 'artifact-hub',
   profile: 'profile',
   mentors: 'mentors',
 } as const;
@@ -18,7 +18,7 @@ const PATH_TO_TAB: Record<string, keyof typeof TAB_TO_PATH> = {
   'season-hub': 'season',
   'progress': 'progress',
   'store': 'store',
-  'badges': 'badges',
+  'artifact-hub': 'badges',
   'profile': 'profile',
   'mentors': 'mentors',
 };
