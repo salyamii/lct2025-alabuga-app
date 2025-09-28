@@ -93,4 +93,16 @@ export const API_ENDPOINTS = {
     UPLOAD: '/media',
     DOWNLOAD: (key: string) => `/media/${key}`,
   },
+  MISSION_CHAINS: {
+    LIST: '/mission-chains',
+    CREATE: '/mission-chains',
+    GET: (id: number) => `/mission-chains/${id}`,
+    UPDATE: (id: number) => `/mission-chains/${id}`,
+    DELETE: (id: number) => `/mission-chains/${id}`,
+    ADD_MISSION: (chainId: number, missionId: number) => `/mission-chains/${chainId}/missions/${missionId}`,
+    REMOVE_MISSION: (chainId: number, missionId: number) => `/mission-chains/${chainId}/missions/${missionId}`,
+    UPDATE_MISSION_ORDER: (chainId: number, missionId: number) => `/mission-chains/${chainId}/missions/${missionId}/order`,
+    ADD_DEPENDENCY: (chainId: number) => `/mission-chains/${chainId}/dependencies`,
+    REMOVE_DEPENDENCY: (chainId: number) => `/mission-chains/${chainId}/dependencies`,
+  },
 } as const;

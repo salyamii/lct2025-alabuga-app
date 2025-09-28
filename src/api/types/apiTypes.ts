@@ -34,16 +34,16 @@ export interface UserResponse {
 export interface HRUserRegistrationRequest {
   login: string;
   password: string;
-  firstName: string | null;
-  lastName: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
 }
 
 // Типы для регистрации кандидатов
 export interface CandidateUserRegistrationRequest {
   login: string;
   password: string;
-  firstName: string | null;
-  lastName: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
 }
 
 // Типы для HTTP методов
@@ -128,16 +128,16 @@ export interface MissionResponse {
   rankRequirement: number;
   seasonId: number;
   category: string;
-  tasks: MissionTaskResponse[];
-  rewardArtifacts: ArtifactResponse[];
-  rewardCompetencies: CompetencyRewardResponse[];
-  rewardSkills: SkillRewardResponse[];
+  tasks?: MissionTaskResponse[];
+  rewardArtifacts?: ArtifactResponse[];
+  rewardCompetencies?: CompetencyRewardResponse[];
+  rewardSkills?: SkillRewardResponse[];
 }
 
 export interface MissionCreateRequest {
   title: string;
   description: string;
-  rewardXp: number;
+  rewardXp: number; // minimum: 0
   rewardMana: number;
   rankRequirement: number;
   seasonId: number;
@@ -147,15 +147,57 @@ export interface MissionCreateRequest {
 export interface MissionUpdateRequest {
   title: string;
   description: string;
-  rewardXp: number;
+  rewardXp: number; // minimum: 0
   rewardMana: number;
   rankRequirement: number;
   seasonId: number;
   category: MissionCategoryEnum;
+  chainId?: number | null; // ID цепочки миссий
 }
 
 export interface MissionsResponse {
   values: MissionResponse[];
+}
+
+// ===== ЦЕПОЧКИ МИССИЙ =====
+export interface MissionChainResponse {
+  id: number;
+  name: string;
+  description: string;
+  rewardXp: number;
+  rewardMana: number;
+  missions?: MissionResponse[];
+  dependencies?: MissionDependencyResponse[];
+  missionOrders?: MissionChainMissionResponse[];
+}
+
+export interface MissionChainCreateRequest {
+  name: string;
+  description: string;
+  rewardXp: number; // minimum: 0
+  rewardMana: number; // minimum: 0
+}
+
+export interface MissionChainUpdateRequest {
+  name: string;
+  description: string;
+  rewardXp: number; // minimum: 0
+  rewardMana: number; // minimum: 0
+}
+
+export interface MissionChainsResponse {
+  values: MissionChainResponse[];
+}
+
+// ===== ЗАВИСИМОСТИ МИССИЙ =====
+export interface MissionDependencyResponse {
+  missionId: number;
+  prerequisiteMissionId: number;
+}
+
+export interface MissionChainMissionResponse {
+  missionId: number;
+  order: number;
 }
 
 // ===== РАНГИ =====
@@ -169,12 +211,12 @@ export interface RankResponse {
 
 export interface RankCreateRequest {
   name: string;
-  requiredXp: number;
+  requiredXp: number; // minimum: 0
 }
 
 export interface RankUpdateRequest {
   name: string;
-  requiredXp: number;
+  requiredXp: number; // minimum: 0
 }
 
 export interface RanksResponse {
@@ -186,17 +228,17 @@ export interface CompetencyResponse {
   id: number;
   name: string;
   maxLevel: number;
-  skills: SkillResponse[];
+  skills?: SkillResponse[];
 }
 
 export interface CompetencyCreateRequest {
   name: string;
-  maxLevel: number;
+  maxLevel: number; // minimum: 2, maximum: 10000
 }
 
 export interface CompetencyUpdateRequest {
   name: string;
-  maxLevel: number;
+  maxLevel: number; // minimum: 2, maximum: 10000
 }
 
 export interface CompetenciesResponse {
@@ -217,12 +259,12 @@ export interface SkillResponse {
 
 export interface SkillCreateRequest {
   name: string;
-  maxLevel: number;
+  maxLevel: number; // minimum: 1, maximum: 10000
 }
 
 export interface SkillUpdateRequest {
   name: string;
-  maxLevel: number;
+  maxLevel: number; // minimum: 1, maximum: 10000
 }
 
 export interface SkillsResponse {
@@ -235,7 +277,7 @@ export interface SkillRewardResponse {
 }
 
 export interface SkillRewardAddRequest {
-  levelIncrease: number;
+  levelIncrease: number; // minimum: 1
 }
 
 // ===== ЗАДАЧИ =====
@@ -290,7 +332,7 @@ export interface ArtifactsResponse {
 
 // Типы для добавления компетенций к рангу
 export interface AddRequiredCompetencyToRankRequest {
-  minLevel: number;
+  minLevel: number; // minimum: 1
 }
 
 // Типы для наград компетенций
@@ -300,7 +342,7 @@ export interface CompetencyRewardResponse {
 }
 
 export interface CompetencyRewardAddRequest {
-  levelIncrease: number;
+  levelIncrease: number; // minimum: 1
 }
 
 // Типы для задач миссий
@@ -312,6 +354,10 @@ export interface MissionTaskResponse {
 
 // Типы для загрузки файлов
 export interface BodyUploadFileMediaPost {
+  file: string; // binary format
+}
+
+export interface Body_upload_file_media_post {
   file: string; // binary format
 }
 

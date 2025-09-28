@@ -10,6 +10,7 @@ interface DataLoaderState {
 interface DataLoaderActions {
   loadAllData: () => Promise<void>;
   loadSpecificData: (storeNames: string[]) => Promise<void>;
+  loadMissionChainById: (id: number) => Promise<void>;
   clearAllData: () => void;
   reset: () => void;
 }
@@ -21,6 +22,7 @@ export function useDataLoader() {
     const stores = [
       { name: 'skills', loader: appStore.skills.fetchSkills },
       { name: 'missions', loader: appStore.missions.fetchMissions },
+      { name: 'missionChains', loader: appStore.missionChains.fetchMissionChains },
       { name: 'tasks', loader: appStore.tasks.fetchTasks },
       { name: 'competencies', loader: appStore.competencies.fetchCompetencies },
       { name: 'ranks', loader: appStore.ranks.fetchRanks },
@@ -76,6 +78,7 @@ export function useDataLoader() {
     const storeMap: Record<string, () => Promise<void>> = {
       skills: appStore.skills.fetchSkills,
       missions: appStore.missions.fetchMissions,
+      missionChains: appStore.missionChains.fetchMissionChains,
       tasks: appStore.tasks.fetchTasks,
       competencies: appStore.competencies.fetchCompetencies,
       ranks: appStore.ranks.fetchRanks,
@@ -117,11 +120,22 @@ export function useDataLoader() {
     });
   }, [appStore]);
 
+  // Загрузить конкретную цепочку миссий по ID
+  const loadMissionChainById = useCallback(async (id: number) => {
+    try {
+      await appStore.missionChains.fetchMissionChainById(id);
+      console.log(`✅ Цепочка миссий с ID ${id} успешно загружена`);
+    } catch (error) {
+      console.error(`❌ Ошибка загрузки цепочки миссий с ID ${id}:`, error);
+    }
+  }, [appStore]);
+
   const clearAllData = useCallback(() => {
     // Очищаем все сторы от данных
     try {
       appStore.skills.clearSkills?.();
       appStore.missions.clearMissions?.();
+      appStore.missionChains.clearMissionChains?.();
       appStore.tasks.clearTasks?.();
       appStore.competencies.clearCompetencies?.();
       appStore.ranks.clearRanks?.();
@@ -141,6 +155,7 @@ export function useDataLoader() {
   return {
     loadAllData,
     loadSpecificData,
+    loadMissionChainById,
     clearAllData,
     reset,
   };

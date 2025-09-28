@@ -1,5 +1,6 @@
 import { useArtifactStore } from './useArtifactStore';
 import { useCompetencyStore } from './useCompetencyStore';
+import { useMissionChainStore } from './useMissionChainStore';
 import { useMissionStore } from './useMissionStore';
 import { useRankStore } from './useRankStore';
 import { useSeasonStore } from './useSeasonStore';
@@ -16,4 +17,5 @@ export const useAppStore = () => ({
   seasons: useSeasonStore(),
   skills: useSkillStore(),
   tasks: useTaskStore(),
+  missionChains: useMissionChainStore(),
 });

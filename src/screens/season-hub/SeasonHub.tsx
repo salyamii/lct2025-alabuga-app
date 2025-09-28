@@ -73,7 +73,7 @@ interface SeasonHubProps {
         total: 6
       },
       nextMission: {
-        title: "Отправьте резюме менеджеру-HR"
+        title: "Согласовать процесс найма"
       },
       rewards: {
         xp: 100,

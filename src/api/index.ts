@@ -16,11 +16,17 @@ export type {
   HttpMethod,
   RequestConfig,
   ErrorResponse,
+  MissionChainResponse,
+  MissionChainsResponse,
+  MissionChainCreateRequest,
+  MissionChainUpdateRequest,
+  MissionDependencyResponse,
 } from './types/apiTypes';
 
 
 // Экспорт сервисов
 export { authService } from './services/authService';
+export { missionChainService } from './services/missionChainService';
 
 // Экспорт интерцепторов
 export {
