@@ -9,6 +9,7 @@ import { Navigate, Routes } from 'react-router-dom';
 import AppLayout from './layouts/AppLayout';
 import { SeasonHub } from './screens/season-hub/SeasonHub';
 import { ArtifactsHub } from './screens/artifacts/ArtifactsHub';
+import { StoreHub } from './screens/store/StoreHub';
 
 // Компонент приложения с проверкой авторизации
 const AppContent: React.FC = () => {
@@ -35,7 +36,7 @@ const AppContent: React.FC = () => {
         <Route index element={<MainContent />} />
       </Route>
       <Route path="/store" element={<AppLayout />}>
-        <Route index element={<MainContent />} />
+        <Route index element={<StoreHub />} />
       </Route>
       <Route path="/artifact-hub" element={<AppLayout />}>
         <Route index element={<ArtifactsHub />} />
