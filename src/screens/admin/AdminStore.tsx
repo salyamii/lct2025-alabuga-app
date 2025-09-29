@@ -1,11 +1,11 @@
-import { Plus, ShoppingBag, Search, Filter, Package } from "lucide-react";
+import { Plus, Search, Filter, ShoppingBag } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { Card, CardHeader, CardContent } from "../../components/ui/card";
 import { Input } from "../../components/ui/input";
 import { Badge } from "../../components/ui/badge";
 import { Edit, Trash2 } from "lucide-react";
 import { useStoreStore } from "../../stores/useStoreStore";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { StoreItem } from "../../domain/store";
 
 interface AdminStoreProps {
@@ -22,10 +22,16 @@ export function AdminStore({
   setSelectedStoreItem 
 }: AdminStoreProps) {
   const { items, fetchItems, isLoading } = useStoreStore();
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     fetchItems();
   }, [fetchItems]);
+
+  // Фильтрация товаров по поисковому запросу
+  const filteredItems = items.filter(item => 
+    item.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div className="space-y-6">
@@ -36,7 +42,12 @@ export function AdminStore({
             <div className="flex items-center gap-2">
               <div className="relative">
                 <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
-                <Input placeholder="Поиск товаров..." className="pl-9 w-64" />
+                <Input 
+                  placeholder="Поиск товаров..." 
+                  className="pl-9 w-64"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
               </div>
               <Button variant="outline" size="sm">
                 <Filter className="w-4 h-4 mr-2" />
@@ -52,80 +63,87 @@ export function AdminStore({
             </div>
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              {items.map((item) => (
-                <div key={item.id} className="admin-card p-4 rounded-lg">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-start gap-4 flex-1">
-                      <div className="w-12 h-12 rounded-lg overflow-hidden border border-border bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center">
-                        <ShoppingBag className="w-6 h-6 text-primary" />
-                      </div>
-                      <div className="space-y-2 flex-1">
-                        <div>
-                          <div className="flex items-center gap-2 mb-1">
+              {filteredItems.map((item) => {
+                return (
+                  <div key={item.id} className="admin-card p-4 rounded-lg">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-start gap-4 flex-1">
+                        <div className="w-12 h-12 bg-gradient-to-br from-primary to-info rounded-lg flex items-center justify-center">
+                          <ShoppingBag className="w-6 h-6 text-white" />
+                        </div>
+                        <div className="space-y-2 flex-1">
+                          <div>
                             <h4 className="font-semibold text-base">
                               {item.title}
                             </h4>
-                            {item.isLowStock() && (
-                              <Badge className="text-xs bg-destructive text-white">
-                                Низкий остаток
-                              </Badge>
-                            )}
-                            {!item.isAvailable() && (
-                              <Badge className="text-xs bg-muted text-muted-foreground">
-                                Нет в наличии
-                              </Badge>
-                            )}
-                          </div>
-                          <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                            <div className="flex items-center gap-1">
-                              <span className="font-semibold text-primary">
-                                {item.price}
-                              </span>
-                              <span>маны</span>
+                            <div className="flex items-center gap-4 mt-2">
+                              <div className="flex items-center gap-1">
+                                <span className="text-sm text-muted-foreground">Цена:</span>
+                                <Badge variant="outline" className="text-xs">
+                                  {item.price} маны
+                                </Badge>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <span className="text-sm text-muted-foreground">Остаток:</span>
+                                <Badge 
+                                  variant={item.isLowStock() ? "destructive" : "outline"} 
+                                  className="text-xs"
+                                >
+                                  {item.stock} шт.
+                                </Badge>
+                              </div>
                             </div>
-                            <div className="flex items-center gap-1">
-                              <Package className="w-4 h-4" />
-                              <span>Остаток: {item.stock}</span>
+                            <div className="mt-2">
+                              <Badge 
+                                variant={item.isAvailable() ? "default" : "secondary"}
+                                className={`text-xs ${
+                                  item.isAvailable() 
+                                    ? "bg-success text-white" 
+                                    : "bg-muted text-muted-foreground"
+                                }`}
+                              >
+                                {item.isAvailable() ? "Доступен" : "Нет в наличии"}
+                              </Badge>
                             </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Button 
-                        variant="ghost" 
-                        size="sm"
-                        onClick={() => {
-                          setSelectedStoreItem(item);
-                          handleEditStoreItem(item);
-                        }}
-                      >
-                        <Edit className="w-4 h-4" />
-                      </Button>
-                      <Button 
-                        variant="ghost" 
-                        size="sm"
-                        onClick={() => {
-                          setSelectedStoreItem(item);
-                          handleDeleteStoreItem(item);
-                        }}
-                        className="text-destructive hover:text-destructive hover:bg-destructive/10 transition-all duration-200 hover:scale-105"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
+                      <div className="flex items-center gap-2">
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => {
+                            setSelectedStoreItem(item);
+                            handleEditStoreItem(item);
+                          }}
+                        >
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => {
+                            setSelectedStoreItem(item);
+                            handleDeleteStoreItem(item);
+                          }}
+                          className="text-destructive hover:text-destructive hover:bg-destructive/10 transition-all duration-200 hover:scale-105"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
               
-              {items.length === 0 && !isLoading && (
-                <div className="text-center py-8 col-span-full">
+              {filteredItems.length === 0 && !isLoading && (
+                <div className="text-center py-8 col-span-2">
                   <div className="text-muted-foreground mb-4">
-                    Товары не найдены
+                    {searchQuery ? "Товары не найдены" : "Товары не найдены"}
                   </div>
                   <Button onClick={handleCreateStoreItem}>
                     <Plus className="w-4 h-4 mr-2" />
-                    Создать первый товар
+                    {searchQuery ? "Создать товар" : "Создать первый товар"}
                   </Button>
                 </div>
               )}

@@ -67,8 +67,6 @@ export function AdminScreen({ onBack, onUserDetailOpen }: AdminScreenProps) {
     taskEditOpen,
     artifactCreationOpen,
     artifactEditOpen,
-    storeItemCreationOpen,
-    storeItemEditOpen,
     badgeCreationOpen,
     rewardCreationOpen,
     storeManagementOpen,
@@ -144,7 +142,6 @@ export function AdminScreen({ onBack, onUserDetailOpen }: AdminScreenProps) {
   const { deleteSkill } = useSkillStore(); // NEW
   const { deleteTask } = useTaskStore();
   const { deleteArtifact } = useArtifactStore();
-  const { deleteItem } = useStoreStore();
 
   // Обработчик удаления сезона
   const handleDeleteSeason = async (season: any) => {
@@ -267,20 +264,6 @@ export function AdminScreen({ onBack, onUserDetailOpen }: AdminScreenProps) {
     openArtifactEdit(artifact);
   };
 
-  // Обработчик удаления товара магазина
-  const handleDeleteStoreItem = async (item: StoreItem) => {
-    if (!item) return;
-    try {
-      await deleteItem(item.id);
-      toast.success("Товар успешно удален! 🗑️", {
-        description: `"${item.title}" был удален из магазина`,
-      });
-    } catch (error) {
-      console.error("Ошибка при удалении товара:", error);
-      toast.error("Ошибка при удалении товара. Попробуйте еще раз.");
-    }
-  };
-
   // Обработчики для товаров магазина
   const handleCreateStoreItem = () => {
     openStoreItemCreation();
@@ -289,6 +272,19 @@ export function AdminScreen({ onBack, onUserDetailOpen }: AdminScreenProps) {
   const handleEditStoreItem = (item: StoreItem) => {
     setSelectedStoreItem(item);
     openStoreItemEdit(item);
+  };
+
+  const handleDeleteStoreItem = async (item: StoreItem) => {
+    if (window.confirm(`Вы уверены, что хотите удалить товар "${item.title}"?`)) {
+      try {
+        const { deleteItem } = useStoreStore.getState();
+        await deleteItem(item.id);
+        toast.success("Товар успешно удален!");
+      } catch (error) {
+        console.error("Ошибка при удалении товара:", error);
+        toast.error("Ошибка при удалении товара");
+      }
+    }
   };
 
   return (
