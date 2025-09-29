@@ -105,4 +105,9 @@ export const API_ENDPOINTS = {
     ADD_DEPENDENCY: (chainId: number) => `/mission-chains/${chainId}/dependencies`,
     REMOVE_DEPENDENCY: (chainId: number) => `/mission-chains/${chainId}/dependencies`,
   },
+  STORE: {
+    ITEMS: '/store',
+    ITEM: (id: number) => `/store/${id}`,
+    PURCHASE: '/store/purchase',
+  },
 } as const;
