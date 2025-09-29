@@ -368,3 +368,55 @@ export interface FileObjectResponse {
   etag: string;
   contentType: string | null;
 }
+
+// ===== МАГАЗИН =====
+export interface StoreItemResponse {
+  id: number;
+  title: string;
+  price: number;
+  stock: number;
+}
+
+export interface StoreItemCreateRequest {
+  title: string;
+  price: number; // minimum: 0
+  stock: number; // minimum: 0
+}
+
+export interface StoreItemUpdateRequest {
+  title: string;
+  price: number; // minimum: 0
+  stock: number; // minimum: 0
+}
+
+export interface StoreItemsResponse {
+  values: StoreItemResponse[];
+}
+
+export interface StorePurchaseRequest {
+  storeItemId: number;
+}
+
+// ===== ПОЛЬЗОВАТЕЛЬСКИЕ МИССИИ =====
+export interface UserMissionResponse {
+  id: number;
+  title: string;
+  description: string;
+  rewardXp: number;
+  rewardMana: number;
+  rankRequirement: number;
+  seasonId: number;
+  category: string;
+  isCompleted: boolean;
+  tasks?: UserTaskResponse[];
+  rewardArtifacts?: ArtifactResponse[];
+  rewardCompetencies?: CompetencyRewardResponse[];
+  rewardSkills?: SkillRewardResponse[];
+}
+
+export interface UserTaskResponse {
+  id: number;
+  title: string;
+  description: string;
+  isCompleted: boolean;
+}

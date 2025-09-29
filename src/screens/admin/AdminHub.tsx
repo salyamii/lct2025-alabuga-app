@@ -21,6 +21,10 @@ import { RankCreationDrawer } from "./RankCreationDrawer";
 import { RankEditDrawer } from "./RankEditDrawer";
 import { SkillCreationDrawer } from "./SkillCreationDrawer"; // NEW
 import { SkillEditDrawer } from "./SkillEditDrawer"; // NEW
+import { TaskCreationDrawer } from "./TaskCreationDrawer";
+import { TaskEditDrawer } from "./TaskEditDrawer";
+import { ArtifactCreationDrawer } from "./ArtifactCreationDrawer";
+import { ArtifactEditDrawer } from "./ArtifactEditDrawer";
 import { SeasonCreationDrawer } from "./SeasonCreationDrawer";
 import { SeasonEditDrawer } from "./SeasonEditDrawer";
 import { ArrowLeft, Shield } from "lucide-react";
@@ -30,9 +34,13 @@ import { useMissionStore } from "../../stores/useMissionStore";
 import { useCompetencyStore } from "../../stores/useCompetencyStore";
 import { useRankStore } from "../../stores/useRankStore";
 import { useSkillStore } from "../../stores/useSkillStore"; // NEW
+import { useTaskStore } from "../../stores/useTaskStore";
+import { useArtifactStore } from "../../stores/useArtifactStore";
 import { Competency } from "../../domain/competency";
 import { Rank } from "../../domain/rank";
 import { Skill } from "../../domain/skill"; // NEW
+import { Task } from "../../domain/task";
+import { Artifact } from "../../domain/artifact";
 import { toast } from "sonner";
 
 interface AdminScreenProps {
@@ -51,6 +59,10 @@ export function AdminScreen({ onBack, onUserDetailOpen }: AdminScreenProps) {
     rankEditOpen,
     skillCreationOpen, // NEW
     skillEditOpen, // NEW
+    taskCreationOpen,
+    taskEditOpen,
+    artifactCreationOpen,
+    artifactEditOpen,
     badgeCreationOpen,
     rewardCreationOpen,
     storeManagementOpen,
@@ -62,6 +74,8 @@ export function AdminScreen({ onBack, onUserDetailOpen }: AdminScreenProps) {
     selectedCompetency,
     selectedRank,
     selectedSkill, // NEW
+    selectedTask,
+    selectedArtifact,
     selectedSeason,
     
     // Действия
@@ -81,6 +95,14 @@ export function AdminScreen({ onBack, onUserDetailOpen }: AdminScreenProps) {
     closeSkillCreation, // NEW
     openSkillEdit, // NEW
     closeSkillEdit, // NEW
+    openTaskCreation,
+    closeTaskCreation,
+    openTaskEdit,
+    closeTaskEdit,
+    openArtifactCreation,
+    closeArtifactCreation,
+    openArtifactEdit,
+    closeArtifactEdit,
     openBadgeCreation,
     closeBadgeCreation,
     openRewardCreation,
@@ -98,6 +120,8 @@ export function AdminScreen({ onBack, onUserDetailOpen }: AdminScreenProps) {
     setSelectedCompetency,
     setSelectedRank,
     setSelectedSkill, // NEW
+    setSelectedTask,
+    setSelectedArtifact,
     setSelectedSeason,
   } = useOverlayStore();
 
@@ -106,6 +130,8 @@ export function AdminScreen({ onBack, onUserDetailOpen }: AdminScreenProps) {
   const { deleteCompetency } = useCompetencyStore();
   const { deleteRank } = useRankStore();
   const { deleteSkill } = useSkillStore(); // NEW
+  const { deleteTask } = useTaskStore();
+  const { deleteArtifact } = useArtifactStore();
 
   // Обработчик удаления сезона
   const handleDeleteSeason = async (season: any) => {
@@ -178,6 +204,54 @@ export function AdminScreen({ onBack, onUserDetailOpen }: AdminScreenProps) {
       console.error("Ошибка при удалении навыка:", error);
       toast.error("Ошибка при удалении навыка. Попробуйте еще раз.");
     }
+  };
+
+  // Обработчик удаления задания
+  const handleDeleteTask = async (task: Task) => {
+    if (!task) return;
+    try {
+      await deleteTask(task.id);
+      toast.success("Задание успешно удалено! 🗑️", {
+        description: `"${task.title}" было удалено из системы`,
+      });
+    } catch (error) {
+      console.error("Ошибка при удалении задания:", error);
+      toast.error("Ошибка при удалении задания. Попробуйте еще раз.");
+    }
+  };
+
+  // Обработчик удаления артефакта
+  const handleDeleteArtifact = async (artifact: Artifact) => {
+    if (!artifact) return;
+    try {
+      await deleteArtifact(artifact.id);
+      toast.success("Артефакт успешно удален! 🗑️", {
+        description: `"${artifact.title}" был удален из системы`,
+      });
+    } catch (error) {
+      console.error("Ошибка при удалении артефакта:", error);
+      toast.error("Ошибка при удалении артефакта. Попробуйте еще раз.");
+    }
+  };
+
+  // Обработчики для заданий
+  const handleCreateTask = () => {
+    openTaskCreation();
+  };
+
+  const handleEditTask = (task: Task) => {
+    setSelectedTask(task);
+    openTaskEdit(task);
+  };
+
+  // Обработчики для артефактов
+  const handleCreateArtifact = () => {
+    openArtifactCreation();
+  };
+
+  const handleEditArtifact = (artifact: Artifact) => {
+    setSelectedArtifact(artifact);
+    openArtifactEdit(artifact);
   };
 
   return (
@@ -254,6 +328,14 @@ export function AdminScreen({ onBack, onUserDetailOpen }: AdminScreenProps) {
             handleEditSkill={(skill) => openSkillEdit(skill)}
             handleDeleteSkill={handleDeleteSkill}
             setSelectedSkill={setSelectedSkill}
+            handleCreateTask={handleCreateTask}
+            handleEditTask={handleEditTask}
+            handleDeleteTask={handleDeleteTask}
+            setSelectedTask={setSelectedTask}
+            handleCreateArtifact={handleCreateArtifact}
+            handleEditArtifact={handleEditArtifact}
+            handleDeleteArtifact={handleDeleteArtifact}
+            setSelectedArtifact={setSelectedArtifact}
           />
         </Tabs>
       </div>
@@ -302,38 +384,25 @@ export function AdminScreen({ onBack, onUserDetailOpen }: AdminScreenProps) {
             season={selectedSeason}
           />
 
-          <CompetencyCreationDrawer // NEW
-            open={competencyCreationOpen}
-            onOpenChange={(open) => open ? openCompetencyCreation() : closeCompetencyCreation()}
-          />
+          <CompetencyCreationDrawer />
 
-          <CompetencyEditDrawer
-            open={competencyEditOpen}
-            onOpenChange={(open) => open ? openCompetencyEdit() : closeCompetencyEdit()}
-            competency={selectedCompetency}
-          />
+          <CompetencyEditDrawer competency={selectedCompetency} />
 
-          <RankCreationDrawer // NEW
-            open={rankCreationOpen}
-            onOpenChange={(open) => open ? openRankCreation() : closeRankCreation()}
-          />
+          <RankCreationDrawer />
 
-          <RankEditDrawer
-            open={rankEditOpen}
-            onOpenChange={(open) => open ? openRankEdit() : closeRankEdit()}
-            rank={selectedRank}
-          />
+          <RankEditDrawer rank={selectedRank} />
 
-          <SkillCreationDrawer // NEW
-            open={skillCreationOpen}
-            onOpenChange={(open) => open ? openSkillCreation() : closeSkillCreation()}
-          />
+          <SkillCreationDrawer />
 
-          <SkillEditDrawer // NEW
-            open={skillEditOpen}
-            onOpenChange={(open) => open ? openSkillEdit() : closeSkillEdit()}
-            skill={selectedSkill}
-          />
+          <SkillEditDrawer skill={selectedSkill} />
+
+          <TaskCreationDrawer />
+
+          <TaskEditDrawer task={selectedTask} />
+
+          <ArtifactCreationDrawer />
+
+          <ArtifactEditDrawer artifact={selectedArtifact} />
         </div>
       );
     }

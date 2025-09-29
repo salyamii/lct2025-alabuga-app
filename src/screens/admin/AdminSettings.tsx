@@ -1,14 +1,18 @@
 import { TabsContent } from "../../components/ui/tabs";
 import { Button } from "../../components/ui/button";
-import { Store, Zap, Award, BarChart3, Star, Crown, Target } from "lucide-react";
+import { Store, Zap, Award, BarChart3, Star, Crown, Target, FileText, Gem } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "../../components/ui/card";
 import { Badge } from "../../components/ui/badge";
 import { AdminCompetency } from "./AdminCompetency";
 import { AdminRank } from "./AdminRank";
 import { AdminSkill } from "./AdminSkill";
+import { AdminTask } from "./AdminTask";
+import { AdminArtifact } from "./AdminArtifact";
 import { Competency } from "../../domain/competency";
 import { Rank } from "../../domain/rank";
 import { Skill } from "../../domain/skill";
+import { Task } from "../../domain/task";
+import { Artifact } from "../../domain/artifact";
 import { useState } from "react";
 
 interface AdminSettingsProps {
@@ -27,6 +31,14 @@ interface AdminSettingsProps {
     handleEditSkill: (skill: Skill) => void;
     handleDeleteSkill: (skill: Skill) => void;
     setSelectedSkill: (skill: Skill) => void;
+    handleCreateTask: () => void;
+    handleEditTask: (task: Task) => void;
+    handleDeleteTask: (task: Task) => void;
+    setSelectedTask: (task: Task) => void;
+    handleCreateArtifact: () => void;
+    handleEditArtifact: (artifact: Artifact) => void;
+    handleDeleteArtifact: (artifact: Artifact) => void;
+    setSelectedArtifact: (artifact: Artifact) => void;
 }
 
 export function AdminSettings({ 
@@ -44,7 +56,15 @@ export function AdminSettings({
     handleCreateSkill,
     handleEditSkill,
     handleDeleteSkill,
-    setSelectedSkill
+    setSelectedSkill,
+    handleCreateTask,
+    handleEditTask,
+    handleDeleteTask,
+    setSelectedTask,
+    handleCreateArtifact,
+    handleEditArtifact,
+    handleDeleteArtifact,
+    setSelectedArtifact
 }: AdminSettingsProps) {
     const [settingsTab, setSettingsTab] = useState("platform");
 
@@ -68,6 +88,8 @@ export function AdminSettings({
                     { key: "competencies", label: "Компетенции", icon: Star },
                     { key: "ranks", label: "Ранги", icon: Crown },
                     { key: "skills", label: "Навыки", icon: Target },
+                    { key: "tasks", label: "Задания", icon: FileText },
+                    { key: "artifacts", label: "Артефакты", icon: Gem },
                   ].map(({ key, label, icon: Icon }) => (
                     <button
                       key={key}
@@ -267,6 +289,58 @@ export function AdminSettings({
                       handleEditSkill={handleEditSkill}
                       handleDeleteSkill={handleDeleteSkill}
                       setSelectedSkill={setSelectedSkill}
+                    />
+                  </div>
+                )}
+
+                {settingsTab === "tasks" && (
+                  <div className="space-y-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h2 className="text-lg font-semibold">Управление заданиями</h2>
+                        <p className="text-sm text-muted-foreground">
+                          Создание, редактирование и управление заданиями системы
+                        </p>
+                      </div>
+                      <Button
+                        className="bg-primary hover:bg-primary-600 text-white"
+                        onClick={handleCreateTask}
+                      >
+                        <FileText className="w-4 h-4 mr-2" />
+                        Добавить задание
+                      </Button>
+                    </div>
+                    <AdminTask
+                      handleCreateTask={handleCreateTask}
+                      handleEditTask={handleEditTask}
+                      handleDeleteTask={handleDeleteTask}
+                      setSelectedTask={setSelectedTask}
+                    />
+                  </div>
+                )}
+
+                {settingsTab === "artifacts" && (
+                  <div className="space-y-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h2 className="text-lg font-semibold">Управление артефактами</h2>
+                        <p className="text-sm text-muted-foreground">
+                          Создание, редактирование и управление артефактами системы
+                        </p>
+                      </div>
+                      <Button
+                        className="bg-primary hover:bg-primary-600 text-white"
+                        onClick={handleCreateArtifact}
+                      >
+                        <Gem className="w-4 h-4 mr-2" />
+                        Добавить артефакт
+                      </Button>
+                    </div>
+                    <AdminArtifact
+                      handleCreateArtifact={handleCreateArtifact}
+                      handleEditArtifact={handleEditArtifact}
+                      handleDeleteArtifact={handleDeleteArtifact}
+                      setSelectedArtifact={setSelectedArtifact}
                     />
                   </div>
                 )}

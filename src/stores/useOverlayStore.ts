@@ -10,6 +10,10 @@ interface OverlayState {
   rankEditOpen: boolean;
   skillCreationOpen: boolean; // NEW
   skillEditOpen: boolean; // NEW
+  taskCreationOpen: boolean;
+  taskEditOpen: boolean;
+  artifactCreationOpen: boolean;
+  artifactEditOpen: boolean;
   badgeCreationOpen: boolean;
   rewardCreationOpen: boolean;
   storeManagementOpen: boolean;
@@ -24,6 +28,8 @@ interface OverlayState {
   selectedCompetency: any;
   selectedRank: any;
   selectedSkill: any; // NEW
+  selectedTask: any;
+  selectedArtifact: any;
   selectedSeason: any;
   
   // Действия для управления оверлеями
@@ -43,6 +49,14 @@ interface OverlayState {
   closeSkillCreation: () => void; // NEW
   openSkillEdit: (skill?: any) => void; // NEW
   closeSkillEdit: () => void; // NEW
+  openTaskCreation: () => void;
+  closeTaskCreation: () => void;
+  openTaskEdit: (task?: any) => void;
+  closeTaskEdit: () => void;
+  openArtifactCreation: () => void;
+  closeArtifactCreation: () => void;
+  openArtifactEdit: (artifact?: any) => void;
+  closeArtifactEdit: () => void;
   openBadgeCreation: () => void;
   closeBadgeCreation: () => void;
   openRewardCreation: () => void;
@@ -64,6 +78,8 @@ interface OverlayState {
   setSelectedCompetency: (competency: any) => void;
   setSelectedRank: (rank: any) => void;
   setSelectedSkill: (skill: any) => void; // NEW
+  setSelectedTask: (task: any) => void;
+  setSelectedArtifact: (artifact: any) => void;
   setSelectedSeason: (season: any) => void;
 }
 
@@ -77,6 +93,10 @@ export const useOverlayStore = create<OverlayState>()((set, get) => ({
   rankEditOpen: false,
   skillCreationOpen: false, // NEW
   skillEditOpen: false, // NEW
+  taskCreationOpen: false,
+  taskEditOpen: false,
+  artifactCreationOpen: false,
+  artifactEditOpen: false,
   badgeCreationOpen: false,
   rewardCreationOpen: false,
   storeManagementOpen: false,
@@ -90,6 +110,8 @@ export const useOverlayStore = create<OverlayState>()((set, get) => ({
   selectedCompetency: null,
   selectedRank: null,
   selectedSkill: null, // NEW
+  selectedTask: null,
+  selectedArtifact: null,
   selectedSeason: null,
   
   // Действия для управления оверлеями
@@ -141,6 +163,30 @@ export const useOverlayStore = create<OverlayState>()((set, get) => ({
     selectedSkill: null 
   }),
   
+  openTaskCreation: () => set({ taskCreationOpen: true }),
+  closeTaskCreation: () => set({ taskCreationOpen: false }),
+  
+  openTaskEdit: (task = null) => set({
+    taskEditOpen: true,
+    selectedTask: task
+  }),
+  closeTaskEdit: () => set({
+    taskEditOpen: false,
+    selectedTask: null
+  }),
+  
+  openArtifactCreation: () => set({ artifactCreationOpen: true }),
+  closeArtifactCreation: () => set({ artifactCreationOpen: false }),
+  
+  openArtifactEdit: (artifact = null) => set({
+    artifactEditOpen: true,
+    selectedArtifact: artifact
+  }),
+  closeArtifactEdit: () => set({
+    artifactEditOpen: false,
+    selectedArtifact: null
+  }),
+  
   openBadgeCreation: () => set({ badgeCreationOpen: true }),
   closeBadgeCreation: () => set({ badgeCreationOpen: false }),
   
@@ -181,6 +227,10 @@ export const useOverlayStore = create<OverlayState>()((set, get) => ({
     rankEditOpen: false,
     skillCreationOpen: false, // NEW
     skillEditOpen: false, // NEW
+    taskCreationOpen: false,
+    taskEditOpen: false,
+    artifactCreationOpen: false,
+    artifactEditOpen: false,
     badgeCreationOpen: false,
     rewardCreationOpen: false,
     storeManagementOpen: false,
@@ -193,6 +243,8 @@ export const useOverlayStore = create<OverlayState>()((set, get) => ({
     selectedCompetency: null,
     selectedRank: null,
     selectedSkill: null, // NEW
+    selectedTask: null,
+    selectedArtifact: null,
     selectedSeason: null,
   }),
   
@@ -202,5 +254,7 @@ export const useOverlayStore = create<OverlayState>()((set, get) => ({
   setSelectedCompetency: (competency) => set({ selectedCompetency: competency }),
   setSelectedRank: (rank) => set({ selectedRank: rank }),
   setSelectedSkill: (skill) => set({ selectedSkill: skill }), // NEW
+  setSelectedTask: (task) => set({ selectedTask: task }),
+  setSelectedArtifact: (artifact) => set({ selectedArtifact: artifact }),
   setSelectedSeason: (season) => set({ selectedSeason: season }),
 }));

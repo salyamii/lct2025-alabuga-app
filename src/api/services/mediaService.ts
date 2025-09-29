@@ -54,6 +54,28 @@ export class MediaService {
   getPreviewUrl(key: string): string {
     return this.getDownloadUrl(key);
   }
+
+  // Загрузить изображение с авторизацией и вернуть Blob URL
+  async loadImageWithAuth(imageUrl: string): Promise<string> {
+    try {
+      // Если это полный URL, загружаем через httpClient с авторизацией
+      if (imageUrl.startsWith('http')) {
+        const response = await httpClient.get(imageUrl, {
+          responseType: 'blob'
+        });
+        
+        const blob = new Blob([response.data], { type: 'image/*' });
+        return URL.createObjectURL(blob);
+      } else {
+        // Если это ключ файла, используем downloadFile
+        const blob = await this.downloadFile(imageUrl);
+        return URL.createObjectURL(blob);
+      }
+    } catch (error) {
+      console.error('Error loading image with auth:', error);
+      throw error;
+    }
+  }
 }
 
 // Экспортируем единственный экземпляр сервиса

@@ -1,86 +1,55 @@
 import { useState } from "react";
 import { Button } from "../../components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "../../components/ui/card";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
-import { Textarea } from "../../components/ui/textarea";
-import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-} from "../../components/ui/drawer";
-import { toast } from "sonner";
-import {
-  X,
-  Target,
-  Lightbulb,
-  Save,
-  Star,
-} from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from "../../components/ui/drawer";
 import { useCompetencyStore } from "../../stores/useCompetencyStore";
-import { Competency } from "../../domain/competency";
+import { useOverlayStore } from "../../stores/useOverlayStore";
+import { Star, X } from "lucide-react";
+import { toast } from "sonner";
 
-interface CompetencyCreationDrawerProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}
-
-export function CompetencyCreationDrawer({
-  open,
-  onOpenChange,
-}: CompetencyCreationDrawerProps) {
+export function CompetencyCreationDrawer() {
+  const { competencyCreationOpen, closeCompetencyCreation } = useOverlayStore();
   const { createCompetency } = useCompetencyStore();
-
+  const [isCreating, setIsCreating] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
-    maxLevel: 10,
+    maxLevel: 10
   });
 
-  const [isCreating, setIsCreating] = useState(false);
-
   const handleInputChange = (field: string, value: string | number) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
   };
 
-  const handleCreateCompetency = async () => {
-    // Basic validation
+  const handleCreate = async () => {
     if (!formData.name.trim()) {
-      toast.error("Пожалуйста, введите название компетенции");
+      toast.error("Название компетенции обязательно!");
       return;
     }
 
     if (formData.maxLevel < 1 || formData.maxLevel > 100) {
-      toast.error("Максимальный уровень должен быть от 1 до 100");
+      toast.error("Максимальный уровень должен быть от 1 до 100!");
       return;
     }
 
     try {
       setIsCreating(true);
-      
-      const competencyData = {
+      await createCompetency({
         name: formData.name.trim(),
-        maxLevel: formData.maxLevel,
-      };
-
-      await createCompetency(competencyData);
-
-      toast.success("Компетенция успешно создана! ✨", {
-        description: `"${formData.name}" готова к использованию`,
+        maxLevel: formData.maxLevel
       });
 
-      // Reset form
-      setFormData({
-        name: "",
-        maxLevel: 10,
+      toast.success("Компетенция успешно создана! ⭐", {
+        description: `"${formData.name}" готова к использованию`
       });
 
-      onOpenChange(false);
+      // Сброс формы
+      setFormData({ name: "", maxLevel: 10 });
+      closeCompetencyCreation();
     } catch (error) {
       console.error("Ошибка при создании компетенции:", error);
       toast.error("Ошибка при создании компетенции. Попробуйте еще раз.");
@@ -89,137 +58,76 @@ export function CompetencyCreationDrawer({
     }
   };
 
-  const handleSaveDraft = () => {
-    toast.success("Изменения сохранены как черновик! 📋");
-    onOpenChange(false);
+  const handleClose = () => {
+    setFormData({ name: "", maxLevel: 10 });
+    closeCompetencyCreation();
   };
 
   return (
-    <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="h-[90vh] flex flex-col">
-        <div className="mx-auto w-full max-w-4xl flex flex-col h-full">
-          <DrawerHeader className="border-b border-border bg-gradient-to-r from-card to-primary/5 flex-shrink-0 rounded-t-lg mx-6 p-0">
-            <div className="flex items-center justify-between p-6">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-gradient-to-br from-primary to-info rounded-lg flex items-center justify-center">
-                  <Target className="w-5 h-5 text-white" />
-                </div>
-                <DrawerTitle className="text-lg font-semibold">
-                  Создать компетенцию
-                </DrawerTitle>
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => onOpenChange(false)}
-              >
-                <X className="w-4 h-4" />
-              </Button>
-            </div>
-          </DrawerHeader>
+    <Drawer open={competencyCreationOpen} onOpenChange={handleClose}>
+      <DrawerContent className="max-w-2xl mx-auto max-h-[90vh] flex flex-col">
+        <DrawerHeader className="flex-shrink-0">
+          <DrawerTitle className="flex items-center gap-2">
+            <Star className="w-5 h-5" />
+            Создание новой компетенции
+          </DrawerTitle>
+          <DrawerDescription>
+            Заполните информацию о компетенции для добавления в систему
+          </DrawerDescription>
+        </DrawerHeader>
 
-          <div className="px-6 pt-6 pb-12 overflow-y-auto flex-1">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Main Competency Details */}
-              <div className="lg:col-span-2 space-y-6">
-                <Card className="card-enhanced">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Target className="w-5 h-5 text-primary" />
-                      Основная информация
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="competency-name">Название компетенции *</Label>
-                      <Input
-                        id="competency-name"
-                        placeholder="например, Веб-разработка"
-                        value={formData.name}
-                        onChange={(e) => handleInputChange("name", e.target.value)}
-                      />
-                    </div>
-                  </CardContent>
-                </Card>
+        <div className="px-6 pb-6 space-y-6 flex-1 overflow-y-auto">
+          {/* Основная информация */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Основная информация</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Название компетенции *</Label>
+                <Input
+                  id="name"
+                  value={formData.name}
+                  onChange={(e) => handleInputChange("name", e.target.value)}
+                  placeholder="Введите название компетенции"
+                  className="w-full"
+                />
               </div>
 
-              {/* Competency Configuration */}
-              <div className="space-y-6">
-                <Card className="card-enhanced">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Star className="w-5 h-5 text-info" />
-                      Конфигурация
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="competency-max-level">Максимальный уровень</Label>
-                      <Input
-                        id="competency-max-level"
-                        type="number"
-                        min="1"
-                        max="100"
-                        value={formData.maxLevel}
-                        onChange={(e) => handleInputChange("maxLevel", parseInt(e.target.value) || 10)}
-                        placeholder="10"
-                      />
-                      <p className="text-xs text-muted-foreground">
-                        Максимальный уровень развития компетенции (1-100)
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Competency Preview */}
-                <Card className="card-enhanced bg-gradient-to-br from-primary/5 to-info/5">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Lightbulb className="w-5 h-5 text-rewards-amber" />
-                      Предварительный просмотр
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3 text-sm">
-                    {formData.name && (
-                      <div>
-                        <strong>Название:</strong> {formData.name}
-                      </div>
-                    )}
-                    <div>
-                      <strong>Максимальный уровень:</strong> {formData.maxLevel}
-                    </div>
-                    <div className="pt-2 border-t border-border">
-                      <div className="text-xs text-muted-foreground">
-                        <strong>Статус:</strong> Новая компетенция
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Action Buttons */}
-                <div className="space-y-3">
-                  <Button
-                    onClick={handleCreateCompetency}
-                    disabled={isCreating}
-                    className="w-full bg-primary hover:bg-primary-600 text-white disabled:opacity-50"
-                  >
-                    <Target className="w-4 h-4 mr-2" />
-                    {isCreating ? "Создание..." : "Создать компетенцию"}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={handleSaveDraft}
-                    className="w-full"
-                  >
-                    <Save className="w-4 h-4 mr-2" />
-                    Сохранить как черновик
-                  </Button>
-                </div>
+              <div className="space-y-2">
+                <Label htmlFor="maxLevel">Максимальный уровень *</Label>
+                <Input
+                  id="maxLevel"
+                  type="number"
+                  min="1"
+                  max="100"
+                  value={formData.maxLevel}
+                  onChange={(e) => handleInputChange("maxLevel", parseInt(e.target.value) || 10)}
+                  placeholder="10"
+                  className="w-full"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Максимальный уровень компетенции (1-100)
+                </p>
               </div>
-            </div>
+            </CardContent>
+          </Card>
+        </div>
 
-            {/* Дополнительный отступ снизу */}
-            <div className="h-12"></div>
+        {/* Кнопки действий - зафиксированы внизу */}
+        <div className="flex-shrink-0 px-6 pb-6">
+          <div className="flex justify-end gap-3">
+            <Button variant="outline" onClick={handleClose} disabled={isCreating}>
+              <X className="w-4 h-4 mr-2" />
+              Отмена
+            </Button>
+            <Button 
+              onClick={handleCreate} 
+              disabled={isCreating || !formData.name.trim()}
+              className="bg-primary hover:bg-primary-600"
+            >
+              {isCreating ? "Создание..." : "Создать компетенцию"}
+            </Button>
           </div>
         </div>
       </DrawerContent>

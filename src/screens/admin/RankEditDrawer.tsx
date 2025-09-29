@@ -1,95 +1,70 @@
 import { useState, useEffect } from "react";
 import { Button } from "../../components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "../../components/ui/card";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
-import { Textarea } from "../../components/ui/textarea";
-import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-} from "../../components/ui/drawer";
-import { toast } from "sonner";
-import {
-  X,
-  Target,
-  Lightbulb,
-  Save,
-  Star,
-  Edit,
-} from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from "../../components/ui/drawer";
 import { useRankStore } from "../../stores/useRankStore";
+import { useOverlayStore } from "../../stores/useOverlayStore";
+import { Star, X } from "lucide-react";
+import { toast } from "sonner";
 import { Rank } from "../../domain/rank";
 
 interface RankEditDrawerProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
   rank: Rank | null;
 }
 
-export function RankEditDrawer({
-  open,
-  onOpenChange,
-  rank,
-}: RankEditDrawerProps) {
+export function RankEditDrawer({ rank }: RankEditDrawerProps) {
+  const { rankEditOpen, closeRankEdit } = useOverlayStore();
   const { updateRank } = useRankStore();
-
+  const [isUpdating, setIsUpdating] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
-    requiredXp: 0,
+    requiredXp: 0
   });
 
-  const [isUpdating, setIsUpdating] = useState(false);
-
-  // Заполняем форму данными ранга при открытии
   useEffect(() => {
-    if (rank && open) {
+    if (rank) {
       setFormData({
         name: rank.name,
-        requiredXp: rank.requiredXp,
+        requiredXp: rank.requiredXp
       });
     }
-  }, [rank, open]);
+  }, [rank]);
 
   const handleInputChange = (field: string, value: string | number) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
   };
 
-  const handleUpdateRank = async () => {
+  const handleUpdate = async () => {
     if (!rank) return;
 
-    // Basic validation
     if (!formData.name.trim()) {
-      toast.error("Пожалуйста, введите название ранга");
+      toast.error("Название ранга обязательно!");
       return;
     }
 
     if (formData.requiredXp < 0) {
-      toast.error("Требуемый опыт не может быть отрицательным");
+      toast.error("Требуемый опыт не может быть отрицательным!");
       return;
     }
 
+
     try {
       setIsUpdating(true);
-      
-      const rankData = {
+      await updateRank(rank.id, {
         name: formData.name.trim(),
-        requiredXp: formData.requiredXp,
-      };
-
-      await updateRank(rank.id, rankData);
-
-      toast.success("Ранг успешно обновлен! ✨", {
-        description: `"${formData.name}" был изменен`,
+        requiredXp: formData.requiredXp
       });
 
-      onOpenChange(false);
+      toast.success("Ранг успешно обновлен! ⭐", {
+        description: `"${formData.name}" был обновлен`
+      });
+
+      closeRankEdit();
     } catch (error) {
       console.error("Ошибка при обновлении ранга:", error);
       toast.error("Ошибка при обновлении ранга. Попробуйте еще раз.");
@@ -98,138 +73,72 @@ export function RankEditDrawer({
     }
   };
 
-  const handleSaveDraft = () => {
-    toast.success("Изменения сохранены как черновик! 📋");
-    onOpenChange(false);
+  const handleClose = () => {
+    closeRankEdit();
   };
 
-  if (!rank) return null;
-
   return (
-    <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="h-[90vh] flex flex-col">
-        <div className="mx-auto w-full max-w-4xl flex flex-col h-full">
-          <DrawerHeader className="border-b border-border bg-gradient-to-r from-card to-primary/5 flex-shrink-0 rounded-t-lg mx-6 p-0">
-            <div className="flex items-center justify-between p-6">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-gradient-to-br from-primary to-info rounded-lg flex items-center justify-center">
-                  <Edit className="w-5 h-5 text-white" />
-                </div>
-                <DrawerTitle className="text-lg font-semibold">
-                  Редактировать ранг
-                </DrawerTitle>
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => onOpenChange(false)}
-              >
-                <X className="w-4 h-4" />
-              </Button>
-            </div>
-          </DrawerHeader>
+    <Drawer open={rankEditOpen} onOpenChange={handleClose}>
+      <DrawerContent className="max-w-2xl mx-auto max-h-[90vh] flex flex-col">
+        <DrawerHeader className="flex-shrink-0">
+          <DrawerTitle className="flex items-center gap-2">
+            <Star className="w-5 h-5" />
+            Редактирование ранга
+          </DrawerTitle>
+          <DrawerDescription>
+            Измените информацию о ранге
+          </DrawerDescription>
+        </DrawerHeader>
 
-          <div className="px-6 pt-6 pb-12 overflow-y-auto flex-1">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Main Rank Details */}
-              <div className="lg:col-span-2 space-y-6">
-                <Card className="card-enhanced">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Target className="w-5 h-5 text-primary" />
-                      Основная информация
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="rank-name">Название ранга *</Label>
-                      <Input
-                        id="rank-name"
-                        placeholder="например, Кадет"
-                        value={formData.name}
-                        onChange={(e) => handleInputChange("name", e.target.value)}
-                      />
-                    </div>
-                  </CardContent>
-                </Card>
+        <div className="px-6 pb-6 space-y-6 flex-1 overflow-y-auto">
+          {/* Основная информация */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Основная информация</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Название ранга *</Label>
+                <Input
+                  id="name"
+                  value={formData.name}
+                  onChange={(e) => handleInputChange("name", e.target.value)}
+                  placeholder="Введите название ранга"
+                  className="w-full"
+                />
               </div>
 
-              {/* Rank Configuration */}
-              <div className="space-y-6">
-                <Card className="card-enhanced">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Star className="w-5 h-5 text-info" />
-                      Конфигурация
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="rank-xp">Требуемый опыт (XP)</Label>
-                      <Input
-                        id="rank-xp"
-                        type="number"
-                        min="0"
-                        value={formData.requiredXp}
-                        onChange={(e) => handleInputChange("requiredXp", parseInt(e.target.value) || 0)}
-                        placeholder="0"
-                      />
-                      <p className="text-xs text-muted-foreground">
-                        Количество опыта, необходимое для получения ранга
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Rank Preview */}
-                <Card className="card-enhanced bg-gradient-to-br from-primary/5 to-info/5">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Lightbulb className="w-5 h-5 text-rewards-amber" />
-                      Предварительный просмотр изменений
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3 text-sm">
-                    {formData.name && (
-                      <div>
-                        <strong>Название:</strong> {formData.name}
-                      </div>
-                    )}
-                    <div>
-                      <strong>Требуемый опыт:</strong> {formData.requiredXp} XP
-                    </div>
-                    <div className="pt-2 border-t border-border">
-                      <div className="text-xs text-muted-foreground">
-                        <strong>ID ранга:</strong> {rank.id}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Action Buttons */}
-                <div className="space-y-3">
-                  <Button
-                    onClick={handleUpdateRank}
-                    disabled={isUpdating}
-                    className="w-full bg-primary hover:bg-primary-600 text-white disabled:opacity-50"
-                  >
-                    <Edit className="w-4 h-4 mr-2" />
-                    {isUpdating ? "Обновление..." : "Обновить ранг"}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={handleSaveDraft}
-                    className="w-full"
-                  >
-                    <Save className="w-4 h-4 mr-2" />
-                    Сохранить как черновик
-                  </Button>
-                </div>
+              <div className="space-y-2">
+                <Label htmlFor="requiredXp">Требуемый опыт</Label>
+                <Input
+                  id="requiredXp"
+                  type="number"
+                  min="0"
+                  value={formData.requiredXp}
+                  onChange={(e) => handleInputChange("requiredXp", parseInt(e.target.value) || 0)}
+                  placeholder="0"
+                  className="w-full"
+                />
               </div>
-            </div>
 
-            {/* Дополнительный отступ снизу */}
-            <div className="h-12"></div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Кнопки действий - зафиксированы внизу */}
+        <div className="flex-shrink-0 px-6 pb-6">
+          <div className="flex justify-end gap-3">
+            <Button variant="outline" onClick={handleClose} disabled={isUpdating}>
+              <X className="w-4 h-4 mr-2" />
+              Отмена
+            </Button>
+            <Button 
+              onClick={handleUpdate} 
+              disabled={isUpdating || !formData.name.trim()}
+              className="bg-primary hover:bg-primary-600"
+            >
+              {isUpdating ? "Обновление..." : "Обновить ранг"}
+            </Button>
           </div>
         </div>
       </DrawerContent>

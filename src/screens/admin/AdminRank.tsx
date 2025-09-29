@@ -212,7 +212,7 @@ export function AdminRank({
                             setSelectedRank(rank);
                             handleDeleteRank(rank);
                           }}
-                          className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                          className="text-destructive hover:text-destructive hover:bg-destructive/10 transition-all duration-200 hover:scale-105"
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>
@@ -319,7 +319,7 @@ export function AdminRank({
                                       onClick={() => {
                                         handleRemoveMissionFromRank(rank.id, mission.id);
                                       }}
-                                      className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                                      className="text-destructive hover:text-destructive hover:bg-destructive/10 transition-all duration-200 hover:scale-105"
                                     >
                                       <X className="w-4 h-4" />
                                     </Button>
@@ -338,7 +338,7 @@ export function AdminRank({
                                       onClick={() => {
                                         handleRemoveCompetencyFromRank(rank.id, req.competency.id);
                                       }}
-                                      className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                                      className="text-destructive hover:text-destructive hover:bg-destructive/10 transition-all duration-200 hover:scale-105"
                                     >
                                       <X className="w-4 h-4" />
                                     </Button>
