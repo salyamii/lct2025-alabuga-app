@@ -1,4 +1,4 @@
-import { TabsContent } from "@radix-ui/react-tabs";
+// import { TabsContent } from "@radix-ui/react-tabs";
 import { Plus, Search, Filter, Zap } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { Card, CardHeader, CardContent } from "../../components/ui/card";
@@ -29,22 +29,7 @@ export function AdminSkill({
   }, [fetchSkills]);
 
   return (
-    <TabsContent value="skills" className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-lg font-semibold">Управление навыками</h2>
-          <p className="text-sm text-muted-foreground">
-            Создание, редактирование и управление навыками системы
-          </p>
-        </div>
-        <Button
-          className="bg-primary hover:bg-primary-600 text-white"
-          onClick={handleCreateSkill}
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Добавить навык
-        </Button>
-      </div>
+    <div className="space-y-6">
 
       <Card className="card-enhanced">
         <CardHeader>
@@ -133,6 +118,6 @@ export function AdminSkill({
           )}
         </CardContent>
       </Card>
-    </TabsContent>
+    </div>
   );
 }

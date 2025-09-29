@@ -1,13 +1,17 @@
-import { TabsContent } from "@radix-ui/react-tabs";
-import { Plus, Star, Search, Filter } from "lucide-react";
+// import { TabsContent } from "@radix-ui/react-tabs";
+import { Plus, Star, Search, Filter, Target, X } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { Card, CardHeader, CardContent } from "../../components/ui/card";
 import { Input } from "../../components/ui/input";
 import { Badge } from "../../components/ui/badge";
 import { Edit, Trash2 } from "lucide-react";
 import { useCompetencyStore } from "../../stores/useCompetencyStore";
-import { useEffect } from "react";
+import { useSkillStore } from "../../stores/useSkillStore";
+import { useEffect, useState } from "react";
 import { Competency } from "../../domain/competency";
+import { Skill } from "../../domain/skill";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select";
+import { toast } from "sonner";
 
 interface AdminCompetencyProps {
   handleCreateCompetency: () => void;
@@ -22,30 +26,52 @@ export function AdminCompetency({
   handleDeleteCompetency, 
   setSelectedCompetency 
 }: AdminCompetencyProps) {
-  const { competencies, fetchCompetencies, isLoading } = useCompetencyStore();
+  const { 
+    competencies, 
+    fetchCompetencies, 
+    isLoading,
+    addSkillToCompetency,
+    removeSkillFromCompetency
+  } = useCompetencyStore();
+  const { skills, fetchSkills } = useSkillStore();
+  const [expandedCompetency, setExpandedCompetency] = useState<number | null>(null);
+  const [selectedSkill, setSelectedSkill] = useState<string>("");
 
   useEffect(() => {
     fetchCompetencies();
-  }, [fetchCompetencies]);
+    fetchSkills();
+  }, [fetchCompetencies, fetchSkills]);
+
+  // Обработчик добавления навыка к компетенции
+  const handleAddSkillToCompetency = async (competencyId: number, skillId: number) => {
+    try {
+      await addSkillToCompetency(competencyId, skillId);
+      toast.success("Навык успешно добавлен к компетенции! 🎯", {
+        description: "Навык был добавлен к компетенции"
+      });
+      setSelectedSkill("");
+    } catch (error) {
+      console.error("Ошибка при добавлении навыка к компетенции:", error);
+      toast.error("Ошибка при добавлении навыка к компетенции. Попробуйте еще раз.");
+    }
+  };
+
+  // Обработчик удаления навыка из компетенции
+  const handleRemoveSkillFromCompetency = async (competencyId: number, skillId: number) => {
+    try {
+      await removeSkillFromCompetency(competencyId, skillId);
+      toast.success("Навык успешно удален из компетенции! 🗑️", {
+        description: "Навык был удален из компетенции"
+      });
+    } catch (error) {
+      console.error("Ошибка при удалении навыка из компетенции:", error);
+      toast.error("Ошибка при удалении навыка из компетенции. Попробуйте еще раз.");
+    }
+  };
 
 
   return (
-    <TabsContent value="competencies" className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-lg font-semibold">Управление компетенциями</h2>
-          <p className="text-sm text-muted-foreground">
-            Создание, редактирование и управление компетенциями системы
-          </p>
-        </div>
-        <Button
-          className="bg-primary hover:bg-primary-600 text-white"
-          onClick={handleCreateCompetency}
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Добавить компетенцию
-        </Button>
-      </div>
+    <div className="space-y-6">
 
       <Card className="card-enhanced">
         <CardHeader>
@@ -71,21 +97,30 @@ export function AdminCompetency({
           ) : (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                   {competencies.map((competency) => {
+                    const isExpanded = expandedCompetency === competency.id;
                     return (
                   <div key={competency.id} className="admin-card p-4 rounded-lg">
                     <div className="flex items-start justify-between">
-                      <div className="flex items-start gap-4">
+                      <div className="flex items-start gap-4 flex-1">
                         <div className="w-12 h-12 bg-gradient-to-br from-primary to-info rounded-lg flex items-center justify-center">
                           <Star className="w-6 h-6 text-white" />
                         </div>
-                        <div className="space-y-2">
+                        <div className="space-y-2 flex-1">
                           <div>
                             <h4 className="font-semibold text-base">
                               {competency.name}
                             </h4>
+                            <p className="text-sm text-muted-foreground">
+                              Максимальный уровень: {competency.maxLevel}
+                            </p>
+                            
+                            {/* Связанные навыки */}
                             {competency.skills && competency.skills.length > 0 && (
-                              <div className="mt-2">
-                                <p className="text-xs text-muted-foreground mb-1">Связанные навыки:</p>
+                              <div className="mt-3">
+                                <p className="text-xs text-muted-foreground mb-1 flex items-center gap-1">
+                                  <Target className="w-3 h-3" />
+                                  Связанные навыки ({competency.skills.length}):
+                                </p>
                                 <div className="flex flex-wrap gap-1">
                                   {competency.skills.map((skill) => (
                                     <Badge key={skill.id} variant="outline" className="text-xs">
@@ -96,14 +131,16 @@ export function AdminCompetency({
                               </div>
                             )}
                           </div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs text-muted-foreground">
-                              Максимальный уровень: {competency.maxLevel}
-                            </span>
-                          </div>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => setExpandedCompetency(isExpanded ? null : competency.id)}
+                        >
+                          {isExpanded ? "Свернуть" : "Управление"}
+                        </Button>
                         <Button 
                           variant="ghost" 
                           size="sm"
@@ -127,6 +164,78 @@ export function AdminCompetency({
                         </Button>
                       </div>
                     </div>
+
+                    {/* Расширенная панель управления навыками */}
+                    {isExpanded && (
+                      <div className="mt-4 pt-4 border-t border-border">
+                        <div className="space-y-4">
+                          {/* Добавление навыка */}
+                          <div className="space-y-2">
+                            <h5 className="text-sm font-medium flex items-center gap-2">
+                              <Target className="w-4 h-4" />
+                              Добавить навык к компетенции
+                            </h5>
+                            <div className="flex gap-2">
+                              <Select value={selectedSkill} onValueChange={setSelectedSkill}>
+                                <SelectTrigger className="flex-1">
+                                  <SelectValue placeholder="Выберите навык" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {skills
+                                    .filter(skill => !competency.skills.some(s => s.id === skill.id))
+                                    .map(skill => (
+                                    <SelectItem key={skill.id} value={skill.id.toString()}>
+                                      {skill.name}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              <Button 
+                                size="sm"
+                                onClick={() => {
+                                  if (selectedSkill) {
+                                    handleAddSkillToCompetency(competency.id, Number(selectedSkill));
+                                  }
+                                }}
+                                disabled={!selectedSkill}
+                              >
+                                <Plus className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </div>
+
+                          {/* Управление существующими навыками */}
+                          {competency.skills && competency.skills.length > 0 && (
+                            <div className="space-y-2">
+                              <h5 className="text-sm font-medium">Управление навыками</h5>
+                              <div className="space-y-2">
+                                {competency.skills.map((skill) => (
+                                  <div key={skill.id} className="flex items-center justify-between p-2 bg-muted rounded-lg">
+                                    <div className="flex items-center gap-2">
+                                      <Target className="w-4 h-4 text-muted-foreground" />
+                                      <span className="text-sm">{skill.name}</span>
+                                      <Badge variant="outline" className="text-xs">
+                                        Макс. ур. {skill.maxLevel}
+                                      </Badge>
+                                    </div>
+                                    <Button 
+                                      variant="ghost" 
+                                      size="sm"
+                                      onClick={() => {
+                                        handleRemoveSkillFromCompetency(competency.id, skill.id);
+                                      }}
+                                      className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                                    >
+                                      <X className="w-4 h-4" />
+                                    </Button>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 );
               })}
@@ -146,6 +255,6 @@ export function AdminCompetency({
           )}
         </CardContent>
       </Card>
-    </TabsContent>
+    </div>
   );
 }

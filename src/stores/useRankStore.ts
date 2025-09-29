@@ -15,6 +15,10 @@ interface RankActions {
   createRank: (rankData: RankCreateRequest) => Promise<Rank>;
   updateRank: (id: number, rankData: RankUpdateRequest) => Promise<Rank>;
   deleteRank: (id: number) => Promise<void>;
+  addRequiredMissionToRank: (rankId: number, missionId: number) => Promise<Rank>;
+  removeRequiredMissionFromRank: (rankId: number, missionId: number) => Promise<Rank>;
+  addRequiredCompetencyToRank: (rankId: number, competencyId: number, minLevel: number) => Promise<Rank>;
+  removeRequiredCompetencyFromRank: (rankId: number, competencyId: number) => Promise<Rank>;
   clearRanks: () => void;
 }
 
@@ -84,6 +88,67 @@ export const useRankStore = create<RankState & RankActions>((set: (partial: Part
       });
     } catch (error: any) {
       set({ error: error.message || 'Не удалось удалить ранг', isLoading: false });
+      throw error;
+    }
+  },
+
+  addRequiredMissionToRank: async (rankId: number, missionId: number) => {
+    try {
+      set({ isLoading: true, error: null });
+      const updatedRank = await rankService.addRequiredMissionToRank(rankId, missionId);
+      set({ 
+        ranks: get().ranks.map((r: Rank) => r.id === rankId ? updatedRank.data : r),
+        isLoading: false 
+      });
+      return updatedRank.data;
+    } catch (error: any) {
+      set({ error: error.message || 'Не удалось добавить обязательную миссию к рангу', isLoading: false });
+      throw error;
+    }
+  },
+
+  removeRequiredMissionFromRank: async (rankId: number, missionId: number) => {
+    try {
+      set({ isLoading: true, error: null });
+      const updatedRank = await rankService.removeRequiredMissionFromRank(rankId, missionId);
+      set({ 
+        ranks: get().ranks.map((r: Rank) => r.id === rankId ? updatedRank.data : r),
+        isLoading: false 
+      });
+      return updatedRank.data;
+    } catch (error: any) {
+      set({ error: error.message || 'Не удалось удалить обязательную миссию из ранга', isLoading: false });
+      throw error;
+    }
+  },
+
+  addRequiredCompetencyToRank: async (rankId: number, competencyId: number, minLevel: number) => {
+    try {
+      set({ isLoading: true, error: null });
+      const requirementData = { minLevel };
+      const updatedRank = await rankService.addRequiredCompetencyToRank(rankId, competencyId, requirementData);
+      set({ 
+        ranks: get().ranks.map((r: Rank) => r.id === rankId ? updatedRank.data : r),
+        isLoading: false 
+      });
+      return updatedRank.data;
+    } catch (error: any) {
+      set({ error: error.message || 'Не удалось добавить обязательную компетенцию к рангу', isLoading: false });
+      throw error;
+    }
+  },
+
+  removeRequiredCompetencyFromRank: async (rankId: number, competencyId: number) => {
+    try {
+      set({ isLoading: true, error: null });
+      const updatedRank = await rankService.removeRequiredCompetencyFromRank(rankId, competencyId);
+      set({ 
+        ranks: get().ranks.map((r: Rank) => r.id === rankId ? updatedRank.data : r),
+        isLoading: false 
+      });
+      return updatedRank.data;
+    } catch (error: any) {
+      set({ error: error.message || 'Не удалось удалить обязательную компетенцию из ранга', isLoading: false });
       throw error;
     }
   },

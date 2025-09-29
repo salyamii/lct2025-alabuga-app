@@ -213,9 +213,6 @@ export function AdminScreen({ onBack, onUserDetailOpen }: AdminScreenProps) {
             <TabsTrigger value="dashboard">Сводка</TabsTrigger>
             <TabsTrigger value="missions">Миссии</TabsTrigger>
             <TabsTrigger value="seasons">Сезоны</TabsTrigger>
-            <TabsTrigger value="competencies">Компетенции</TabsTrigger>
-            <TabsTrigger value="ranks">Ранги</TabsTrigger>
-            <TabsTrigger value="skills">Навыки</TabsTrigger> {/* NEW */}
             <TabsTrigger value="users">Пользователи</TabsTrigger>
             <TabsTrigger value="settings">Настройки</TabsTrigger>
           </TabsList>
@@ -239,33 +236,24 @@ export function AdminScreen({ onBack, onUserDetailOpen }: AdminScreenProps) {
             setSelectedSeason={setSelectedSeason}
           />
 
-          <AdminCompetency
-            handleCreateCompetency={openCompetencyCreation}
-            handleEditCompetency={(competency) => openCompetencyEdit(competency)}
-            handleDeleteCompetency={handleDeleteCompetency}
-            setSelectedCompetency={setSelectedCompetency}
-          />
-
-          <AdminRank
-            handleCreateRank={openRankCreation}
-            handleEditRank={(rank) => openRankEdit(rank)}
-            handleDeleteRank={handleDeleteRank}
-            setSelectedRank={setSelectedRank}
-          />
-
-          <AdminSkill // NEW
-            handleCreateSkill={openSkillCreation}
-            handleEditSkill={(skill) => openSkillEdit(skill)}
-            handleDeleteSkill={handleDeleteSkill}
-            setSelectedSkill={setSelectedSkill}
-          />
-
           <AdminUsers onUserDetailOpen={onUserDetailOpen} />
 
           <AdminSettings
             handleCreateReward={openRewardCreation}
             handleCreateBadge={openBadgeCreation}
             handleManageStore={openStoreManagement}
+            handleCreateCompetency={openCompetencyCreation}
+            handleEditCompetency={(competency) => openCompetencyEdit(competency)}
+            handleDeleteCompetency={handleDeleteCompetency}
+            setSelectedCompetency={setSelectedCompetency}
+            handleCreateRank={openRankCreation}
+            handleEditRank={(rank) => openRankEdit(rank)}
+            handleDeleteRank={handleDeleteRank}
+            setSelectedRank={setSelectedRank}
+            handleCreateSkill={openSkillCreation}
+            handleEditSkill={(skill) => openSkillEdit(skill)}
+            handleDeleteSkill={handleDeleteSkill}
+            setSelectedSkill={setSelectedSkill}
           />
         </Tabs>
       </div>

@@ -15,6 +15,8 @@ interface CompetencyActions {
   createCompetency: (competencyData: CompetencyCreateRequest) => Promise<Competency>;
   updateCompetency: (id: number, competencyData: CompetencyUpdateRequest) => Promise<Competency>;
   deleteCompetency: (id: number) => Promise<void>;
+  addSkillToCompetency: (competencyId: number, skillId: number) => Promise<Competency>;
+  removeSkillFromCompetency: (competencyId: number, skillId: number) => Promise<Competency>;
   clearCompetencies: () => void;
 }
 
@@ -84,6 +86,36 @@ export const useCompetencyStore = create<CompetencyState & CompetencyActions>((s
       });
     } catch (error: any) {
       set({ error: error.message || 'Не удалось удалить компетенцию', isLoading: false });
+      throw error;
+    }
+  },
+
+  addSkillToCompetency: async (competencyId: number, skillId: number) => {
+    try {
+      set({ isLoading: true, error: null });
+      const updatedCompetency = await competencyService.addSkillToCompetency(competencyId, skillId);
+      set({ 
+        competencies: get().competencies.map((c: Competency) => c.id === competencyId ? updatedCompetency.data : c),
+        isLoading: false 
+      });
+      return updatedCompetency.data;
+    } catch (error: any) {
+      set({ error: error.message || 'Не удалось добавить навык к компетенции', isLoading: false });
+      throw error;
+    }
+  },
+
+  removeSkillFromCompetency: async (competencyId: number, skillId: number) => {
+    try {
+      set({ isLoading: true, error: null });
+      const updatedCompetency = await competencyService.removeSkillFromCompetency(competencyId, skillId);
+      set({ 
+        competencies: get().competencies.map((c: Competency) => c.id === competencyId ? updatedCompetency.data : c),
+        isLoading: false 
+      });
+      return updatedCompetency.data;
+    } catch (error: any) {
+      set({ error: error.message || 'Не удалось удалить навык из компетенции', isLoading: false });
       throw error;
     }
   },
