@@ -3,7 +3,13 @@ import { create } from 'zustand';
 interface OverlayState {
   // Состояния оверлеев
   missionCreationOpen: boolean;
-  missionEditOpen: boolean; // NEW
+  missionEditOpen: boolean;
+  competencyCreationOpen: boolean;
+  competencyEditOpen: boolean;
+  rankCreationOpen: boolean;
+  rankEditOpen: boolean;
+  skillCreationOpen: boolean; // NEW
+  skillEditOpen: boolean; // NEW
   badgeCreationOpen: boolean;
   rewardCreationOpen: boolean;
   storeManagementOpen: boolean;
@@ -15,13 +21,28 @@ interface OverlayState {
   selectedChain: any;
   selectedBranch: any;
   selectedMission: any;
+  selectedCompetency: any;
+  selectedRank: any;
+  selectedSkill: any; // NEW
   selectedSeason: any;
   
   // Действия для управления оверлеями
   openMissionCreation: () => void;
   closeMissionCreation: () => void;
-  openMissionEdit: (mission?: any) => void; // NEW
-  closeMissionEdit: () => void; // NEW
+  openMissionEdit: (mission?: any) => void;
+  closeMissionEdit: () => void;
+  openCompetencyCreation: () => void;
+  closeCompetencyCreation: () => void;
+  openCompetencyEdit: (competency?: any) => void;
+  closeCompetencyEdit: () => void;
+  openRankCreation: () => void;
+  closeRankCreation: () => void;
+  openRankEdit: (rank?: any) => void;
+  closeRankEdit: () => void;
+  openSkillCreation: () => void; // NEW
+  closeSkillCreation: () => void; // NEW
+  openSkillEdit: (skill?: any) => void; // NEW
+  closeSkillEdit: () => void; // NEW
   openBadgeCreation: () => void;
   closeBadgeCreation: () => void;
   openRewardCreation: () => void;
@@ -40,13 +61,22 @@ interface OverlayState {
   setSelectedChain: (chain: any) => void;
   setSelectedBranch: (branch: any) => void;
   setSelectedMission: (mission: any) => void;
+  setSelectedCompetency: (competency: any) => void;
+  setSelectedRank: (rank: any) => void;
+  setSelectedSkill: (skill: any) => void; // NEW
   setSelectedSeason: (season: any) => void;
 }
 
 export const useOverlayStore = create<OverlayState>()((set, get) => ({
   // Начальное состояние
   missionCreationOpen: false,
-  missionEditOpen: false, // NEW
+  missionEditOpen: false,
+  competencyCreationOpen: false,
+  competencyEditOpen: false,
+  rankCreationOpen: false,
+  rankEditOpen: false,
+  skillCreationOpen: false, // NEW
+  skillEditOpen: false, // NEW
   badgeCreationOpen: false,
   rewardCreationOpen: false,
   storeManagementOpen: false,
@@ -57,19 +87,58 @@ export const useOverlayStore = create<OverlayState>()((set, get) => ({
   selectedChain: null,
   selectedBranch: null,
   selectedMission: null,
+  selectedCompetency: null,
+  selectedRank: null,
+  selectedSkill: null, // NEW
   selectedSeason: null,
   
   // Действия для управления оверлеями
   openMissionCreation: () => set({ missionCreationOpen: true }),
   closeMissionCreation: () => set({ missionCreationOpen: false }),
   
-  openMissionEdit: (mission = null) => set({ // NEW
+  openMissionEdit: (mission = null) => set({
     missionEditOpen: true, 
     selectedMission: mission 
   }),
-  closeMissionEdit: () => set({ // NEW
+  closeMissionEdit: () => set({
     missionEditOpen: false, 
     selectedMission: null 
+  }),
+  
+  openCompetencyCreation: () => set({ competencyCreationOpen: true }), // NEW
+  closeCompetencyCreation: () => set({ competencyCreationOpen: false }), // NEW
+  
+  openCompetencyEdit: (competency = null) => set({
+    competencyEditOpen: true, 
+    selectedCompetency: competency 
+  }),
+  closeCompetencyEdit: () => set({
+    competencyEditOpen: false, 
+    selectedCompetency: null 
+  }),
+  
+  openRankCreation: () => set({ rankCreationOpen: true }), // NEW
+  closeRankCreation: () => set({ rankCreationOpen: false }), // NEW
+  
+  openRankEdit: (rank = null) => set({
+    rankEditOpen: true, 
+    selectedRank: rank 
+  }),
+  closeRankEdit: () => set({
+    rankEditOpen: false, 
+    selectedRank: null 
+  }),
+  
+  openSkillCreation: () => set({ skillCreationOpen: true }), // NEW
+  closeSkillCreation: () => set({ skillCreationOpen: false }), // NEW
+  
+  openSkillEdit: (skill = null) => set({ // NEW
+    skillEditOpen: true, 
+    selectedSkill: skill 
+  }),
+  closeSkillEdit: () => set({ // NEW
+    skillEditOpen: false, 
+    selectedSkill: null 
   }),
   
   openBadgeCreation: () => set({ badgeCreationOpen: true }),
@@ -105,7 +174,13 @@ export const useOverlayStore = create<OverlayState>()((set, get) => ({
   // Универсальные методы
   closeAllOverlays: () => set({
     missionCreationOpen: false,
-    missionEditOpen: false, // NEW
+    missionEditOpen: false,
+    competencyCreationOpen: false,
+    competencyEditOpen: false,
+    rankCreationOpen: false,
+    rankEditOpen: false,
+    skillCreationOpen: false, // NEW
+    skillEditOpen: false, // NEW
     badgeCreationOpen: false,
     rewardCreationOpen: false,
     storeManagementOpen: false,
@@ -115,11 +190,17 @@ export const useOverlayStore = create<OverlayState>()((set, get) => ({
     selectedChain: null,
     selectedBranch: null,
     selectedMission: null,
+    selectedCompetency: null,
+    selectedRank: null,
+    selectedSkill: null, // NEW
     selectedSeason: null,
   }),
   
   setSelectedChain: (chain) => set({ selectedChain: chain }),
   setSelectedBranch: (branch) => set({ selectedBranch: branch }),
   setSelectedMission: (mission) => set({ selectedMission: mission }),
+  setSelectedCompetency: (competency) => set({ selectedCompetency: competency }),
+  setSelectedRank: (rank) => set({ selectedRank: rank }),
+  setSelectedSkill: (skill) => set({ selectedSkill: skill }), // NEW
   setSelectedSeason: (season) => set({ selectedSeason: season }),
 }));

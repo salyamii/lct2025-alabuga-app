@@ -1,17 +1,15 @@
 import { TabsContent } from "@radix-ui/react-tabs";
 import { Button } from "../../components/ui/button";
-import { Card, CardHeader, CardTitle } from "../../components/ui/card";
-import { Plus, Search, Link2, Target, Zap, Award } from "lucide-react";
+import { Card, CardHeader, CardTitle, CardContent } from "../../components/ui/card";
+import { Plus, Search, Link2, Target, Zap, Award, Filter, Eye, Edit, Trash2, Clock, Users, Star } from "lucide-react";
 import { Input } from "../../components/ui/input";
-import { Filter } from "lucide-react";
 import { Badge } from "../../components/ui/badge";
-import { Eye, Edit, Trash2 } from "lucide-react";
-import { CardContent } from "../../components/ui/card";
 import { Progress } from "../../components/ui/progress";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useMissionStore } from "../../stores/useMissionStore";
 import { useMissionChainStore } from "../../stores/useMissionChainStore";
 import { useSeasonStore } from "../../stores/useSeasonStore";
+import { Mission } from "../../domain/mission";
 
 interface AdminMissionProps {
   handleCreateMission: () => void;
@@ -26,16 +24,61 @@ interface AdminMissionProps {
 export function AdminMission({
   handleCreateMission,
   handleEditMission,
-  handleDeleteMission, // NEW
+  handleDeleteMission,
   handleCreateChain,
   setSelectedChain,
   setSelectedMission,
   setChainCreationOpen,
 }: AdminMissionProps) {
-
-  const { missions } = useMissionStore();
-  const { missionChains } = useMissionChainStore();
+  const { missions, fetchMissions } = useMissionStore();
+  const { missionChains, fetchMissionChains } = useMissionChainStore();
   const { currentSeason } = useSeasonStore();
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        await Promise.all([
+          fetchMissions(),
+          fetchMissionChains(),
+        ]);
+      } catch (error) {
+        console.error("Ошибка при загрузке данных:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadData();
+  }, [fetchMissions, fetchMissionChains]);
+
+  // Функция для получения статуса миссии
+  const getMissionStatus = (mission: Mission) => {
+    if (mission.tasks.length === 0) return "draft";
+    if (mission.rewardArtifacts.length === 0 && mission.rewardCompetencies.length === 0 && mission.rewardSkills.length === 0) return "incomplete";
+    return "active";
+  };
+
+  // Функция для получения цвета статуса
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "active": return "bg-green-500";
+      case "incomplete": return "bg-yellow-500";
+      case "draft": return "bg-gray-500";
+      default: return "bg-gray-500";
+    }
+  };
+
+  // Функция для получения текста статуса
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case "active": return "Активная";
+      case "incomplete": return "Неполная";
+      case "draft": return "Черновик";
+      default: return "Неизвестно";
+    }
+  };
+
   // const missions = [
   //   {
   //     id: "mission-1",
@@ -317,58 +360,99 @@ export function AdminMission({
                   </div>
                 </div>
 
-                <div className="space-y-4">
-                  {missions.map((mission) => (
-                    <div
-                      key={mission.id}
-                      className="flex items-center justify-between p-4 rounded-lg border border-border"
-                    >
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <h4 className="font-medium">{mission.title}</h4>
-                          <Badge
-                            variant={
-                              mission.seasonId === currentSeason?.id
-                                ? "default"
-                                : "secondary"
-                            }
-                            className="text-xs"
-                          >
-                            {mission.seasonId === currentSeason?.id ? "Активная" : "Завершена"}
-                          </Badge>
-                        </div>
-                        <div className="flex items-center gap-6 text-sm text-muted-foreground">
-                          <span>{500} участников</span>
-                          <span>{90}% завершено</span>
-                          <span>Создано 2024-01-01</span>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          onClick={() => {
-                            setSelectedMission(mission);
-                            handleEditMission(mission);
-                          }}
-                        >
-                          <Edit className="w-4 h-4" />
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          onClick={() => {
-                            setSelectedMission(mission);
-                            handleDeleteMission(mission);
-                          }}
-                          className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
+                {isLoading ? (
+                  <div className="flex items-center justify-center py-8">
+                    <div className="text-muted-foreground">Загрузка миссий...</div>
+                  </div>
+                ) : missions.length === 0 ? (
+                  <div className="text-center py-8">
+                    <div className="text-muted-foreground mb-4">
+                      Миссии не найдены
                     </div>
-                  ))}
-                </div>
+                    <Button onClick={handleCreateMission}>
+                      <Plus className="w-4 h-4 mr-2" />
+                      Создать первую миссию
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {missions.map((mission) => {
+                      const status = getMissionStatus(mission);
+                      const statusText = getStatusText(status);
+                      const statusColor = getStatusColor(status);
+                      
+                      return (
+                        <div
+                          key={mission.id}
+                          className="flex items-center justify-between p-4 rounded-lg border border-border hover:shadow-sm transition-shadow"
+                        >
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3 mb-2">
+                              <h4 className="font-medium">{mission.title}</h4>
+                              <Badge
+                                variant={
+                                  mission.seasonId === currentSeason?.id
+                                    ? "default"
+                                    : "secondary"
+                                }
+                                className="text-xs"
+                              >
+                                {mission.seasonId === currentSeason?.id ? "Активная" : "Завершена"}
+                              </Badge>
+                              <div className={`w-2 h-2 rounded-full ${statusColor}`} title={statusText} />
+                            </div>
+                            <div className="flex items-center gap-6 text-sm text-muted-foreground">
+                              <span className="flex items-center gap-1">
+                                <Target className="w-3 h-3" />
+                                {mission.tasks.length} заданий
+                              </span>
+                              <span className="flex items-center gap-1">
+                                <Zap className="w-3 h-3" />
+                                {mission.rewardXp} XP
+                              </span>
+                              <span className="flex items-center gap-1">
+                                <Award className="w-3 h-3" />
+                                {mission.rewardMana} маны
+                              </span>
+                              <span className="flex items-center gap-1">
+                                <Star className="w-3 h-3" />
+                                {mission.rewardArtifacts.length + mission.rewardCompetencies.length + mission.rewardSkills.length} наград
+                              </span>
+                            </div>
+                            <div className="mt-2">
+                              <p className="text-sm text-muted-foreground line-clamp-2">
+                                {mission.description}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => {
+                                setSelectedMission(mission);
+                                handleEditMission(mission);
+                              }}
+                            >
+                              <Edit className="w-4 h-4" />
+                            </Button>
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => {
+                                setSelectedMission(mission);
+                                handleDeleteMission(mission);
+                              }}
+                              className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             )}
 

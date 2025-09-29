@@ -9,15 +9,30 @@ import { AdminDashboard } from "./AdminDashboard";
 import { AdminUsers } from "./AdminUsers";
 import { AdminMission } from "./AdminMission";
 import { AdminSeason } from "./AdminSeason";
+import { AdminCompetency } from "./AdminCompetency";
+import { AdminRank } from "./AdminRank";
+import { AdminSkill } from "./AdminSkill"; // NEW
 import { AdminSettings } from "./AdminSettings";
 import { MissionCreationDrawer } from "./MissionCreationDrawer";
-import { MissionEditDrawer } from "./MissionEditDrawer"; // NEW
+import { MissionEditDrawer } from "./MissionEditDrawer";
+import { CompetencyCreationDrawer } from "./CompetencyCreationDrawer";
+import { CompetencyEditDrawer } from "./CompetencyEditDrawer";
+import { RankCreationDrawer } from "./RankCreationDrawer";
+import { RankEditDrawer } from "./RankEditDrawer";
+import { SkillCreationDrawer } from "./SkillCreationDrawer"; // NEW
+import { SkillEditDrawer } from "./SkillEditDrawer"; // NEW
 import { SeasonCreationDrawer } from "./SeasonCreationDrawer";
 import { SeasonEditDrawer } from "./SeasonEditDrawer";
 import { ArrowLeft, Shield } from "lucide-react";
 import { useOverlayStore } from "../../stores/useOverlayStore";
 import { useSeasonStore } from "../../stores/useSeasonStore";
-import { useMissionStore } from "../../stores/useMissionStore"; // NEW
+import { useMissionStore } from "../../stores/useMissionStore";
+import { useCompetencyStore } from "../../stores/useCompetencyStore";
+import { useRankStore } from "../../stores/useRankStore";
+import { useSkillStore } from "../../stores/useSkillStore"; // NEW
+import { Competency } from "../../domain/competency";
+import { Rank } from "../../domain/rank";
+import { Skill } from "../../domain/skill"; // NEW
 import { toast } from "sonner";
 
 interface AdminScreenProps {
@@ -29,7 +44,13 @@ export function AdminScreen({ onBack, onUserDetailOpen }: AdminScreenProps) {
   const {
     // Состояния оверлеев
     missionCreationOpen,
-    missionEditOpen, // NEW
+    missionEditOpen,
+    competencyCreationOpen,
+    competencyEditOpen,
+    rankCreationOpen,
+    rankEditOpen,
+    skillCreationOpen, // NEW
+    skillEditOpen, // NEW
     badgeCreationOpen,
     rewardCreationOpen,
     storeManagementOpen,
@@ -37,14 +58,29 @@ export function AdminScreen({ onBack, onUserDetailOpen }: AdminScreenProps) {
     seasonCreationOpen,
     seasonEditOpen,
     selectedChain,
-    selectedMission, // NEW
+    selectedMission,
+    selectedCompetency,
+    selectedRank,
+    selectedSkill, // NEW
     selectedSeason,
     
     // Действия
     openMissionCreation,
     closeMissionCreation,
-    openMissionEdit, // NEW
-    closeMissionEdit, // NEW
+    openMissionEdit,
+    closeMissionEdit,
+    openCompetencyCreation,
+    closeCompetencyCreation,
+    openCompetencyEdit,
+    closeCompetencyEdit,
+    openRankCreation,
+    closeRankCreation,
+    openRankEdit,
+    closeRankEdit,
+    openSkillCreation, // NEW
+    closeSkillCreation, // NEW
+    openSkillEdit, // NEW
+    closeSkillEdit, // NEW
     openBadgeCreation,
     closeBadgeCreation,
     openRewardCreation,
@@ -58,12 +94,18 @@ export function AdminScreen({ onBack, onUserDetailOpen }: AdminScreenProps) {
     openSeasonEdit,
     closeSeasonEdit,
     setSelectedChain,
-    setSelectedMission, // NEW
+    setSelectedMission,
+    setSelectedCompetency,
+    setSelectedRank,
+    setSelectedSkill, // NEW
     setSelectedSeason,
   } = useOverlayStore();
 
   const { deleteSeason } = useSeasonStore();
-  const { deleteMission } = useMissionStore(); // NEW
+  const { deleteMission } = useMissionStore();
+  const { deleteCompetency } = useCompetencyStore();
+  const { deleteRank } = useRankStore();
+  const { deleteSkill } = useSkillStore(); // NEW
 
   // Обработчик удаления сезона
   const handleDeleteSeason = async (season: any) => {
@@ -80,7 +122,7 @@ export function AdminScreen({ onBack, onUserDetailOpen }: AdminScreenProps) {
     }
   };
 
-  // Обработчик удаления миссии // NEW
+  // Обработчик удаления миссии
   const handleDeleteMission = async (mission: any) => {
     if (!mission) return;
 
@@ -92,6 +134,49 @@ export function AdminScreen({ onBack, onUserDetailOpen }: AdminScreenProps) {
     } catch (error) {
       console.error("Ошибка при удалении миссии:", error);
       toast.error("Ошибка при удалении миссии. Попробуйте еще раз.");
+    }
+  };
+
+  // Обработчик удаления компетенции
+  const handleDeleteCompetency = async (competency: Competency) => {
+    if (!competency) return;
+
+    try {
+      await deleteCompetency(competency.id);
+      toast.success("Компетенция успешно удалена! 🗑️", {
+        description: `"${competency.name}" была удалена из системы`,
+      });
+    } catch (error) {
+      console.error("Ошибка при удалении компетенции:", error);
+      toast.error("Ошибка при удалении компетенции. Попробуйте еще раз.");
+    }
+  };
+
+  // Обработчик удаления ранга
+  const handleDeleteRank = async (rank: Rank) => {
+    if (!rank) return;
+    try {
+      await deleteRank(rank.id);
+      toast.success("Ранг успешно удален! 🗑️", {
+        description: `"${rank.name}" был удален из системы`,
+      });
+    } catch (error) {
+      console.error("Ошибка при удалении ранга:", error);
+      toast.error("Ошибка при удалении ранга. Попробуйте еще раз.");
+    }
+  };
+
+  // Обработчик удаления навыка // NEW
+  const handleDeleteSkill = async (skill: Skill) => {
+    if (!skill) return;
+    try {
+      await deleteSkill(skill.id);
+      toast.success("Навык успешно удален! 🗑️", {
+        description: `"${skill.name}" был удален из системы`,
+      });
+    } catch (error) {
+      console.error("Ошибка при удалении навыка:", error);
+      toast.error("Ошибка при удалении навыка. Попробуйте еще раз.");
     }
   };
 
@@ -124,10 +209,13 @@ export function AdminScreen({ onBack, onUserDetailOpen }: AdminScreenProps) {
       {/* Content */}
       <div className="max-w-7xl mx-auto px-4 py-6">
         <Tabs defaultValue="dashboard">
-          <TabsList className="grid w-full grid-cols-5 max-w-2xl">
+          <TabsList className="inline-flex w-full max-w-7xl overflow-x-auto">
             <TabsTrigger value="dashboard">Сводка</TabsTrigger>
             <TabsTrigger value="missions">Миссии</TabsTrigger>
             <TabsTrigger value="seasons">Сезоны</TabsTrigger>
+            <TabsTrigger value="competencies">Компетенции</TabsTrigger>
+            <TabsTrigger value="ranks">Ранги</TabsTrigger>
+            <TabsTrigger value="skills">Навыки</TabsTrigger> {/* NEW */}
             <TabsTrigger value="users">Пользователи</TabsTrigger>
             <TabsTrigger value="settings">Настройки</TabsTrigger>
           </TabsList>
@@ -149,6 +237,27 @@ export function AdminScreen({ onBack, onUserDetailOpen }: AdminScreenProps) {
             handleEditSeason={(season) => openSeasonEdit(season)}
             handleDeleteSeason={handleDeleteSeason}
             setSelectedSeason={setSelectedSeason}
+          />
+
+          <AdminCompetency
+            handleCreateCompetency={openCompetencyCreation}
+            handleEditCompetency={(competency) => openCompetencyEdit(competency)}
+            handleDeleteCompetency={handleDeleteCompetency}
+            setSelectedCompetency={setSelectedCompetency}
+          />
+
+          <AdminRank
+            handleCreateRank={openRankCreation}
+            handleEditRank={(rank) => openRankEdit(rank)}
+            handleDeleteRank={handleDeleteRank}
+            setSelectedRank={setSelectedRank}
+          />
+
+          <AdminSkill // NEW
+            handleCreateSkill={openSkillCreation}
+            handleEditSkill={(skill) => openSkillEdit(skill)}
+            handleDeleteSkill={handleDeleteSkill}
+            setSelectedSkill={setSelectedSkill}
           />
 
           <AdminUsers onUserDetailOpen={onUserDetailOpen} />
@@ -199,14 +308,47 @@ export function AdminScreen({ onBack, onUserDetailOpen }: AdminScreenProps) {
         onOpenChange={(open) => open ? openSeasonCreation() : closeSeasonCreation()}
       />
 
-      <SeasonEditDrawer
-        open={seasonEditOpen}
-        onOpenChange={(open) => open ? openSeasonEdit() : closeSeasonEdit()}
-        season={selectedSeason}
-      />
-    </div>
-  );
-}
+          <SeasonEditDrawer
+            open={seasonEditOpen}
+            onOpenChange={(open) => open ? openSeasonEdit() : closeSeasonEdit()}
+            season={selectedSeason}
+          />
+
+          <CompetencyCreationDrawer // NEW
+            open={competencyCreationOpen}
+            onOpenChange={(open) => open ? openCompetencyCreation() : closeCompetencyCreation()}
+          />
+
+          <CompetencyEditDrawer
+            open={competencyEditOpen}
+            onOpenChange={(open) => open ? openCompetencyEdit() : closeCompetencyEdit()}
+            competency={selectedCompetency}
+          />
+
+          <RankCreationDrawer // NEW
+            open={rankCreationOpen}
+            onOpenChange={(open) => open ? openRankCreation() : closeRankCreation()}
+          />
+
+          <RankEditDrawer
+            open={rankEditOpen}
+            onOpenChange={(open) => open ? openRankEdit() : closeRankEdit()}
+            rank={selectedRank}
+          />
+
+          <SkillCreationDrawer // NEW
+            open={skillCreationOpen}
+            onOpenChange={(open) => open ? openSkillCreation() : closeSkillCreation()}
+          />
+
+          <SkillEditDrawer // NEW
+            open={skillEditOpen}
+            onOpenChange={(open) => open ? openSkillEdit() : closeSkillEdit()}
+            skill={selectedSkill}
+          />
+        </div>
+      );
+    }
 
 // Заглушки для компонентов Drawer
 const BadgeCreationDrawer = ({

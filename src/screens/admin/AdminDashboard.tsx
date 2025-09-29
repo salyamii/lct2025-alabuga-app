@@ -4,47 +4,71 @@ import {
   CardHeader,
   CardTitle,
 } from "../../components/ui/card";
-import { Users, Target, BarChart3, Settings } from "lucide-react";
+import { Users, Target, BarChart3, Settings, Zap, Award, Star, Calendar, Trophy, BookOpen, TrendingUp } from "lucide-react";
 import { Badge } from "../../components/ui/badge";
 import { TabsContent } from "../../components/ui/tabs";
+import { useMissionStore } from "../../stores/useMissionStore";
+import { useSeasonStore } from "../../stores/useSeasonStore";
+import { useRankStore } from "../../stores/useRankStore";
+import { useSkillStore } from "../../stores/useSkillStore";
+import { useCompetencyStore } from "../../stores/useCompetencyStore";
+import { useEffect, useState } from "react";
 
 export function AdminDashboard() {
+  const { missions, fetchMissions } = useMissionStore();
+  const { seasons, fetchSeasons } = useSeasonStore();
+  const { ranks, fetchRanks } = useRankStore();
+  const { skills, fetchSkills } = useSkillStore();
+  const { competencies, fetchCompetencies } = useCompetencyStore();
+  
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        await Promise.all([
+          fetchMissions(),
+          fetchSeasons(),
+          fetchRanks(),
+          fetchSkills(),
+          fetchCompetencies(),
+        ]);
+      } catch (error) {
+        console.error("Ошибка при загрузке данных:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadData();
+  }, [fetchMissions, fetchSeasons, fetchRanks, fetchSkills, fetchCompetencies]);
+
+  // Вычисляем статистику на основе реальных данных
   const dashboardStats = {
-    totalUsers: 1247,
-    activeMissions: 23,
-    completionRate: 87.3,
-    totalMana: 125420,
+    totalUsers: 1247, // Пока оставляем мок, так как нет пользователей в доменной модели
+    activeMissions: missions.length,
+    completionRate: missions.length > 0 ? Math.round((missions.filter(m => m.tasks.length > 0).length / missions.length) * 100) : 0,
+    totalMana: missions.reduce((sum, mission) => sum + mission.rewardMana, 0),
+    totalXp: missions.reduce((sum, mission) => sum + mission.rewardXp, 0),
+    totalTasks: missions.reduce((sum, mission) => sum + mission.tasks.length, 0),
+    totalArtifacts: missions.reduce((sum, mission) => sum + mission.rewardArtifacts.length, 0),
+    totalCompetencies: missions.reduce((sum, mission) => sum + mission.rewardCompetencies.length, 0),
+    totalSkills: missions.reduce((sum, mission) => sum + mission.rewardSkills.length, 0),
   };
 
-  const recentUsers = [
-    {
-      id: "user-1",
-      name: "Alex Morgan",
-      email: "alex.morgan@company.com",
-      rank: "Navigator",
-      joinDate: "2024-03-10",
-      lastActive: "2 hours ago",
-      status: "active",
-    },
-    {
-      id: "user-2",
-      name: "Sarah Chen",
-      email: "sarah.chen@company.com",
-      rank: "Commander",
-      joinDate: "2024-02-15",
-      lastActive: "1 day ago",
-      status: "active",
-    },
-    {
-      id: "user-3",
-      name: "Mike Johnson",
-      email: "mike.johnson@company.com",
-      rank: "Cadet",
-      joinDate: "2024-03-12",
-      lastActive: "3 days ago",
-      status: "inactive",
-    },
-  ];
+  // Получаем последние миссии для отображения
+  const recentMissions = missions.slice(0, 3).map(mission => ({
+    id: mission.id,
+    title: mission.title,
+    description: mission.description,
+    rewardXp: mission.rewardXp,
+    rewardMana: mission.rewardMana,
+    category: mission.category,
+    tasksCount: mission.tasks.length,
+    artifactsCount: mission.rewardArtifacts.length,
+    competenciesCount: mission.rewardCompetencies.length,
+    skillsCount: mission.rewardSkills.length,
+  }));
 
   return (
     <TabsContent value="dashboard" className="space-y-6">
@@ -61,8 +85,8 @@ export function AdminDashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Card className="card-enhanced">
             <CardContent className="p-6 text-center">
-              <div className="w-12 h-12 bg-primary/10 rounded-lg mx-auto flex items-center justify-center mb-3">
-                <Users className="w-6 h-6 text-primary" />
+              <div className="w-12 h-12 bg-blue-500/10 rounded-lg mx-auto flex items-center justify-center mb-3">
+                <Users className="w-6 h-6 text-blue-500" />
               </div>
               <div className="text-2xl font-bold text-foreground mb-1">
                 {dashboardStats.totalUsers.toLocaleString()}
@@ -75,8 +99,8 @@ export function AdminDashboard() {
 
           <Card className="card-enhanced">
             <CardContent className="p-6 text-center">
-              <div className="w-12 h-12 bg-info/10 rounded-lg mx-auto flex items-center justify-center mb-3">
-                <Target className="w-6 h-6 text-info" />
+              <div className="w-12 h-12 bg-green-500/10 rounded-lg mx-auto flex items-center justify-center mb-3">
+                <Target className="w-6 h-6 text-green-500" />
               </div>
               <div className="text-2xl font-bold text-foreground mb-1">
                 {dashboardStats.activeMissions}
@@ -89,8 +113,8 @@ export function AdminDashboard() {
 
           <Card className="card-enhanced">
             <CardContent className="p-6 text-center">
-              <div className="w-12 h-12 bg-success/10 rounded-lg mx-auto flex items-center justify-center mb-3">
-                <BarChart3 className="w-6 h-6 text-success" />
+              <div className="w-12 h-12 bg-purple-500/10 rounded-lg mx-auto flex items-center justify-center mb-3">
+                <TrendingUp className="w-6 h-6 text-purple-500" />
               </div>
               <div className="text-2xl font-bold text-foreground mb-1">
                 {dashboardStats.completionRate}%
@@ -103,8 +127,8 @@ export function AdminDashboard() {
 
           <Card className="card-enhanced">
             <CardContent className="p-6 text-center">
-              <div className="w-12 h-12 bg-rewards-amber/10 rounded-lg mx-auto flex items-center justify-center mb-3">
-                <Settings className="w-6 h-6 text-rewards-amber" />
+              <div className="w-12 h-12 bg-amber-500/10 rounded-lg mx-auto flex items-center justify-center mb-3">
+                <Zap className="w-6 h-6 text-amber-500" />
               </div>
               <div className="text-2xl font-bold text-foreground mb-1">
                 {dashboardStats.totalMana.toLocaleString()}
@@ -114,50 +138,125 @@ export function AdminDashboard() {
           </Card>
         </div>
 
-        {/* Recent Activity */}
+        {/* Additional Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <Card className="card-enhanced">
+            <CardContent className="p-6 text-center">
+              <div className="w-12 h-12 bg-orange-500/10 rounded-lg mx-auto flex items-center justify-center mb-3">
+                <Award className="w-6 h-6 text-orange-500" />
+              </div>
+              <div className="text-2xl font-bold text-foreground mb-1">
+                {dashboardStats.totalXp.toLocaleString()}
+              </div>
+              <div className="text-sm text-muted-foreground">Всего опыта</div>
+            </CardContent>
+          </Card>
+
+          <Card className="card-enhanced">
+            <CardContent className="p-6 text-center">
+              <div className="w-12 h-12 bg-indigo-500/10 rounded-lg mx-auto flex items-center justify-center mb-3">
+                <BookOpen className="w-6 h-6 text-indigo-500" />
+              </div>
+              <div className="text-2xl font-bold text-foreground mb-1">
+                {dashboardStats.totalTasks}
+              </div>
+              <div className="text-sm text-muted-foreground">Всего заданий</div>
+            </CardContent>
+          </Card>
+
+          <Card className="card-enhanced">
+            <CardContent className="p-6 text-center">
+              <div className="w-12 h-12 bg-pink-500/10 rounded-lg mx-auto flex items-center justify-center mb-3">
+                <Trophy className="w-6 h-6 text-pink-500" />
+              </div>
+              <div className="text-2xl font-bold text-foreground mb-1">
+                {dashboardStats.totalArtifacts + dashboardStats.totalCompetencies + dashboardStats.totalSkills}
+              </div>
+              <div className="text-sm text-muted-foreground">Всего наград</div>
+            </CardContent>
+          </Card>
+
+          <Card className="card-enhanced">
+            <CardContent className="p-6 text-center">
+              <div className="w-12 h-12 bg-teal-500/10 rounded-lg mx-auto flex items-center justify-center mb-3">
+                <Calendar className="w-6 h-6 text-teal-500" />
+              </div>
+              <div className="text-2xl font-bold text-foreground mb-1">
+                {seasons.length}
+              </div>
+              <div className="text-sm text-muted-foreground">Сезонов</div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Recent Missions */}
         <Card className="card-enhanced">
           <CardHeader>
-            <CardTitle>Последняя активность пользователей</CardTitle>
+            <CardTitle>Последние миссии</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {recentUsers.map((user) => (
-                <div
-                  key={user.id}
-                  className="flex items-center justify-between p-4 rounded-lg border border-border"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 bg-gradient-to-br from-primary to-info rounded-full flex items-center justify-center">
-                      <span className="text-white font-semibold text-sm">
-                        {user.name.charAt(0)}
-                      </span>
+            {isLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <div className="text-muted-foreground">Загрузка миссий...</div>
+              </div>
+            ) : recentMissions.length > 0 ? (
+              <div className="space-y-4">
+                {recentMissions.map((mission) => (
+                  <div
+                    key={mission.id}
+                    className="flex items-center justify-between p-4 rounded-lg border border-border"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-blue-500 rounded-lg flex items-center justify-center">
+                        <Target className="w-6 h-6 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="font-medium">{mission.title}</h4>
+                        <p className="text-sm text-muted-foreground line-clamp-2">
+                          {mission.description}
+                        </p>
+                        <div className="flex items-center gap-4 mt-2">
+                          <Badge variant="outline" className="text-xs">
+                            {mission.category}
+                          </Badge>
+                          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                            <Target className="w-3 h-3" />
+                            {mission.tasksCount} заданий
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <div>
-                      <h4 className="font-medium">{user.name}</h4>
-                      <p className="text-sm text-muted-foreground">
-                        {user.email}
-                      </p>
+                    <div className="flex items-center gap-6">
+                      <div className="text-center">
+                        <div className="flex items-center gap-1 text-sm font-medium text-orange-600">
+                          <Award className="w-4 h-4" />
+                          {mission.rewardXp} XP
+                        </div>
+                        <div className="text-xs text-muted-foreground">Опыт</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="flex items-center gap-1 text-sm font-medium text-amber-600">
+                          <Zap className="w-4 h-4" />
+                          {mission.rewardMana} маны
+                        </div>
+                        <div className="text-xs text-muted-foreground">Мана</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="flex items-center gap-1 text-sm font-medium text-pink-600">
+                          <Trophy className="w-4 h-4" />
+                          {mission.artifactsCount + mission.competenciesCount + mission.skillsCount}
+                        </div>
+                        <div className="text-xs text-muted-foreground">Наград</div>
+                      </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-4">
-                    <Badge variant="outline" className="text-xs">
-                      {user.rank}
-                    </Badge>
-                    <span className="text-sm text-muted-foreground">
-                      {user.lastActive}
-                    </span>
-                    <Badge
-                      variant={
-                        user.status === "active" ? "default" : "secondary"
-                      }
-                      className="text-xs"
-                    >
-                      {user.status}
-                    </Badge>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <div className="text-muted-foreground">Миссии не найдены</div>
+              </div>
+            )}
           </CardContent>
         </Card>
     </TabsContent>

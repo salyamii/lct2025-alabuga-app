@@ -92,7 +92,7 @@ export function AdminSeason({ handleCreateSeason, handleEditSeason, handleDelete
                 <div className="text-muted-foreground">Загрузка сезонов...</div>
               </div>
             ) : (
-              <div className="space-y-4">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {seasons.map((season) => {
                   const status = getSeasonStatus(season.startDate, season.endDate);
                   const statusLabel = getStatusLabel(status);
