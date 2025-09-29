@@ -1,7 +1,7 @@
 import { TabsContent } from "@radix-ui/react-tabs";
 import { Button } from "../../components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "../../components/ui/card";
-import { Plus, Search, Link2, Target, Zap, Award, Filter, Eye, Edit, Trash2, Clock, Users, Star } from "lucide-react";
+import { Plus, Search, Link2, Target, Zap, Award, Filter, Edit, Trash2, Clock, Users, Star } from "lucide-react";
 import { Input } from "../../components/ui/input";
 import { Badge } from "../../components/ui/badge";
 import { Progress } from "../../components/ui/progress";
@@ -10,30 +10,39 @@ import { useMissionStore } from "../../stores/useMissionStore";
 import { useMissionChainStore } from "../../stores/useMissionChainStore";
 import { useSeasonStore } from "../../stores/useSeasonStore";
 import { Mission } from "../../domain/mission";
+import { MissionChain } from "../../domain/missionChain";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "../../components/ui/alert-dialog";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../../components/ui/tooltip";
 
 interface AdminMissionProps {
   handleCreateMission: () => void;
   handleEditMission: (mission: any) => void;
-  handleDeleteMission: (mission: any) => void; // NEW
-  handleCreateChain: () => void;
-  setSelectedChain: (chain: any) => void;
+  handleDeleteMission: (mission: any) => void;
   setSelectedMission: (mission: any) => void;
-  setChainCreationOpen: (open: boolean) => void;
+  handleCreateChain: () => void;
+  handleEditChain: (chain: any) => void;
+  handleDeleteChain: (chain: any) => void;
+  setSelectedChain: (chain: any) => void;
 }
 
 export function AdminMission({
   handleCreateMission,
   handleEditMission,
   handleDeleteMission,
-  handleCreateChain,
-  setSelectedChain,
   setSelectedMission,
-  setChainCreationOpen,
+  handleCreateChain,
+  handleEditChain,
+  handleDeleteChain,
+  setSelectedChain,
 }: AdminMissionProps) {
   const { missions, fetchMissions } = useMissionStore();
   const { missionChains, fetchMissionChains } = useMissionChainStore();
   const { currentSeason } = useSeasonStore();
   const [isLoading, setIsLoading] = useState(true);
+  
+  // Состояние для диалога удаления цепочки
+  const [chainDeleteOpen, setChainDeleteOpen] = useState(false);
+  const [chainToDelete, setChainToDelete] = useState<MissionChain | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
@@ -106,196 +115,67 @@ export function AdminMission({
   //   },
   // ];
 
-  // Mock data for mission chains
-  const chains = [
-    {
-      id: "chain-1",
-      title: "React Mastery Journey",
-      description:
-        "Complete step-by-step progression through React fundamentals to advanced patterns",
-      category: "Frontend",
-      season: "Delta Constellation",
-      isLinear: true,
-      autoUnlock: true,
-      requiresSequentialCompletion: true,
-      status: "active",
-      createdDate: "2024-03-01",
-      participants: 234,
-      completionRate: 82,
-      totalMissions: 4,
-      currentMissionIndex: 2, // 0-based index
-      estimatedTotalDuration: "8 hours",
-      completionRewards: {
-        xp: 1500,
-        mana: 2000,
-        artifacts: ["React Master"],
-        badges: ["Frontend Specialist"],
-      },
-      missions: [
-        {
-          id: "chain-1-mission-1",
-          title: "React Fundamentals",
-          description: "Learn JSX, components, and props",
-          difficulty: "Beginner",
-          type: "Individual",
-          status: "completed",
-          estimatedDuration: "2 hours",
-          xpReward: 200,
-          manaReward: 300,
-        },
-        {
-          id: "chain-1-mission-2",
-          title: "State Management Basics",
-          description: "Master useState and useEffect hooks",
-          difficulty: "Intermediate",
-          type: "Individual",
-          status: "completed",
-          estimatedDuration: "2 hours",
-          xpReward: 300,
-          manaReward: 450,
-        },
-        {
-          id: "chain-1-mission-3",
-          title: "Component Architecture",
-          description: "Build reusable component systems",
-          difficulty: "Advanced",
-          type: "Group",
-          status: "in_progress",
-          estimatedDuration: "2 hours",
-          xpReward: 400,
-          manaReward: 600,
-        },
-        {
-          id: "chain-1-mission-4",
-          title: "Advanced React Patterns",
-          description:
-            "Master context, custom hooks, and performance optimization",
-          difficulty: "Expert",
-          type: "Individual",
-          status: "locked",
-          estimatedDuration: "2 hours",
-          xpReward: 500,
-          manaReward: 750,
-        },
-      ],
-    },
-    {
-      id: "chain-2",
-      title: "Full-Stack Development Path",
-      description: "End-to-end web development from frontend to deployment",
-      category: "Full-Stack",
-      season: "Delta Constellation",
-      isLinear: true,
-      autoUnlock: false,
-      requiresSequentialCompletion: true,
-      status: "draft",
-      createdDate: "2024-03-05",
-      participants: 0,
-      completionRate: 0,
-      totalMissions: 6,
-      currentMissionIndex: 0,
-      estimatedTotalDuration: "15 hours",
-      completionRewards: {
-        xp: 2500,
-        mana: 3500,
-        artifacts: ["Full-Stack Developer", "System Architect"],
-        badges: ["Complete Developer"],
-      },
-      missions: [
-        {
-          id: "chain-2-mission-1",
-          title: "Frontend Foundations",
-          description: "HTML, CSS, and JavaScript essentials",
-          difficulty: "Beginner",
-          type: "Individual",
-          status: "todo",
-          estimatedDuration: "3 hours",
-          xpReward: 250,
-          manaReward: 400,
-        },
-        {
-          id: "chain-2-mission-2",
-          title: "React Framework",
-          description: "Component-based development",
-          difficulty: "Intermediate",
-          type: "Individual",
-          status: "locked",
-          estimatedDuration: "3 hours",
-          xpReward: 350,
-          manaReward: 500,
-        },
-        {
-          id: "chain-2-mission-3",
-          title: "Backend API Development",
-          description: "RESTful APIs and database integration",
-          difficulty: "Advanced",
-          type: "Individual",
-          status: "locked",
-          estimatedDuration: "3 hours",
-          xpReward: 450,
-          manaReward: 650,
-        },
-      ],
-    },
-    {
-      id: "chain-3",
-      title: "Leadership Excellence Journey",
-      description: "Develop essential leadership and team management skills",
-      category: "Leadership",
-      season: "Delta Constellation",
-      isLinear: false, // Non-linear chain example
-      autoUnlock: true,
-      requiresSequentialCompletion: false,
-      status: "active",
-      createdDate: "2024-02-28",
-      participants: 89,
-      completionRate: 67,
-      totalMissions: 3,
-      currentMissionIndex: 1,
-      estimatedTotalDuration: "6 hours",
-      completionRewards: {
-        xp: 1200,
-        mana: 1600,
-        artifacts: ["Leadership Badge"],
-        badges: ["Team Leader"],
-      },
-      missions: [
-        {
-          id: "chain-3-mission-1",
-          title: "Communication Fundamentals",
-          description: "Effective team communication strategies",
-          difficulty: "Intermediate",
-          type: "Group",
-          status: "completed",
-          estimatedDuration: "2 hours",
-          xpReward: 300,
-          manaReward: 400,
-        },
-        {
-          id: "chain-3-mission-2",
-          title: "Project Management",
-          description: "Agile methodologies and team coordination",
-          difficulty: "Advanced",
-          type: "Group",
-          status: "in_progress",
-          estimatedDuration: "2 hours",
-          xpReward: 400,
-          manaReward: 600,
-        },
-        {
-          id: "chain-3-mission-3",
-          title: "Mentorship Skills",
-          description: "Guide and develop junior team members",
-          difficulty: "Expert",
-          type: "Event",
-          status: "locked",
-          estimatedDuration: "2 hours",
-          xpReward: 500,
-          manaReward: 750,
-        },
-      ],
-    },
-  ];
+  // Функция для получения статуса цепочки миссий
+  const getChainStatus = (chain: any) => {
+    if (chain.missions.length === 0) return "draft";
+    return "active";
+  };
+
+  // Функция для получения цвета статуса цепочки
+  const getChainStatusColor = (status: string) => {
+    switch (status) {
+      case "active": return "bg-green-500";
+      case "draft": return "bg-gray-500";
+      default: return "bg-gray-500";
+    }
+  };
+
+  // Функция для получения текста статуса цепочки
+  const getChainStatusText = (status: string) => {
+    switch (status) {
+      case "active": return "Активная";
+      case "draft": return "Черновик";
+      default: return "Неизвестно";
+    }
+  };
+
+  // Функции для работы с цепочками миссий
+  const handleCreateChainClick = () => {
+    handleCreateChain();
+  };
+
+  const handleEditChainClick = (chain: MissionChain) => {
+    setSelectedChain(chain);
+    handleEditChain(chain);
+  };
+
+  const handleDeleteChainClick = (chain: MissionChain) => {
+    setChainToDelete(chain);
+    setChainDeleteOpen(true);
+  };
+
+  const handleDeleteChainConfirm = async () => {
+    if (!chainToDelete) return;
+    
+    try {
+      await handleDeleteChain(chainToDelete);
+      setChainDeleteOpen(false);
+      setChainToDelete(null);
+    } catch (error) {
+      console.error('Ошибка при удалении цепочки:', error);
+    }
+  };
+
+  // Функция для получения зависимостей миссии
+  const getMissionDependencies = (missionId: number, chain: MissionChain) => {
+    return chain.dependencies
+      .filter(dep => dep.missionId === missionId)
+      .map(dep => {
+        const prerequisiteMission = missions.find(m => m.id === dep.prerequisiteMissionId);
+        return prerequisiteMission?.title || `Миссия #${dep.prerequisiteMissionId}`;
+      });
+  };
+
 
   const [missionsTab, setMissionsTab] = useState("missions");
 
@@ -479,7 +359,7 @@ export function AdminMission({
                     </Button>
                     <Button
                       className="bg-primary hover:bg-primary-600 text-white"
-                      onClick={handleCreateChain}
+                      onClick={handleCreateChainClick}
                     >
                       <Plus className="w-4 h-4 mr-2" />
                       Создать цепь
@@ -487,220 +367,246 @@ export function AdminMission({
                   </div>
                 </div>
 
-                <div className="space-y-4">
-                  {chains.map((chain) => (
-                    <div key={chain.id} className="admin-card p-4 rounded-lg">
-                      <div className="flex items-start justify-between mb-4">
-                        <div className="flex items-start gap-4">
-                          <div className="w-12 h-12 bg-gradient-to-br from-info to-soft-cyan rounded-lg flex items-center justify-center">
-                            <Link2 className="w-6 h-6 text-white" />
-                          </div>
-                          <div className="space-y-2">
-                            <div>
-                              <div className="flex items-center gap-3 mb-1">
-                                <h4 className="font-semibold text-base">
-                                  {chain.title}
-                                </h4>
-                                <Badge
-                                  variant={
-                                    chain.status === "active"
-                                      ? "default"
-                                      : chain.status === "draft"
-                                      ? "outline"
-                                      : "secondary"
-                                  }
-                                  className="text-xs"
-                                >
-                                  {chain.status}
-                                </Badge>
-                                <Badge variant="outline" className="text-xs">
-                                  {chain.category}
-                                </Badge>
-                              </div>
-                              <p className="text-sm text-muted-foreground mb-2">
-                                {chain.description}
-                              </p>
-                              <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                                <span>{chain.season}</span>
-                                <span>•</span>
-                                <span>{chain.totalMissions} миссий</span>
-                                <span>•</span>
-                                <span>{chain.estimatedTotalDuration}</span>
-                                <span>•</span>
-                                <span>
-                                  {chain.isLinear ? "Линейная" : "Не линейная"}
-                                </span>
-                              </div>
-                            </div>
-
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                              <div>
-                                <span className="text-muted-foreground">
-                                  Участники:
-                                </span>
-                                <span className="ml-1 font-medium">
-                                  {chain.participants.toLocaleString()}
-                                </span>
-                              </div>
-                              <div>
-                                <span className="text-muted-foreground">
-                                  Завершение:
-                                </span>
-                                <span className="ml-1 font-medium">
-                                  {chain.completionRate}%
-                                </span>
-                              </div>
-                              <div>
-                                <span className="text-muted-foreground">
-                                  Прогресс:
-                                </span>
-                                <span className="ml-1 font-medium">
-                                  Миссия {chain.currentMissionIndex + 1}/
-                                  {chain.totalMissions}
-                                </span>
-                              </div>
-                              <div>
-                                <span className="text-muted-foreground">
-                                  Создано:
-                                </span>
-                                <span className="ml-1 font-medium">
-                                  {chain.createdDate}
-                                </span>
-                              </div>
-                            </div>
-
-                            {/* Chain Configuration Indicators */}
-                            <div className="flex items-center gap-2 flex-wrap">
-                              {chain.autoUnlock && (
-                                <Badge
-                                  variant="secondary"
-                                  className="text-xs bg-success/10 text-success border-success/20"
-                                >
-                                  <Zap className="w-3 h-3 mr-1" />
-                                  Авто-разблокировка
-                                </Badge>
-                              )}
-                              {chain.requiresSequentialCompletion && (
-                                <Badge
-                                  variant="secondary"
-                                  className="text-xs bg-info/10 text-info border-info/20"
-                                >
-                                  Последовательная
-                                </Badge>
-                              )}
-                              {chain.isLinear && (
-                                <Badge
-                                  variant="secondary"
-                                  className="text-xs bg-primary/10 text-primary border-primary/20"
-                                >
-                                  Линейный путь
-                                </Badge>
-                              )}
-                            </div>
-
-                            {/* Progress Bar */}
-                            <div className="space-y-1">
-                              <div className="flex justify-between text-xs text-muted-foreground">
-                                <span>Прогресс цепи</span>
-                                <span>
-                                  {Math.round(
-                                    (chain.currentMissionIndex /
-                                      chain.totalMissions) *
-                                      100
-                                  )}
-                                  %
-                                </span>
-                              </div>
-                              <Progress
-                                value={
-                                  (chain.currentMissionIndex /
-                                    chain.totalMissions) *
-                                  100
-                                }
-                                className="h-2"
-                              />
-                            </div>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                              setSelectedChain(chain);
-                              // Could open chain detail view here
-                            }}
-                          >
-                            <Eye className="w-4 h-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                              setSelectedChain(chain);
-                              setChainCreationOpen(true);
-                            }}
-                          >
-                            <Edit className="w-4 h-4" />
-                          </Button>
-                          <Button 
-                            variant="ghost" 
-                            size="sm"
-                            className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </div>
-
-                      {/* Mission Sequence Preview */}
-                      <div className="border-t pt-4">
-                        <h5 className="text-sm font-medium mb-3 flex items-center gap-2">
-                          <Target className="w-4 h-4" />
-                          Последовательность миссий
-                        </h5>
-                        <div className="flex items-center gap-2 overflow-x-auto pb-2">
-                          {chain.missions.map((mission, index) => (
-                            <div
-                              key={mission.id}
-                              className="flex items-center gap-2 shrink-0"
-                            >
-                              <div
-                                className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-xs min-w-0 ${
-                                  mission.status === "completed"
-                                    ? "bg-success/10 border-success/20 text-success"
-                                    : mission.status === "in_progress"
-                                    ? "bg-info/10 border-info/20 text-info"
-                                    : mission.status === "locked"
-                                    ? "bg-muted border-border text-muted-foreground"
-                                    : "bg-background border-border"
-                                }`}
-                              >
-                                <span className="font-medium">{index + 1}</span>
-                                <span className="truncate max-w-24">
-                                  {mission.title}
-                                </span>
-                                <Badge
-                                  variant="outline"
-                                  className="text-xs px-1 py-0"
-                                >
-                                  {mission.difficulty[0]}
-                                </Badge>
-                              </div>
-                              {index < chain.missions.length - 1 && (
-                                <div className="text-muted-foreground">→</div>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                      </div>
+                {isLoading ? (
+                  <div className="flex items-center justify-center py-8">
+                    <div className="text-muted-foreground">Загрузка цепочек миссий...</div>
+                  </div>
+                ) : missionChains.length === 0 ? (
+                  <div className="text-center py-8">
+                    <div className="text-muted-foreground mb-4">
+                      Цепочки миссий не найдены
                     </div>
-                  ))}
-                </div>
+                    <Button onClick={handleCreateChainClick}>
+                      <Plus className="w-4 h-4 mr-2" />
+                      Создать первую цепочку
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {missionChains.map((chain) => {
+                          const status = getChainStatus(chain);
+                          const statusText = getChainStatusText(status);
+                          const statusColor = getChainStatusColor(status);
+                          const orderedMissions = chain.getMissionsInOrder();
+                          
+                          return (
+                            <div key={chain.id} className="admin-card p-4 rounded-lg">
+                              <div className="flex items-start justify-between mb-4">
+                                <div className="flex items-start gap-4">
+                                  <div className="w-12 h-12 bg-gradient-to-br from-info to-soft-cyan rounded-lg flex items-center justify-center">
+                                    <Link2 className="w-6 h-6 text-white" />
+                                  </div>
+                                  <div className="space-y-2">
+                                    <div>
+                                      <div className="flex items-center gap-3 mb-1">
+                                        <h4 className="font-semibold text-base">
+                                          {chain.name}
+                                        </h4>
+                                        <Badge
+                                          variant={
+                                            status === "active"
+                                              ? "default"
+                                              : "outline"
+                                          }
+                                          className="text-xs"
+                                        >
+                                          {statusText}
+                                        </Badge>
+                                        <div className={`w-2 h-2 rounded-full ${statusColor}`} title={statusText} />
+                                      </div>
+                                      <p className="text-sm text-muted-foreground mb-2">
+                                        {chain.description}
+                                      </p>
+                                      <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                                        <span>{currentSeason?.name || "Без сезона"}</span>
+                                        <span>•</span>
+                                        <span>{orderedMissions.length} миссий</span>
+                                        <span>•</span>
+                                        <span>{chain.rewardXp} XP</span>
+                                        <span>•</span>
+                                        <span>{chain.rewardMana} маны</span>
+                                      </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                                      <div>
+                                        <span className="text-muted-foreground">
+                                          Награда XP:
+                                        </span>
+                                        <span className="ml-1 font-medium">
+                                          {chain.rewardXp}
+                                        </span>
+                                      </div>
+                                      <div>
+                                        <span className="text-muted-foreground">
+                                          Награда мана:
+                                        </span>
+                                        <span className="ml-1 font-medium">
+                                          {chain.rewardMana}
+                                        </span>
+                                      </div>
+                                      <div>
+                                        <span className="text-muted-foreground">
+                                          Миссий:
+                                        </span>
+                                        <span className="ml-1 font-medium">
+                                          {orderedMissions.length}
+                                        </span>
+                                      </div>
+                                      <div>
+                                        <span className="text-muted-foreground">
+                                          ID:
+                                        </span>
+                                        <span className="ml-1 font-medium">
+                                          #{chain.id}
+                                        </span>
+                                      </div>
+                                    </div>
+
+                                    {/* Chain Configuration Indicators */}
+                                    <div className="flex items-center gap-2 flex-wrap">
+                                      {chain.dependencies.length > 0 && (
+                                        <Badge
+                                          variant="secondary"
+                                          className="text-xs bg-info/10 text-info border-info/20"
+                                        >
+                                          <Link2 className="w-3 h-3 mr-1" />
+                                          Зависимости
+                                        </Badge>
+                                      )}
+                                      {chain.missionOrders.length > 0 && (
+                                        <Badge
+                                          variant="secondary"
+                                          className="text-xs bg-primary/10 text-primary border-primary/20"
+                                        >
+                                          Упорядоченная
+                                        </Badge>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                            <div className="flex items-center gap-2">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleEditChainClick(chain)}
+                              >
+                                <Edit className="w-4 h-4" />
+                              </Button>
+                              <Button 
+                                variant="ghost" 
+                                size="sm"
+                                onClick={() => handleDeleteChainClick(chain)}
+                                className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+                              </div>
+
+                              {/* Mission Sequence Preview */}
+                              {orderedMissions.length > 0 && (
+                                <div className="border-t pt-4">
+                                  <h5 className="text-sm font-medium mb-3 flex items-center gap-2">
+                                    <Target className="w-4 h-4" />
+                                    Последовательность миссий
+                                  </h5>
+                                  <TooltipProvider>
+                                    <div className="flex items-center gap-2 overflow-x-auto pb-2">
+                                      {orderedMissions.map((mission, index) => {
+                                        const dependencies = getMissionDependencies(mission.id, chain);
+                                        return (
+                                          <div
+                                            key={mission.id}
+                                            className="flex items-center gap-2 shrink-0"
+                                          >
+                                            <Tooltip>
+                                              <TooltipTrigger asChild>
+                                                <div className="flex items-center gap-2 px-3 py-2 rounded-lg border text-xs min-w-0 bg-background border-border cursor-help">
+                                                  <span className="font-medium">{index + 1}</span>
+                                                  <span className="truncate max-w-24">
+                                                    {mission.title}
+                                                  </span>
+                                                  <Badge
+                                                    variant="outline"
+                                                    className="text-xs px-1 py-0"
+                                                  >
+                                                    {mission.category}
+                                                  </Badge>
+                                                  {dependencies.length > 0 && (
+                                                    <Link2 className="w-3 h-3 text-muted-foreground" />
+                                                  )}
+                                                </div>
+                                              </TooltipTrigger>
+                                              <TooltipContent className="bg-slate-900/95 border border-slate-600/60 text-slate-100 shadow-2xl backdrop-blur-sm">
+                                                <div className="max-w-xs">
+                                                  <div className="font-semibold mb-2 text-slate-50 text-sm">{mission.title}</div>
+                                                  {dependencies.length > 0 ? (
+                                                    <div>
+                                                      <div className="text-xs text-slate-300 mb-2 font-medium flex items-center gap-1">
+                                                        <Link2 className="w-3 h-3" />
+                                                        Зависимости:
+                                                      </div>
+                                                      <ul className="text-xs space-y-1.5">
+                                                        {dependencies.map((dep, depIndex) => (
+                                                          <li key={depIndex} className="flex items-center gap-2 text-slate-200">
+                                                            <span className="w-1.5 h-1.5 bg-blue-400 rounded-full flex-shrink-0" />
+                                                            <span className="truncate">{dep}</span>
+                                                          </li>
+                                                        ))}
+                                                      </ul>
+                                                    </div>
+                                                  ) : (
+                                                    <div className="text-xs text-slate-400 flex items-center gap-1">
+                                                      <span className="w-1.5 h-1.5 bg-slate-500 rounded-full" />
+                                                      Нет зависимостей
+                                                    </div>
+                                                  )}
+                                                </div>
+                                              </TooltipContent>
+                                            </Tooltip>
+                                            {index < orderedMissions.length - 1 && (
+                                              <div className="text-muted-foreground">→</div>
+                                            )}
+                                          </div>
+                                        );
+                                      })}
+                                    </div>
+                                  </TooltipProvider>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                  </div>
+                )}
               </div>
             )}
           </CardContent>
         </Card>
+
+
+        {/* Диалог подтверждения удаления цепочки */}
+        <AlertDialog open={chainDeleteOpen} onOpenChange={setChainDeleteOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Удалить цепочку миссий</AlertDialogTitle>
+              <AlertDialogDescription>
+                Вы уверены, что хотите удалить цепочку "{chainToDelete?.name}"? 
+                Это действие нельзя отменить.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Отмена</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleDeleteChainConfirm}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                Удалить
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
     </TabsContent>
   );
 }

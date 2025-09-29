@@ -20,6 +20,7 @@ interface OverlayState {
   rewardCreationOpen: boolean;
   storeManagementOpen: boolean;
   chainCreationOpen: boolean;
+  chainEditOpen: boolean;
   seasonCreationOpen: boolean;
   seasonEditOpen: boolean;
   
@@ -72,6 +73,8 @@ interface OverlayState {
   closeStoreManagement: () => void;
   openChainCreation: (chain?: any) => void;
   closeChainCreation: () => void;
+  openChainEdit: (chain?: any) => void;
+  closeChainEdit: () => void;
   openSeasonCreation: () => void;
   closeSeasonCreation: () => void;
   openSeasonEdit: (season?: any) => void;
@@ -111,6 +114,7 @@ export const useOverlayStore = create<OverlayState>()((set, get) => ({
   rewardCreationOpen: false,
   storeManagementOpen: false,
   chainCreationOpen: false,
+  chainEditOpen: false,
   seasonCreationOpen: false,
   seasonEditOpen: false,
   
@@ -227,6 +231,15 @@ export const useOverlayStore = create<OverlayState>()((set, get) => ({
     selectedChain: null 
   }),
   
+  openChainEdit: (chain = null) => set({ 
+    chainEditOpen: true, 
+    selectedChain: chain 
+  }),
+  closeChainEdit: () => set({ 
+    chainEditOpen: false, 
+    selectedChain: null 
+  }),
+  
   openSeasonCreation: () => set({ seasonCreationOpen: true }),
   closeSeasonCreation: () => set({ seasonCreationOpen: false }),
   
@@ -259,6 +272,7 @@ export const useOverlayStore = create<OverlayState>()((set, get) => ({
     rewardCreationOpen: false,
     storeManagementOpen: false,
     chainCreationOpen: false,
+    chainEditOpen: false,
     seasonCreationOpen: false,
     seasonEditOpen: false,
     selectedChain: null,

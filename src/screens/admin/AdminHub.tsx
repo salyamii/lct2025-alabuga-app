@@ -29,10 +29,13 @@ import { StoreItemCreationDrawer } from "./StoreItemCreationDrawer";
 import { StoreItemEditDrawer } from "./StoreItemEditDrawer";
 import { SeasonCreationDrawer } from "./SeasonCreationDrawer";
 import { SeasonEditDrawer } from "./SeasonEditDrawer";
+import { MissionChainCreationDrawer } from "./MissionChainCreationDrawer";
+import { MissionChainEditDrawer } from "./MissionChainEditDrawer";
 import { ArrowLeft, Shield } from "lucide-react";
 import { useOverlayStore } from "../../stores/useOverlayStore";
 import { useSeasonStore } from "../../stores/useSeasonStore";
 import { useMissionStore } from "../../stores/useMissionStore";
+import { useMissionChainStore } from "../../stores/useMissionChainStore";
 import { useCompetencyStore } from "../../stores/useCompetencyStore";
 import { useRankStore } from "../../stores/useRankStore";
 import { useSkillStore } from "../../stores/useSkillStore"; // NEW
@@ -71,6 +74,7 @@ export function AdminScreen({ onBack, onUserDetailOpen }: AdminScreenProps) {
     rewardCreationOpen,
     storeManagementOpen,
     chainCreationOpen,
+    chainEditOpen,
     seasonCreationOpen,
     seasonEditOpen,
     selectedChain,
@@ -120,6 +124,8 @@ export function AdminScreen({ onBack, onUserDetailOpen }: AdminScreenProps) {
     closeStoreManagement,
     openChainCreation,
     closeChainCreation,
+    openChainEdit,
+    closeChainEdit,
     openSeasonCreation,
     closeSeasonCreation,
     openSeasonEdit,
@@ -137,6 +143,7 @@ export function AdminScreen({ onBack, onUserDetailOpen }: AdminScreenProps) {
 
   const { deleteSeason } = useSeasonStore();
   const { deleteMission } = useMissionStore();
+  const { deleteMissionChain } = useMissionChainStore();
   const { deleteCompetency } = useCompetencyStore();
   const { deleteRank } = useRankStore();
   const { deleteSkill } = useSkillStore(); // NEW
@@ -170,6 +177,30 @@ export function AdminScreen({ onBack, onUserDetailOpen }: AdminScreenProps) {
     } catch (error) {
       console.error("Ошибка при удалении миссии:", error);
       toast.error("Ошибка при удалении миссии. Попробуйте еще раз.");
+    }
+  };
+
+  // Обработчики для цепочек миссий
+  const handleCreateChain = () => {
+    openChainCreation();
+  };
+
+  const handleEditChain = (chain: any) => {
+    setSelectedChain(chain);
+    openChainEdit(chain);
+  };
+
+  const handleDeleteChain = async (chain: any) => {
+    if (!chain) return;
+
+    try {
+      await deleteMissionChain(chain.id);
+      toast.success("Цепочка миссий успешно удалена! 🗑️", {
+        description: `"${chain.name}" была удалена из системы`,
+      });
+    } catch (error) {
+      console.error("Ошибка при удалении цепочки:", error);
+      toast.error("Ошибка при удалении цепочки. Попробуйте еще раз.");
     }
   };
 
@@ -329,11 +360,12 @@ export function AdminScreen({ onBack, onUserDetailOpen }: AdminScreenProps) {
               <AdminMission
                 handleCreateMission={openMissionCreation}
                 handleEditMission={(mission) => openMissionEdit(mission)}
-                handleDeleteMission={handleDeleteMission} // NEW
-                handleCreateChain={() => openChainCreation()}
-                setSelectedChain={setSelectedChain}
+                handleDeleteMission={handleDeleteMission}
                 setSelectedMission={setSelectedMission}
-                setChainCreationOpen={(open) => open ? openChainCreation() : closeChainCreation()}
+                handleCreateChain={handleCreateChain}
+                handleEditChain={handleEditChain}
+                handleDeleteChain={handleDeleteChain}
+                setSelectedChain={setSelectedChain}
               />
           
           <AdminSeason 
@@ -407,7 +439,12 @@ export function AdminScreen({ onBack, onUserDetailOpen }: AdminScreenProps) {
       <MissionChainCreationDrawer
         open={chainCreationOpen}
         onOpenChange={(open) => open ? openChainCreation() : closeChainCreation()}
-        editChain={selectedChain}
+      />
+
+      <MissionChainEditDrawer
+        open={chainEditOpen}
+        onOpenChange={(open) => open ? openChainEdit() : closeChainEdit()}
+        chain={selectedChain}
       />
 
       <SeasonCreationDrawer
@@ -469,15 +506,6 @@ const StoreManagementDrawer = ({
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-}) => null;
-const MissionChainCreationDrawer = ({
-  open,
-  onOpenChange,
-  editChain,
-}: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  editChain?: any;
 }) => null;
 
 // Закомментированные данные ветвей и цепей миссий (перенесены из AdminSeason.tsx)
