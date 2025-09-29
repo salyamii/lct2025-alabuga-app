@@ -25,6 +25,8 @@ import { TaskCreationDrawer } from "./TaskCreationDrawer";
 import { TaskEditDrawer } from "./TaskEditDrawer";
 import { ArtifactCreationDrawer } from "./ArtifactCreationDrawer";
 import { ArtifactEditDrawer } from "./ArtifactEditDrawer";
+import { StoreItemCreationDrawer } from "./StoreItemCreationDrawer";
+import { StoreItemEditDrawer } from "./StoreItemEditDrawer";
 import { SeasonCreationDrawer } from "./SeasonCreationDrawer";
 import { SeasonEditDrawer } from "./SeasonEditDrawer";
 import { ArrowLeft, Shield } from "lucide-react";
@@ -36,11 +38,13 @@ import { useRankStore } from "../../stores/useRankStore";
 import { useSkillStore } from "../../stores/useSkillStore"; // NEW
 import { useTaskStore } from "../../stores/useTaskStore";
 import { useArtifactStore } from "../../stores/useArtifactStore";
+import { useStoreStore } from "../../stores/useStoreStore";
 import { Competency } from "../../domain/competency";
 import { Rank } from "../../domain/rank";
 import { Skill } from "../../domain/skill"; // NEW
 import { Task } from "../../domain/task";
 import { Artifact } from "../../domain/artifact";
+import { StoreItem } from "../../domain/store";
 import { toast } from "sonner";
 
 interface AdminScreenProps {
@@ -63,6 +67,8 @@ export function AdminScreen({ onBack, onUserDetailOpen }: AdminScreenProps) {
     taskEditOpen,
     artifactCreationOpen,
     artifactEditOpen,
+    storeItemCreationOpen,
+    storeItemEditOpen,
     badgeCreationOpen,
     rewardCreationOpen,
     storeManagementOpen,
@@ -76,6 +82,7 @@ export function AdminScreen({ onBack, onUserDetailOpen }: AdminScreenProps) {
     selectedSkill, // NEW
     selectedTask,
     selectedArtifact,
+    selectedStoreItem,
     selectedSeason,
     
     // Действия
@@ -103,6 +110,10 @@ export function AdminScreen({ onBack, onUserDetailOpen }: AdminScreenProps) {
     closeArtifactCreation,
     openArtifactEdit,
     closeArtifactEdit,
+    openStoreItemCreation,
+    closeStoreItemCreation,
+    openStoreItemEdit,
+    closeStoreItemEdit,
     openBadgeCreation,
     closeBadgeCreation,
     openRewardCreation,
@@ -122,6 +133,7 @@ export function AdminScreen({ onBack, onUserDetailOpen }: AdminScreenProps) {
     setSelectedSkill, // NEW
     setSelectedTask,
     setSelectedArtifact,
+    setSelectedStoreItem,
     setSelectedSeason,
   } = useOverlayStore();
 
@@ -132,6 +144,7 @@ export function AdminScreen({ onBack, onUserDetailOpen }: AdminScreenProps) {
   const { deleteSkill } = useSkillStore(); // NEW
   const { deleteTask } = useTaskStore();
   const { deleteArtifact } = useArtifactStore();
+  const { deleteItem } = useStoreStore();
 
   // Обработчик удаления сезона
   const handleDeleteSeason = async (season: any) => {
@@ -254,6 +267,30 @@ export function AdminScreen({ onBack, onUserDetailOpen }: AdminScreenProps) {
     openArtifactEdit(artifact);
   };
 
+  // Обработчик удаления товара магазина
+  const handleDeleteStoreItem = async (item: StoreItem) => {
+    if (!item) return;
+    try {
+      await deleteItem(item.id);
+      toast.success("Товар успешно удален! 🗑️", {
+        description: `"${item.title}" был удален из магазина`,
+      });
+    } catch (error) {
+      console.error("Ошибка при удалении товара:", error);
+      toast.error("Ошибка при удалении товара. Попробуйте еще раз.");
+    }
+  };
+
+  // Обработчики для товаров магазина
+  const handleCreateStoreItem = () => {
+    openStoreItemCreation();
+  };
+
+  const handleEditStoreItem = (item: StoreItem) => {
+    setSelectedStoreItem(item);
+    openStoreItemEdit(item);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -336,6 +373,10 @@ export function AdminScreen({ onBack, onUserDetailOpen }: AdminScreenProps) {
             handleEditArtifact={handleEditArtifact}
             handleDeleteArtifact={handleDeleteArtifact}
             setSelectedArtifact={setSelectedArtifact}
+            handleCreateStoreItem={handleCreateStoreItem}
+            handleEditStoreItem={handleEditStoreItem}
+            handleDeleteStoreItem={handleDeleteStoreItem}
+            setSelectedStoreItem={setSelectedStoreItem}
           />
         </Tabs>
       </div>
@@ -403,6 +444,10 @@ export function AdminScreen({ onBack, onUserDetailOpen }: AdminScreenProps) {
           <ArtifactCreationDrawer />
 
           <ArtifactEditDrawer artifact={selectedArtifact} />
+
+          <StoreItemCreationDrawer />
+
+          <StoreItemEditDrawer item={selectedStoreItem} />
         </div>
       );
     }

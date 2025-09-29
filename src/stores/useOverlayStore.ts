@@ -14,6 +14,8 @@ interface OverlayState {
   taskEditOpen: boolean;
   artifactCreationOpen: boolean;
   artifactEditOpen: boolean;
+  storeItemCreationOpen: boolean;
+  storeItemEditOpen: boolean;
   badgeCreationOpen: boolean;
   rewardCreationOpen: boolean;
   storeManagementOpen: boolean;
@@ -30,6 +32,7 @@ interface OverlayState {
   selectedSkill: any; // NEW
   selectedTask: any;
   selectedArtifact: any;
+  selectedStoreItem: any;
   selectedSeason: any;
   
   // Действия для управления оверлеями
@@ -57,6 +60,10 @@ interface OverlayState {
   closeArtifactCreation: () => void;
   openArtifactEdit: (artifact?: any) => void;
   closeArtifactEdit: () => void;
+  openStoreItemCreation: () => void;
+  closeStoreItemCreation: () => void;
+  openStoreItemEdit: (storeItem?: any) => void;
+  closeStoreItemEdit: () => void;
   openBadgeCreation: () => void;
   closeBadgeCreation: () => void;
   openRewardCreation: () => void;
@@ -80,6 +87,7 @@ interface OverlayState {
   setSelectedSkill: (skill: any) => void; // NEW
   setSelectedTask: (task: any) => void;
   setSelectedArtifact: (artifact: any) => void;
+  setSelectedStoreItem: (storeItem: any) => void;
   setSelectedSeason: (season: any) => void;
 }
 
@@ -97,6 +105,8 @@ export const useOverlayStore = create<OverlayState>()((set, get) => ({
   taskEditOpen: false,
   artifactCreationOpen: false,
   artifactEditOpen: false,
+  storeItemCreationOpen: false,
+  storeItemEditOpen: false,
   badgeCreationOpen: false,
   rewardCreationOpen: false,
   storeManagementOpen: false,
@@ -112,6 +122,7 @@ export const useOverlayStore = create<OverlayState>()((set, get) => ({
   selectedSkill: null, // NEW
   selectedTask: null,
   selectedArtifact: null,
+  selectedStoreItem: null,
   selectedSeason: null,
   
   // Действия для управления оверлеями
@@ -187,6 +198,17 @@ export const useOverlayStore = create<OverlayState>()((set, get) => ({
     selectedArtifact: null
   }),
   
+  openStoreItemCreation: () => set({ storeItemCreationOpen: true }),
+  closeStoreItemCreation: () => set({ storeItemCreationOpen: false }),
+  openStoreItemEdit: (storeItem) => set({
+    storeItemEditOpen: true,
+    selectedStoreItem: storeItem
+  }),
+  closeStoreItemEdit: () => set({
+    storeItemEditOpen: false,
+    selectedStoreItem: null
+  }),
+  
   openBadgeCreation: () => set({ badgeCreationOpen: true }),
   closeBadgeCreation: () => set({ badgeCreationOpen: false }),
   
@@ -231,6 +253,8 @@ export const useOverlayStore = create<OverlayState>()((set, get) => ({
     taskEditOpen: false,
     artifactCreationOpen: false,
     artifactEditOpen: false,
+    storeItemCreationOpen: false,
+    storeItemEditOpen: false,
     badgeCreationOpen: false,
     rewardCreationOpen: false,
     storeManagementOpen: false,
@@ -245,6 +269,7 @@ export const useOverlayStore = create<OverlayState>()((set, get) => ({
     selectedSkill: null, // NEW
     selectedTask: null,
     selectedArtifact: null,
+    selectedStoreItem: null,
     selectedSeason: null,
   }),
   
@@ -256,5 +281,6 @@ export const useOverlayStore = create<OverlayState>()((set, get) => ({
   setSelectedSkill: (skill) => set({ selectedSkill: skill }), // NEW
   setSelectedTask: (task) => set({ selectedTask: task }),
   setSelectedArtifact: (artifact) => set({ selectedArtifact: artifact }),
+  setSelectedStoreItem: (storeItem) => set({ selectedStoreItem: storeItem }),
   setSelectedSeason: (season) => set({ selectedSeason: season }),
 }));

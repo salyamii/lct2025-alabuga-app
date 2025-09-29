@@ -1,6 +1,6 @@
 import { TabsContent } from "../../components/ui/tabs";
 import { Button } from "../../components/ui/button";
-import { Store, Zap, Award, BarChart3, Star, Crown, Target, FileText, Gem } from "lucide-react";
+import { Store, Zap, Award, BarChart3, Star, Crown, Target, FileText, Gem, ShoppingBag } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "../../components/ui/card";
 import { Badge } from "../../components/ui/badge";
 import { AdminCompetency } from "./AdminCompetency";
@@ -8,11 +8,13 @@ import { AdminRank } from "./AdminRank";
 import { AdminSkill } from "./AdminSkill";
 import { AdminTask } from "./AdminTask";
 import { AdminArtifact } from "./AdminArtifact";
+import { AdminStore } from "./AdminStore";
 import { Competency } from "../../domain/competency";
 import { Rank } from "../../domain/rank";
 import { Skill } from "../../domain/skill";
 import { Task } from "../../domain/task";
 import { Artifact } from "../../domain/artifact";
+import { StoreItem } from "../../domain/store";
 import { useState } from "react";
 
 interface AdminSettingsProps {
@@ -39,6 +41,10 @@ interface AdminSettingsProps {
     handleEditArtifact: (artifact: Artifact) => void;
     handleDeleteArtifact: (artifact: Artifact) => void;
     setSelectedArtifact: (artifact: Artifact) => void;
+    handleCreateStoreItem: () => void;
+    handleEditStoreItem: (item: StoreItem) => void;
+    handleDeleteStoreItem: (item: StoreItem) => void;
+    setSelectedStoreItem: (item: StoreItem) => void;
 }
 
 export function AdminSettings({ 
@@ -64,7 +70,11 @@ export function AdminSettings({
     handleCreateArtifact,
     handleEditArtifact,
     handleDeleteArtifact,
-    setSelectedArtifact
+    setSelectedArtifact,
+    handleCreateStoreItem,
+    handleEditStoreItem,
+    handleDeleteStoreItem,
+    setSelectedStoreItem
 }: AdminSettingsProps) {
     const [settingsTab, setSettingsTab] = useState("platform");
 
@@ -90,6 +100,7 @@ export function AdminSettings({
                     { key: "skills", label: "Навыки", icon: Target },
                     { key: "tasks", label: "Задания", icon: FileText },
                     { key: "artifacts", label: "Артефакты", icon: Gem },
+                    { key: "store", label: "Магазин", icon: ShoppingBag },
                   ].map(({ key, label, icon: Icon }) => (
                     <button
                       key={key}
@@ -341,6 +352,32 @@ export function AdminSettings({
                       handleEditArtifact={handleEditArtifact}
                       handleDeleteArtifact={handleDeleteArtifact}
                       setSelectedArtifact={setSelectedArtifact}
+                    />
+                  </div>
+                )}
+
+                {settingsTab === "store" && (
+                  <div className="space-y-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h2 className="text-lg font-semibold">Управление магазином</h2>
+                        <p className="text-sm text-muted-foreground">
+                          Создание, редактирование и управление товарами магазина
+                        </p>
+                      </div>
+                      <Button
+                        className="bg-primary hover:bg-primary-600 text-white"
+                        onClick={handleCreateStoreItem}
+                      >
+                        <ShoppingBag className="w-4 h-4 mr-2" />
+                        Добавить товар
+                      </Button>
+                    </div>
+                    <AdminStore
+                      handleCreateStoreItem={handleCreateStoreItem}
+                      handleEditStoreItem={handleEditStoreItem}
+                      handleDeleteStoreItem={handleDeleteStoreItem}
+                      setSelectedStoreItem={setSelectedStoreItem}
                     />
                   </div>
                 )}
