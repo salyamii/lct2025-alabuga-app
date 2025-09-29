@@ -81,13 +81,27 @@ export const useSeasonStore = create<SeasonState & SeasonActions>((set: (partial
   updateSeason: async (id: number, seasonData: SeasonUpdateRequest) => {
     try {
       set({ isLoading: true, error: null });
+      
+      // Проверяем, существует ли сезон в сторе
+      const existingSeason = get().seasons.find((s: Season) => s.id === id);
+      if (!existingSeason) {
+        throw new Error(`Сезон с ID ${id} не найден в локальном хранилище`);
+      }
+      
       const updatedSeason = await seasonService.updateSeason(id, seasonData);
       const prevCurrentSeason = get().currentSeason;
+      
+      // Заменяем сезон в массиве seasons
+      const updatedSeasons = get().seasons.map((s: Season) => 
+        s.id === id ? updatedSeason.data : s
+      );
+      
       set({ 
-        seasons: get().seasons.map((s: Season) => s.id === id ? updatedSeason.data : s),
+        seasons: updatedSeasons,
         currentSeason: (prevCurrentSeason && prevCurrentSeason.id === id) ? updatedSeason.data : prevCurrentSeason,
         isLoading: false
       });
+      
       return updatedSeason.data;
     } catch (error: any) {
       set({ error: error.message || 'Не удалось обновить сезон', isLoading: false });

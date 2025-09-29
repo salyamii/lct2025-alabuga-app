@@ -11,8 +11,14 @@ import { AdminMission } from "./AdminMission";
 import { AdminSeason } from "./AdminSeason";
 import { AdminSettings } from "./AdminSettings";
 import { MissionCreationDrawer } from "./MissionCreationDrawer";
+import { MissionEditDrawer } from "./MissionEditDrawer"; // NEW
+import { SeasonCreationDrawer } from "./SeasonCreationDrawer";
+import { SeasonEditDrawer } from "./SeasonEditDrawer";
 import { ArrowLeft, Shield } from "lucide-react";
 import { useOverlayStore } from "../../stores/useOverlayStore";
+import { useSeasonStore } from "../../stores/useSeasonStore";
+import { useMissionStore } from "../../stores/useMissionStore"; // NEW
+import { toast } from "sonner";
 
 interface AdminScreenProps {
   onBack: () => void;
@@ -23,16 +29,22 @@ export function AdminScreen({ onBack, onUserDetailOpen }: AdminScreenProps) {
   const {
     // Состояния оверлеев
     missionCreationOpen,
+    missionEditOpen, // NEW
     badgeCreationOpen,
     rewardCreationOpen,
     storeManagementOpen,
     chainCreationOpen,
     seasonCreationOpen,
+    seasonEditOpen,
     selectedChain,
+    selectedMission, // NEW
+    selectedSeason,
     
     // Действия
     openMissionCreation,
     closeMissionCreation,
+    openMissionEdit, // NEW
+    closeMissionEdit, // NEW
     openBadgeCreation,
     closeBadgeCreation,
     openRewardCreation,
@@ -43,8 +55,45 @@ export function AdminScreen({ onBack, onUserDetailOpen }: AdminScreenProps) {
     closeChainCreation,
     openSeasonCreation,
     closeSeasonCreation,
+    openSeasonEdit,
+    closeSeasonEdit,
     setSelectedChain,
+    setSelectedMission, // NEW
+    setSelectedSeason,
   } = useOverlayStore();
+
+  const { deleteSeason } = useSeasonStore();
+  const { deleteMission } = useMissionStore(); // NEW
+
+  // Обработчик удаления сезона
+  const handleDeleteSeason = async (season: any) => {
+    if (!season) return;
+
+    try {
+      await deleteSeason(season.id);
+      toast.success("Сезон успешно удален! 🗑️", {
+        description: `"${season.name}" был удален из системы`,
+      });
+    } catch (error) {
+      console.error("Ошибка при удалении сезона:", error);
+      toast.error("Ошибка при удалении сезона. Попробуйте еще раз.");
+    }
+  };
+
+  // Обработчик удаления миссии // NEW
+  const handleDeleteMission = async (mission: any) => {
+    if (!mission) return;
+
+    try {
+      await deleteMission(mission.id);
+      toast.success("Миссия успешно удалена! 🗑️", {
+        description: `"${mission.title}" была удалена из системы`,
+      });
+    } catch (error) {
+      console.error("Ошибка при удалении миссии:", error);
+      toast.error("Ошибка при удалении миссии. Попробуйте еще раз.");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -85,14 +134,22 @@ export function AdminScreen({ onBack, onUserDetailOpen }: AdminScreenProps) {
 
           <AdminDashboard />
 
-          <AdminMission
-            handleCreateMission={openMissionCreation}
-            handleCreateChain={() => openChainCreation()}
-            setSelectedChain={setSelectedChain}
-            setChainCreationOpen={(open) => open ? openChainCreation() : closeChainCreation()}
-          />
+              <AdminMission
+                handleCreateMission={openMissionCreation}
+                handleEditMission={(mission) => openMissionEdit(mission)}
+                handleDeleteMission={handleDeleteMission} // NEW
+                handleCreateChain={() => openChainCreation()}
+                setSelectedChain={setSelectedChain}
+                setSelectedMission={setSelectedMission}
+                setChainCreationOpen={(open) => open ? openChainCreation() : closeChainCreation()}
+              />
           
-          <AdminSeason handleCreateSeason={openSeasonCreation} />
+          <AdminSeason 
+            handleCreateSeason={openSeasonCreation}
+            handleEditSeason={(season) => openSeasonEdit(season)}
+            handleDeleteSeason={handleDeleteSeason}
+            setSelectedSeason={setSelectedSeason}
+          />
 
           <AdminUsers onUserDetailOpen={onUserDetailOpen} />
 
@@ -104,11 +161,17 @@ export function AdminScreen({ onBack, onUserDetailOpen }: AdminScreenProps) {
         </Tabs>
       </div>
 
-      {/* Drawers */}
-      <MissionCreationDrawer
-        open={missionCreationOpen}
-        onOpenChange={(open) => open ? openMissionCreation() : closeMissionCreation()}
-      />
+          {/* Drawers */}
+          <MissionCreationDrawer
+            open={missionCreationOpen}
+            onOpenChange={(open) => open ? openMissionCreation() : closeMissionCreation()}
+          />
+
+          <MissionEditDrawer // NEW
+            open={missionEditOpen}
+            onOpenChange={(open) => open ? openMissionEdit() : closeMissionEdit()}
+            mission={selectedMission}
+          />
 
       <BadgeCreationDrawer
         open={badgeCreationOpen}
@@ -129,6 +192,17 @@ export function AdminScreen({ onBack, onUserDetailOpen }: AdminScreenProps) {
         open={chainCreationOpen}
         onOpenChange={(open) => open ? openChainCreation() : closeChainCreation()}
         editChain={selectedChain}
+      />
+
+      <SeasonCreationDrawer
+        open={seasonCreationOpen}
+        onOpenChange={(open) => open ? openSeasonCreation() : closeSeasonCreation()}
+      />
+
+      <SeasonEditDrawer
+        open={seasonEditOpen}
+        onOpenChange={(open) => open ? openSeasonEdit() : closeSeasonEdit()}
+        season={selectedSeason}
       />
     </div>
   );

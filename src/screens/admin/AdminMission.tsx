@@ -5,7 +5,7 @@ import { Plus, Search, Link2, Target, Zap, Award } from "lucide-react";
 import { Input } from "../../components/ui/input";
 import { Filter } from "lucide-react";
 import { Badge } from "../../components/ui/badge";
-import { Eye, Edit, MoreHorizontal, Trash2 } from "lucide-react";
+import { Eye, Edit, Trash2 } from "lucide-react";
 import { CardContent } from "../../components/ui/card";
 import { Progress } from "../../components/ui/progress";
 import { useState } from "react";
@@ -15,15 +15,21 @@ import { useSeasonStore } from "../../stores/useSeasonStore";
 
 interface AdminMissionProps {
   handleCreateMission: () => void;
+  handleEditMission: (mission: any) => void;
+  handleDeleteMission: (mission: any) => void; // NEW
   handleCreateChain: () => void;
   setSelectedChain: (chain: any) => void;
+  setSelectedMission: (mission: any) => void;
   setChainCreationOpen: (open: boolean) => void;
 }
 
 export function AdminMission({
   handleCreateMission,
+  handleEditMission,
+  handleDeleteMission, // NEW
   handleCreateChain,
   setSelectedChain,
+  setSelectedMission,
   setChainCreationOpen,
 }: AdminMissionProps) {
 
@@ -338,14 +344,26 @@ export function AdminMission({
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Button variant="ghost" size="sm">
-                          <Eye className="w-4 h-4" />
-                        </Button>
-                        <Button variant="ghost" size="sm">
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => {
+                            setSelectedMission(mission);
+                            handleEditMission(mission);
+                          }}
+                        >
                           <Edit className="w-4 h-4" />
                         </Button>
-                        <Button variant="ghost" size="sm">
-                          <MoreHorizontal className="w-4 h-4" />
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => {
+                            setSelectedMission(mission);
+                            handleDeleteMission(mission);
+                          }}
+                          className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                        >
+                          <Trash2 className="w-4 h-4" />
                         </Button>
                       </div>
                     </div>
@@ -541,8 +559,12 @@ export function AdminMission({
                           >
                             <Edit className="w-4 h-4" />
                           </Button>
-                          <Button variant="ghost" size="sm">
-                            <MoreHorizontal className="w-4 h-4" />
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                          >
+                            <Trash2 className="w-4 h-4" />
                           </Button>
                         </div>
                       </div>
