@@ -1,6 +1,6 @@
 import { TabsContent } from "../../components/ui/tabs";
 import { Button } from "../../components/ui/button";
-import { Store, Zap, Award, BarChart3, Star, Crown, Target, FileText, Gem, ShoppingBag } from "lucide-react";
+import { Store, Star, Crown, Target, FileText, Gem, ShoppingBag } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "../../components/ui/card";
 import { Badge } from "../../components/ui/badge";
 import { AdminCompetency } from "./AdminCompetency";
@@ -18,9 +18,6 @@ import { StoreItem } from "../../domain/store";
 import { useState } from "react";
 
 interface AdminSettingsProps {
-    handleCreateReward: () => void;
-    handleCreateBadge: () => void;
-    handleManageStore: () => void;
     handleCreateCompetency: () => void;
     handleEditCompetency: (competency: Competency) => void;
     handleDeleteCompetency: (competency: Competency) => void;
@@ -48,9 +45,6 @@ interface AdminSettingsProps {
 }
 
 export function AdminSettings({ 
-    handleCreateReward, 
-    handleCreateBadge, 
-    handleManageStore,
     handleCreateCompetency,
     handleEditCompetency,
     handleDeleteCompetency,
@@ -121,34 +115,6 @@ export function AdminSettings({
                 {settingsTab === "platform" && (
                   <div className="space-y-6">
 
-            {/* Management Actions */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <Button
-                onClick={handleCreateReward}
-                className="h-20 bg-rewards-amber hover:bg-rewards-amber/90 text-white flex-col"
-              >
-                <Store className="w-6 h-6 mb-2" />
-                Создать награду
-              </Button>
-              <Button
-                onClick={handleCreateBadge}
-                className="h-20 bg-info hover:bg-info/90 text-white flex-col"
-              >
-                <Award className="w-6 h-6 mb-2" />
-                Создать значок
-              </Button>
-              <Button
-                onClick={handleManageStore}
-                className="h-20 bg-primary hover:bg-primary-600 text-white flex-col"
-              >
-                <Zap className="w-6 h-6 mb-2" />
-                Управление магазином
-              </Button>
-              <Button className="h-20 bg-success hover:bg-success/90 text-white flex-col">
-                <BarChart3 className="w-6 h-6 mb-2" />
-                Аналитика
-              </Button>
-            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Card className="card-enhanced">

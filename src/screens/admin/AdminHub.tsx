@@ -378,9 +378,6 @@ export function AdminScreen({ onBack, onUserDetailOpen }: AdminScreenProps) {
           <AdminUsers onUserDetailOpen={onUserDetailOpen} />
 
           <AdminSettings
-            handleCreateReward={openRewardCreation}
-            handleCreateBadge={openBadgeCreation}
-            handleManageStore={openStoreManagement}
             handleCreateCompetency={openCompetencyCreation}
             handleEditCompetency={(competency) => openCompetencyEdit(competency)}
             handleDeleteCompetency={handleDeleteCompetency}
