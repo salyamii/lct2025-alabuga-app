@@ -18,7 +18,7 @@ interface DataLoaderActions {
 
 export function useDataLoader() {
   const appStore = useAppStore();
-  const { fetchUserProfile, fetchAllUserMissions, clearUserData } = useUserStore();
+  const { fetchUserProfile, fetchAllUsers, fetchAllUserMissions, clearUserData } = useUserStore();
 
   const loadAllData = useCallback(async () => {
     // Сначала загружаем профиль пользователя
@@ -66,6 +66,14 @@ export function useDataLoader() {
     } catch (error) {
       console.error('❌ Ошибка загрузки миссий пользователя:', error);
     }
+
+    // Загружаем список всех пользователей (только для HR)
+    try {
+      console.log('👥 Проверяем необходимость загрузки списка пользователей...');
+      await fetchAllUsers();
+    } catch (error) {
+      console.error('❌ Ошибка загрузки списка пользователей:', error);
+    }
     
     // Логируем результаты загрузки
     results.forEach((result, index) => {
@@ -95,7 +103,7 @@ export function useDataLoader() {
     } else {
       console.log('🎉 Все данные успешно загружены');
     }
-  }, [appStore, fetchUserProfile, fetchAllUserMissions]);
+  }, [appStore, fetchUserProfile, fetchAllUsers, fetchAllUserMissions]);
 
   const loadSpecificData = useCallback(async (storeNames: string[]) => {
     const storeMap: Record<string, () => Promise<void>> = {

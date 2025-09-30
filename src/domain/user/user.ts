@@ -1,4 +1,4 @@
-import { UserResponse } from "../../api/types/apiTypes";
+import { UserResponse, UserDetailedResponse } from "../../api/types/apiTypes";
 import { UserMission } from "./userMission";
 import { Artifact } from "../artifact";
 import { UserCompetency } from "./userCompetency";
@@ -29,6 +29,21 @@ export class User {
         [],
         [],
         []
+      );
+    }
+
+    static fromDetailedResponse(response: UserDetailedResponse): User {
+      return new User(
+        response.login,
+        response.firstName,
+        response.lastName,
+        response.role,
+        response.rankId,
+        response.exp,
+        response.mana,
+        [], // missions будут загружены отдельно
+        response.artifacts || [],
+        response.competencies?.map(comp => UserCompetency.fromResponse(comp)) || []
       );
     }
     

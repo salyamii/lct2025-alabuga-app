@@ -37,7 +37,7 @@ export function MissionExecutionScreen({ onBack, onCompleteMission }: MissionExe
     user,
     fetchUserProfile, 
     fetchUserMission,
-    completeTask, 
+    completeTaskLocal, 
     uncompleteTask, 
     completeMission: completeUserMission 
   } = useUserStore();
@@ -90,7 +90,7 @@ export function MissionExecutionScreen({ onBack, onCompleteMission }: MissionExe
       uncompleteTask(numericMissionId, taskId);
     } else {
       console.log('✅ Completing task...');
-      completeTask(numericMissionId, taskId);
+      completeTaskLocal(numericMissionId, taskId);
     }
   };
 
