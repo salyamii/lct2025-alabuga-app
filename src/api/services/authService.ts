@@ -3,7 +3,6 @@ import { API_ENDPOINTS } from '../config/apiConfig';
 import { 
   UserLoginRequest, 
   UserTokenResponse, 
-  UserResponse, 
   HRUserRegistrationRequest,
   CandidateUserRegistrationRequest,
   ApiResponse 

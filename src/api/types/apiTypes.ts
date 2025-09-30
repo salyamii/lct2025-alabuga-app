@@ -30,6 +30,35 @@ export interface UserResponse {
   role: string;
 }
 
+export interface UserDetailedResponse {
+  login: string;
+  firstName: string;
+  lastName: string;
+  role: string;
+  rankId: number;
+  exp: number;
+  mana: number;
+  artifacts?: ArtifactResponse[];
+  competencies?: UserCompetencyResponse[];
+}
+
+export interface UserUpdateRequest {
+  firstName?: string | null;
+  lastName?: string | null;
+  password?: string | null;
+  mana?: number | null;
+  rankId?: number | null;
+  exp?: number | null;
+}
+
+export interface UsersListResponse {
+  users?: UserResponse[];
+}
+
+export interface UserMissionsListResponse {
+  missions?: UserMissionResponse[];
+}
+
 // Типы для регистрации HR пользователей
 export interface HRUserRegistrationRequest {
   login: string;
@@ -98,20 +127,20 @@ export enum ArtifactRarityEnum {
 export interface SeasonResponse {
   id: number;
   name: string;
-  startDate: string; // ISO date-time
-  endDate: string; // ISO date-time
+  startDate: string; // date-time format
+  endDate: string; // date-time format
 }
 
 export interface SeasonCreateRequest {
   name: string;
-  startDate: string; // ISO date-time
-  endDate: string; // ISO date-time
+  startDate: string; // date-time format
+  endDate: string; // date-time format
 }
 
 export interface SeasonUpdateRequest {
   name: string;
-  startDate: string; // ISO date-time
-  endDate: string; // ISO date-time
+  startDate: string; // date-time format
+  endDate: string; // date-time format
 }
 
 export interface SeasonsResponse {
@@ -353,10 +382,6 @@ export interface MissionTaskResponse {
 }
 
 // Типы для загрузки файлов
-export interface BodyUploadFileMediaPost {
-  file: string; // binary format
-}
-
 export interface Body_upload_file_media_post {
   file: string; // binary format
 }
@@ -408,6 +433,7 @@ export interface UserMissionResponse {
   seasonId: number;
   category: string;
   isCompleted: boolean;
+  isApproved: boolean;
   tasks?: UserTaskResponse[];
   rewardArtifacts?: ArtifactResponse[];
   rewardCompetencies?: CompetencyRewardResponse[];
@@ -435,4 +461,9 @@ export interface UserCompetencyResponse {
   maxLevel: number;
   userLevel: number;
   skills: UserSkillResponse[];
+}
+
+// ===== ДОПОЛНИТЕЛЬНЫЕ ТИПЫ =====
+export interface TaskCompleteRequest {
+  userLogin: string;
 }

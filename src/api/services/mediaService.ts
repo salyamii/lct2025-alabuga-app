@@ -2,7 +2,7 @@ import { httpClient } from '../httpClient';
 import { API_ENDPOINTS } from '../config/apiConfig';
 import { 
   FileObjectResponse,
-  BodyUploadFileMediaPost,
+  Body_upload_file_media_post,
   ApiResponse 
 } from '../types/apiTypes';
 
