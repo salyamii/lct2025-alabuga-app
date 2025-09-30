@@ -9,9 +9,9 @@ export const getApiConfig = (): ApiConfig => {
   
   return {
     baseURL: isDevelopment 
-      ? process.env.REACT_APP_API_URL || '/api'  // Используем прокси в dev режиме
+      ? '/api'  // Используем прокси в dev режиме
       : process.env.REACT_APP_API_URL || 'http://91.219.150.15',
-    timeout: 10000,
+    timeout: parseInt(process.env.REACT_APP_API_TIMEOUT || '10000', 10),
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',

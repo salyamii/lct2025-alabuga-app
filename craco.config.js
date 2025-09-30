@@ -20,7 +20,7 @@ module.exports = {
   devServer: {
     proxy: {
       '/api': {
-        target: 'http://91.219.150.15',
+        target: process.env.REACT_APP_API_URL || 'http://91.219.150.15',
         changeOrigin: true,
         secure: false,
         pathRewrite: {

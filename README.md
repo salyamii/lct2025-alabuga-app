@@ -2,6 +2,23 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Настройка окружения
+
+### Переменные окружения
+
+Перед запуском проекта создайте файл `.env` в корне проекта на основе `.env.example`:
+
+```bash
+cp .env.example .env
+```
+
+Настройте переменные в `.env`:
+
+- `REACT_APP_API_URL` - URL бэкенд сервера
+- `REACT_APP_API_TIMEOUT` - Таймаут запросов в миллисекундах (по умолчанию: 10000)
+
+**⚠️ Важно:** Файл `.env` содержит чувствительные данные и не должен коммититься в git (уже добавлен в `.gitignore`).
+
 ## Available Scripts
 
 In the project directory, you can run:
