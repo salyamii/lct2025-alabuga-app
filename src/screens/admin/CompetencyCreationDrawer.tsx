@@ -1,28 +1,47 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from "../../components/ui/drawer";
+import { Badge } from "../../components/ui/badge";
 import { useCompetencyStore } from "../../stores/useCompetencyStore";
+import { useSkillStore } from "../../stores/useSkillStore";
 import { useOverlayStore } from "../../stores/useOverlayStore";
-import { Star, X } from "lucide-react";
+import { Star, X, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 export function CompetencyCreationDrawer() {
   const { competencyCreationOpen, closeCompetencyCreation } = useOverlayStore();
-  const { createCompetency } = useCompetencyStore();
+  const { createCompetency, addSkillToCompetency } = useCompetencyStore();
+  const { skills, fetchSkills } = useSkillStore();
   const [isCreating, setIsCreating] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     maxLevel: 10
   });
+  const [selectedSkillIds, setSelectedSkillIds] = useState<number[]>([]);
+
+  // Загружаем навыки при открытии
+  useEffect(() => {
+    if (competencyCreationOpen && skills.length === 0) {
+      fetchSkills();
+    }
+  }, [competencyCreationOpen, skills.length, fetchSkills]);
 
   const handleInputChange = (field: string, value: string | number) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
     }));
+  };
+
+  const toggleSkill = (skillId: number) => {
+    setSelectedSkillIds(prev => 
+      prev.includes(skillId) 
+        ? prev.filter(id => id !== skillId)
+        : [...prev, skillId]
+    );
   };
 
   const handleCreate = async () => {
@@ -36,19 +55,32 @@ export function CompetencyCreationDrawer() {
       return;
     }
 
+    if (selectedSkillIds.length === 0) {
+      toast.error("Выберите хотя бы один навык для компетенции!");
+      return;
+    }
+
     try {
       setIsCreating(true);
-      await createCompetency({
+      
+      // Создаем компетенцию
+      const newCompetency = await createCompetency({
         name: formData.name.trim(),
         maxLevel: formData.maxLevel
       });
 
+      // Добавляем навыки к компетенции
+      for (const skillId of selectedSkillIds) {
+        await addSkillToCompetency(newCompetency.id, skillId);
+      }
+
       toast.success("Компетенция успешно создана! ⭐", {
-        description: `"${formData.name}" готова к использованию`
+        description: `"${formData.name}" с ${selectedSkillIds.length} ${selectedSkillIds.length === 1 ? 'навыком' : 'навыками'}`
       });
 
       // Сброс формы
       setFormData({ name: "", maxLevel: 10 });
+      setSelectedSkillIds([]);
       closeCompetencyCreation();
     } catch (error) {
       console.error("Ошибка при создании компетенции:", error);
@@ -60,6 +92,7 @@ export function CompetencyCreationDrawer() {
 
   const handleClose = () => {
     setFormData({ name: "", maxLevel: 10 });
+    setSelectedSkillIds([]);
     closeCompetencyCreation();
   };
 
@@ -112,6 +145,77 @@ export function CompetencyCreationDrawer() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Навыки */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Навыки компетенции *</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                Выберите хотя бы один навык, который входит в эту компетенцию
+              </p>
+              
+              {skills.length === 0 ? (
+                <p className="text-sm text-muted-foreground">Загрузка навыков...</p>
+              ) : (
+                <div className="space-y-2">
+                  {skills.map((skill) => {
+                    const isSelected = selectedSkillIds.includes(skill.id);
+                    return (
+                      <div
+                        key={skill.id}
+                        onClick={() => toggleSkill(skill.id)}
+                        className={`p-3 border rounded-lg cursor-pointer transition-all ${
+                          isSelected
+                            ? 'border-primary bg-primary/5'
+                            : 'border-border hover:border-primary/50'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
+                              isSelected
+                                ? 'border-primary bg-primary'
+                                : 'border-border'
+                            }`}>
+                              {isSelected && (
+                                <Star className="w-3 h-3 text-white" fill="currentColor" />
+                              )}
+                            </div>
+                            <div>
+                              <p className="font-medium text-sm">{skill.name}</p>
+                              <p className="text-xs text-muted-foreground">
+                                Макс. уровень: {skill.maxLevel}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {selectedSkillIds.length > 0 && (
+                <div className="pt-2">
+                  <p className="text-sm font-medium mb-2">
+                    Выбрано навыков: {selectedSkillIds.length}
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedSkillIds.map(skillId => {
+                      const skill = skills.find(s => s.id === skillId);
+                      return skill ? (
+                        <Badge key={skillId} variant="secondary">
+                          {skill.name}
+                        </Badge>
+                      ) : null;
+                    })}
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
 
         {/* Кнопки действий - зафиксированы внизу */}
@@ -123,7 +227,7 @@ export function CompetencyCreationDrawer() {
             </Button>
             <Button 
               onClick={handleCreate} 
-              disabled={isCreating || !formData.name.trim()}
+              disabled={isCreating || !formData.name.trim() || selectedSkillIds.length === 0}
               className="bg-primary hover:bg-primary-600"
             >
               {isCreating ? "Создание..." : "Создать компетенцию"}

@@ -19,6 +19,9 @@ import { SettingsScreen } from "./screens/settings/SettingsScreen";
 import { useNavigationStore } from "./stores/useNavigationStore";
 import { NotificationsScreen } from "./screens/notifications/NotificationScreen";
 import { MissionExecutionScreen, MissionDetailScreen } from "./screens/mission-execution";
+import { useStoreStore } from "./stores/useStoreStore";
+import { useUserStore } from "./stores/useUserStore";
+import { toast } from "sonner";
 
 // Компонент приложения с проверкой авторизации
 const AppContent: React.FC = () => {
@@ -100,7 +103,23 @@ const AppContent: React.FC = () => {
         <Route index element={<ProgressHub onMissionDetails={(missionId) => navigate(`/mission/${missionId}`)} />} />
       </Route>
       <Route path="/store" element={<AppLayout />}>
-        <Route index element={<StoreHub />} />
+        <Route index element={<StoreHub onPurchase={async (itemId) => {
+          const { purchaseItem } = useStoreStore.getState();
+          const { user, fetchUserProfile } = useUserStore.getState();
+          
+          if (!user) {
+            toast.error('Необходимо авторизоваться');
+            return;
+          }
+
+          // Покупаем товар
+          const result = await purchaseItem({ storeItemId: itemId });
+          
+          if (result) {
+            // Обновляем профиль пользователя для актуальной маны
+            await fetchUserProfile();
+          }
+        }} />} />
       </Route>
       <Route path="/artifact-hub" element={<AppLayout />}>
         <Route index element={<ArtifactsHub />} />

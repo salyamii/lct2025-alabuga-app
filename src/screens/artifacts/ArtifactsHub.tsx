@@ -6,11 +6,53 @@ import { toast } from "sonner";
 import { useArtifactStore } from "../../stores/useArtifactStore";
 import { ArtifactRarityEnum } from "../../api/types/apiTypes";
 import { useUserStore } from "../../stores/useUserStore";
+import { useState, useEffect } from "react";
+import mediaService from "../../api/services/mediaService";
 
 export function ArtifactsHub() {
 
     const { artifacts } = useArtifactStore();
     const { user } = useUserStore();
+    const [artifactImages, setArtifactImages] = useState<Record<number, string>>({});
+
+    // Логирование для отладки
+    useEffect(() => {
+      console.log('🔍 ArtifactsHub Debug:', {
+        totalArtifacts: artifacts.length,
+        userArtifacts: user?.artifacts.length || 0,
+        userArtifactIds: user?.artifactIds || [],
+        user: user
+      });
+    }, [artifacts, user]);
+
+    // Загружаем изображения артефактов
+    useEffect(() => {
+      const loadArtifactImages = async () => {
+        const imagePromises = artifacts.map(async (artifact) => {
+          if (artifact.imageUrl) {
+            try {
+              const imageUrl = await mediaService.loadImageWithAuth(artifact.imageUrl);
+              return { id: artifact.id, url: imageUrl };
+            } catch (error) {
+              console.error(`Ошибка загрузки изображения для артефакта ${artifact.id}:`, error);
+              return { id: artifact.id, url: '' };
+            }
+          }
+          return { id: artifact.id, url: '' };
+        });
+
+        const loadedImages = await Promise.all(imagePromises);
+        const imagesMap: Record<number, string> = {};
+        loadedImages.forEach(({ id, url }) => {
+          if (url) imagesMap[id] = url;
+        });
+        setArtifactImages(imagesMap);
+      };
+
+      if (artifacts.length > 0) {
+        loadArtifactImages();
+      }
+    }, [artifacts]);
 
     const badges = [
       {
@@ -110,6 +152,34 @@ export function ArtifactsHub() {
         default: return Gem;
       }
     };
+
+    const getRarityText = (rarity: ArtifactRarityEnum) => {
+      switch (rarity) {
+        case ArtifactRarityEnum.LEGENDARY: return "Легендарный";
+        case ArtifactRarityEnum.EPIC: return "Эпический";
+        case ArtifactRarityEnum.RARE: return "Редкий";
+        case ArtifactRarityEnum.UNCOMMON: return "Необычный";
+        case ArtifactRarityEnum.COMMON: return "Обычный";
+        default: return "Обычный";
+      }
+    };
+
+    const getRarityStyles = (rarity: ArtifactRarityEnum) => {
+      switch (rarity) {
+        case ArtifactRarityEnum.LEGENDARY: 
+          return { bg: 'rgba(234, 179, 8, 0.2)', text: 'rgb(202, 138, 4)', border: 'rgba(234, 179, 8, 0.3)' }; // yellow
+        case ArtifactRarityEnum.EPIC: 
+          return { bg: 'rgba(168, 85, 247, 0.2)', text: 'rgb(147, 51, 234)', border: 'rgba(168, 85, 247, 0.3)' }; // purple
+        case ArtifactRarityEnum.RARE: 
+          return { bg: 'rgba(59, 130, 246, 0.2)', text: 'rgb(37, 99, 235)', border: 'rgba(59, 130, 246, 0.3)' }; // blue
+        case ArtifactRarityEnum.UNCOMMON: 
+          return { bg: 'rgba(34, 197, 94, 0.2)', text: 'rgb(22, 163, 74)', border: 'rgba(34, 197, 94, 0.3)' }; // green
+        case ArtifactRarityEnum.COMMON: 
+          return { bg: 'rgba(107, 114, 128, 0.2)', text: 'rgb(75, 85, 99)', border: 'rgba(107, 114, 128, 0.3)' }; // gray
+        default: 
+          return { bg: 'rgba(107, 114, 128, 0.2)', text: 'rgb(75, 85, 99)', border: 'rgba(107, 114, 128, 0.3)' }; // gray
+      }
+    };
   
     return (
       <div className="max-w-7xl mx-auto px-4 py-6">
@@ -188,69 +258,72 @@ export function ArtifactsHub() {
   
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           {artifacts.map((artifact) => {
-            // Выбираем случайную иконку из набора доступных
-            const availableIcons = [Star, Orbit, Crown, Zap, Shield];
-            const IconComponent = availableIcons[Math.floor(Math.random() * availableIcons.length)];
             const RarityIcon = getRarityIcon(artifact.rarity);
+            const hasArtifact = user?.artifactIds.includes(artifact.id) || false;
+            const imageUrl = artifactImages[artifact.id];
+            const rarityStyles = getRarityStyles(artifact.rarity);
+            
             return (
               <Card 
                 key={artifact.id} 
-                className={`badge-card ${user?.artifactIds.includes(artifact.id) ? 'border-primary/30 stellar-glow' : 'badge-locked'} cursor-pointer`}
+                className={`badge-card ${hasArtifact ? 'border-primary/30 stellar-glow' : 'badge-locked'} cursor-pointer`}
                 onClick={() => {/* TODO view artifact details */}}
               >
                 <CardContent className="p-4 md:p-6 space-y-4">
                   <div className="flex items-center justify-between">
                     <div 
                       className={`w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br ${
-                        user?.artifactIds.includes(artifact.id) ? getRarityColor(artifact.rarity) : 'from-gray-400 to-gray-500'
-                      } rounded-lg flex items-center justify-center relative ${
-                        user?.artifactIds.includes(artifact.id) ? 'stellar-pulse' : ''
+                        hasArtifact ? getRarityColor(artifact.rarity) : 'from-gray-400 to-gray-500'
+                      } rounded-lg flex items-center justify-center relative overflow-hidden ${
+                        hasArtifact ? 'stellar-pulse' : ''
                       }`}
                     >
-                      <IconComponent className="w-6 h-6 md:w-7 md:h-7 text-white" />
-                      {user?.artifactIds.includes(artifact.id) && (
+                      {imageUrl ? (
+                        <img 
+                          src={imageUrl} 
+                          alt={artifact.title}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <Gem className="w-6 h-6 md:w-7 md:h-7 text-white" />
+                      )}
+                      {hasArtifact && (
                         <div className="absolute -top-1 -right-1 w-4 h-4 bg-success rounded-full flex items-center justify-center">
                           <RarityIcon className="w-2 h-2 text-white" />
                         </div>
                       )}
-                      {!user?.artifactIds.includes(artifact.id) && (
-                        <div className="absolute inset-0 bg-black/40 rounded-lg flex items-center justify-center">
-                          <Shield className="w-4 h-4 text-white/70" />
-                        </div>
+                      {!hasArtifact && (
+                        <div className="absolute inset-0 bg-black/40 rounded-lg" />
                       )}
                     </div>
-                    <div className="flex flex-col gap-1">
-                      <Badge 
-                        variant="outline" 
-                        className={`text-xs ${user?.artifactIds.includes(artifact.id) ? '' : 'opacity-50'}`}
-                      >
-                        <Star className="w-3 h-3 mr-1" />
-                        {artifact.rarity}
-                      </Badge>
-                      <Badge 
-                        variant="secondary" 
-                        className={`text-xs ${user?.artifactIds.includes(artifact.id) ? '' : 'opacity-50'}`}
-                      >
-                        <RarityIcon className="w-3 h-3 mr-1" />
-                        {artifact.rarity}
-                      </Badge>
-                    </div>
+                    <Badge 
+                      variant="outline" 
+                      className={`text-xs ${hasArtifact ? '' : 'opacity-50'}`}
+                      style={{
+                        backgroundColor: rarityStyles.bg,
+                        color: rarityStyles.text,
+                        borderColor: rarityStyles.border
+                      }}
+                    >
+                      <RarityIcon className="w-3 h-3 mr-1" />
+                      {getRarityText(artifact.rarity)}
+                    </Badge>
                   </div>
                   
                   <div>
                     <h3 className={`font-semibold text-base leading-tight ${
-                      user?.artifactIds.includes(artifact.id) ? '' : 'text-muted-foreground'
+                      hasArtifact ? '' : 'text-muted-foreground'
                     }`}>
                       {artifact.title}
                     </h3>
                     <p className={`text-sm mt-1 leading-relaxed ${
-                        user?.artifactIds.includes(artifact.id) ? 'text-muted-foreground' : 'text-muted-foreground/70'
+                        hasArtifact ? 'text-muted-foreground' : 'text-muted-foreground/70'
                     }`}>
                       {artifact.description}
                     </p>
                   </div>
                   
-                  {user?.artifactIds.includes(artifact.id) ? (
+                  {hasArtifact ? (
                     <div className="flex items-center gap-2 text-sm text-success">
                       <Calendar className="w-4 h-4" />
                       <span>Получено 2023-0{Math.floor(Math.random() * 9) + 1}-1{Math.floor(Math.random() * 9) + 1}</span>
@@ -278,24 +351,6 @@ export function ArtifactsHub() {
                           </div>
                         );
                       })()}
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <Moon className="w-4 h-4" />
-                          <span>Не получено</span>
-                        </div>
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            // onMissionDetails("mission-related-to-badge");
-                          }}
-                          className="text-xs"
-                        >
-                          <Target className="w-3 h-3 mr-1" />
-                          Найти квесты
-                        </Button>
-                      </div>
                     </div>
                   )}
                 </CardContent>

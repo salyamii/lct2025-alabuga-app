@@ -3,6 +3,9 @@ import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { useIsMobile } from "../components/ui/use-mobile";
+import { useUserStore } from "../stores/useUserStore";
+import { useRankStore } from "../stores/useRankStore";
+import { useEffect } from "react";
 
 
 interface DesktopNavigationTopBarProps {
@@ -11,8 +14,6 @@ interface DesktopNavigationTopBarProps {
     onAdminOpen: () => void;
     onNotificationsOpen?: () => void;
     onSettingsOpen?: () => void;
-    userRank?: string;
-    userMana?: number;
     className?: string;
   }
 
@@ -22,10 +23,22 @@ interface DesktopNavigationTopBarProps {
     onAdminOpen,
     onNotificationsOpen,
     onSettingsOpen,
-    userRank = "Космический кадет", 
-    userMana = 1250,
     className = ""
   }: DesktopNavigationTopBarProps) {
+    const { user } = useUserStore();
+    const { ranks, fetchRanks } = useRankStore();
+
+    // Загружаем ранги, если их еще нет
+    useEffect(() => {
+      if (ranks.length === 0) {
+        fetchRanks();
+      }
+    }, [ranks.length, fetchRanks]);
+
+    // Получаем реальные данные пользователя
+    const userMana = user?.mana || 0;
+    const currentRank = ranks.find(r => r.id === user?.rankId);
+    const userRank = currentRank?.name;
 
     return (
         <div className={`cosmic-gradient text-white px-4 py-3 md:px-6 md:py-4 ${className}`}>
@@ -47,9 +60,11 @@ interface DesktopNavigationTopBarProps {
                 {/* Mobile user status */}
                 <div className="sm:hidden">
                   <div className="flex items-center gap-2">
-                    <Badge variant="secondary" className="bg-white/20 text-white border-white/30 text-xs">
-                      {userRank}
-                    </Badge>
+                    {userRank && (
+                      <Badge variant="secondary" className="bg-white/20 text-white border-white/30 text-xs">
+                        {userRank}
+                      </Badge>
+                    )}
                     <span className="text-xs font-mono text-cyan-200">{userMana.toLocaleString()}</span>
                   </div>
                 </div>
@@ -57,9 +72,11 @@ interface DesktopNavigationTopBarProps {
                 {/* Desktop user status */}
                 <div className="text-right hidden sm:block">
                   <div className="flex items-center gap-2">
-                    <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
-                      {userRank}
-                    </Badge>
+                    {userRank && (
+                      <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
+                        {userRank}
+                      </Badge>
+                    )}
                     <span className="text-sm">
                       <span className="text-white/80">Мана:</span>{" "}
                       <span className="font-mono text-cyan-200">{userMana.toLocaleString()}</span>

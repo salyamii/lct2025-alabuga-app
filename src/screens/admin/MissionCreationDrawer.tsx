@@ -56,6 +56,7 @@ import { useSeasonStore } from "../../stores/useSeasonStore";
 import { useSkillStore } from "../../stores/useSkillStore";
 import { useArtifactStore } from "../../stores/useArtifactStore";
 import { useTaskStore } from "../../stores/useTaskStore";
+import mediaService from "../../api/services/mediaService";
 
 interface MissionCreationDrawerProps {
   open: boolean;
@@ -158,12 +159,27 @@ export function MissionCreationDrawer({
     { id: 1, title: "", description: "", isRequired: true },
   ]);
 
-  const [selectedCompetency, setSelectedCompetency] = useState<Competency | null>(null);
-  const [competencyLevelIncrease, setCompetencyLevelIncrease] = useState<number>(1);
-  const [selectedSkills, setSelectedSkills] = useState<SkillReward[]>([]);
+  // Новая структура для компетенций с их навыками
+  const [competencyRewards, setCompetencyRewards] = useState<Array<{
+    id: number;
+    competency: Competency | null;
+    levelIncrease: number;
+    skillRewards: Array<{ skillId: number; levelIncrease: number }>;
+  }>>([
+    { id: 1, competency: null, levelIncrease: 1, skillRewards: [] }
+  ]);
+
+  // Отдельные навыки (не привязанные к компетенциям)
+  const [standaloneSkillRewards, setStandaloneSkillRewards] = useState<Array<{
+    id: number;
+    skill: Skill | null;
+    levelIncrease: number;
+  }>>([]);
+
   const [missionArtifacts, setMissionArtifacts] = useState<MissionArtifact[]>([
     { id: 1, title: "", description: "", rarity: ArtifactRarityEnum.COMMON, imageUrl: "" }
   ]);
+  const [uploadingImages, setUploadingImages] = useState<Record<number, boolean>>({});
   const [isCreating, setIsCreating] = useState(false);
 
   // Загружаем компетенции, ранги, сезоны и навыки при открытии drawer
@@ -229,24 +245,83 @@ export function MissionCreationDrawer({
   };
 
 
-  const toggleSkill = (skillId: number) => {
-    setSelectedSkills((prev) => {
-      const isSelected = prev.some(skill => skill.skill.id === skillId);
-      
-      if (isSelected) {
-        // Удаляем награду навыка
-        return prev.filter(skill => skill.skill.id !== skillId);
-      } else {
-        // Находим навык в сторе
-        const skill = skills.find(s => s.id === skillId);
-        if (skill) {
-          // Создаем награду навыка с levelIncrease = 1
-          const skillReward = new SkillReward(skill, 1);
-          return [...prev, skillReward];
+  // Методы для управления компетенциями
+  const addCompetencyReward = () => {
+    const newId = Math.max(...competencyRewards.map(c => c.id), 0) + 1;
+    setCompetencyRewards(prev => [
+      ...prev,
+      { id: newId, competency: null, levelIncrease: 1, skillRewards: [] }
+    ]);
+  };
+
+  const removeCompetencyReward = (id: number) => {
+    setCompetencyRewards(prev => prev.filter(c => c.id !== id));
+  };
+
+  const updateCompetencyReward = (id: number, field: 'competency' | 'levelIncrease', value: any) => {
+    setCompetencyRewards(prev => prev.map(c => {
+      if (c.id === id) {
+        if (field === 'competency') {
+          // При смене компетенции, инициализируем skillRewards на основе новой компетенции
+          const competency = value as Competency | null;
+          const skillRewards = competency 
+            ? competency.skills.map(skill => ({ skillId: skill.id, levelIncrease: 1 }))
+            : [];
+          return { ...c, competency, skillRewards };
         }
-        return prev;
+        return { ...c, [field]: value };
       }
-    });
+      return c;
+    }));
+  };
+
+  const updateSkillInCompetency = (competencyId: number, skillId: number, levelIncrease: number) => {
+    setCompetencyRewards(prev => prev.map(c => {
+      if (c.id === competencyId) {
+        const updatedSkillRewards = c.skillRewards.map(sr =>
+          sr.skillId === skillId ? { ...sr, levelIncrease } : sr
+        );
+        return { ...c, skillRewards: updatedSkillRewards };
+      }
+      return c;
+    }));
+  };
+
+  // Методы для управления отдельными навыками
+  const addStandaloneSkill = () => {
+    const newId = Math.max(...standaloneSkillRewards.map(s => s.id), 0, 0) + 1;
+    setStandaloneSkillRewards(prev => [
+      ...prev,
+      { id: newId, skill: null, levelIncrease: 1 }
+    ]);
+  };
+
+  const removeStandaloneSkill = (id: number) => {
+    setStandaloneSkillRewards(prev => prev.filter(s => s.id !== id));
+  };
+
+  const updateStandaloneSkill = (id: number, field: 'skill' | 'levelIncrease', value: any) => {
+    setStandaloneSkillRewards(prev => prev.map(s => 
+      s.id === id ? { ...s, [field]: value } : s
+    ));
+  };
+
+  // Метод для загрузки изображения артефакта
+  const handleImageUpload = async (artifactId: number, file: File) => {
+    try {
+      setUploadingImages(prev => ({ ...prev, [artifactId]: true }));
+      
+      const response = await mediaService.uploadFile(file);
+      const imageUrl = response.data.url;
+      
+      updateArtifact(artifactId, "imageUrl", imageUrl);
+      toast.success("Изображение успешно загружено!");
+    } catch (error) {
+      console.error("Ошибка при загрузке изображения:", error);
+      toast.error("Ошибка при загрузке изображения");
+    } finally {
+      setUploadingImages(prev => ({ ...prev, [artifactId]: false }));
+    }
   };
 
 
@@ -294,13 +369,10 @@ export function MissionCreationDrawer({
        return;
      }
 
-    if (!selectedCompetency) {
-      toast.error("Пожалуйста, выберите компетенцию");
-      return;
-    }
-
-    if (competencyLevelIncrease < 1) {
-      toast.error("Увеличение уровня компетенции должно быть не менее 1");
+    // Проверяем, что выбрана хотя бы одна компетенция
+    const validCompetencies = competencyRewards.filter(cr => cr.competency !== null);
+    if (validCompetencies.length === 0) {
+      toast.error("Пожалуйста, выберите хотя бы одну компетенцию");
       return;
     }
 
@@ -315,12 +387,12 @@ export function MissionCreationDrawer({
       
       // Парсим задания в доменную модель
       const parsedTasks = tasks
-        .filter(task => task.title && task.description) // Только заполненные задания
+        .filter(task => task.title && task.description)
         .map(task => new Task(0, task.title, task.description));
 
       // Парсим артефакты в доменную модель
       const parsedArtifacts = missionArtifacts
-        .filter(artifact => artifact.title && artifact.description) // Только заполненные артефакты
+        .filter(artifact => artifact.title && artifact.description)
         .map(artifact => new Artifact(0, artifact.title, artifact.description, artifact.rarity, artifact.imageUrl));
 
       // Создаем миссию
@@ -356,22 +428,38 @@ export function MissionCreationDrawer({
         await addArtifactToMission(createdMission.id, createdArtifact.id);
       }
 
-      // Прикрепляем награду компетенции к миссии
-      if (selectedCompetency) {
-        await addCompetencyRewardToMission(
-          createdMission.id, 
-          selectedCompetency.id, 
-          competencyLevelIncrease
-        );
+      // Прикрепляем награды компетенций к миссии
+      for (const compReward of validCompetencies) {
+        if (compReward.competency) {
+          await addCompetencyRewardToMission(
+            createdMission.id, 
+            compReward.competency.id, 
+            compReward.levelIncrease
+          );
+
+          // Прикрепляем награды навыков из этой компетенции
+          for (const skillReward of compReward.skillRewards) {
+            if (skillReward.levelIncrease > 0) {
+              await addSkillRewardToMission(
+                createdMission.id,
+                skillReward.skillId,
+                skillReward.levelIncrease
+              );
+            }
+          }
+        }
       }
 
-      // Прикрепляем награды навыков к миссии
-      for (const skillReward of selectedSkills) {
-        await addSkillRewardToMission(
-          createdMission.id, 
-          skillReward.skill.id, 
-          skillReward.levelIncrease
-        );
+      // Прикрепляем отдельные навыки (не привязанные к компетенциям)
+      const validStandaloneSkills = standaloneSkillRewards.filter(sr => sr.skill !== null);
+      for (const skillReward of validStandaloneSkills) {
+        if (skillReward.skill) {
+          await addSkillRewardToMission(
+            createdMission.id, 
+            skillReward.skill.id, 
+            skillReward.levelIncrease
+          );
+        }
       }
 
       // Показываем успешное сообщение
@@ -402,9 +490,8 @@ export function MissionCreationDrawer({
        location: "",
      });
       setTasks([{ id: 1, title: "", description: "", isRequired: true }]);
-      setSelectedCompetency(null);
-      setCompetencyLevelIncrease(1);
-      setSelectedSkills([]);
+      setCompetencyRewards([{ id: 1, competency: null, levelIncrease: 1, skillRewards: [] }]);
+      setStandaloneSkillRewards([]);
       setMissionArtifacts([{ id: 1, title: "", description: "", rarity: ArtifactRarityEnum.COMMON, imageUrl: "" }]);
 
     onOpenChange(false);
@@ -567,28 +654,6 @@ export function MissionCreationDrawer({
                     </div>
                     
                     <div className="space-y-2">
-                      <Label htmlFor="competency-select">Целевая компетенция *</Label>
-                      <Select
-                        value={selectedCompetency?.id.toString() || ""}
-                        onValueChange={(value) => {
-                          const competency = competencies.find(c => c.id.toString() === value);
-                          setSelectedCompetency(competency || null);
-                        }}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder={competenciesLoading ? "Загрузка компетенций..." : "Выберите компетенцию"} />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {competencies.map((competency) => (
-                            <SelectItem key={competency.id} value={competency.id.toString()}>
-                              {competency.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    
-                    <div className="space-y-2">
                       <Label htmlFor="season-select">Сезон *</Label>
                       <Select
                         value={formData.seasonId === -1 ? "" : formData.seasonId.toString()}
@@ -610,50 +675,192 @@ export function MissionCreationDrawer({
                 </Card>
 
 
-                {/* Skills Selection */}
+                {/* Competency Rewards */}
                 <Card className="card-enhanced">
                   <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Zap className="w-5 h-5 text-info" />
-                      Целевые навыки
-                    </CardTitle>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="flex items-center gap-2">
+                        <Star className="w-5 h-5 text-primary" />
+                        Выбор компетенций *
+                      </CardTitle>
+                      <Button variant="outline" size="sm" onClick={addCompetencyReward}>
+                        <Plus className="w-4 h-4 mr-2" />
+                        Добавить компетенцию
+                      </Button>
+                    </div>
                   </CardHeader>
-                  <CardContent>
-                    {skillsLoading ? (
-                      <div className="flex items-center justify-center py-8">
-                        <div className="text-muted-foreground">Загрузка навыков...</div>
-                      </div>
-                    ) : (
-                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                       {skills.map((skill) => {
-                         const isSelected = selectedSkills.some(s => s.skill.id === skill.id);
+                  <CardContent className="space-y-4">
+                    {competencyRewards.map((compReward, index) => {
+                      const selectedComp = compReward.competency;
+                      
+                      return (
+                        <div key={compReward.id} className="border rounded-lg p-4 space-y-4">
+                          <div className="flex items-center justify-between">
+                            <Badge variant="outline" className="text-xs">
+                              Компетенция {index + 1}
+                            </Badge>
+                            {competencyRewards.length > 1 && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => removeCompetencyReward(compReward.id)}
+                                className="text-destructive hover:text-destructive"
+                              >
+                                <X className="w-4 h-4" />
+                              </Button>
+                            )}
+                          </div>
 
-                         return (
-                           <div
-                             key={skill.id}
-                             className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-all ${
-                               isSelected
-                                 ? "border-primary bg-primary/5"
-                                 : "border-border hover:border-primary/30"
-                             }`}
-                             onClick={() => toggleSkill(skill.id)}
-                           >
-                             <div className="flex-1">
-                               <p className="font-medium text-sm">
-                                 {skill.name}
-                               </p>
-                               <p className="text-xs text-muted-foreground">
-                                 Максимальный уровень: {skill.maxLevel}
-                               </p>
-                             </div>
-                             <Checkbox
-                               checked={isSelected}
-                               onChange={() => toggleSkill(skill.id)}
-                             />
-                           </div>
-                         );
-                       })}
-                     </div>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <Label>Компетенция *</Label>
+                              <Select
+                                value={selectedComp?.id.toString() || ""}
+                                onValueChange={(value) => {
+                                  const comp = competencies.find(c => c.id.toString() === value);
+                                  updateCompetencyReward(compReward.id, 'competency', comp || null);
+                                }}
+                              >
+                                <SelectTrigger>
+                                  <SelectValue placeholder={competenciesLoading ? "Загрузка..." : "Выберите компетенцию"} />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {competencies.map((comp) => (
+                                    <SelectItem key={comp.id} value={comp.id.toString()}>
+                                      {comp.name}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label>Повышение уровня *</Label>
+                              <Input
+                                type="number"
+                                min="1"
+                                value={compReward.levelIncrease}
+                                onChange={(e) => updateCompetencyReward(compReward.id, 'levelIncrease', parseInt(e.target.value) || 1)}
+                                placeholder="1"
+                              />
+                            </div>
+                          </div>
+
+                          {/* Навыки компетенции */}
+                          {selectedComp && selectedComp.skills.length > 0 && (
+                            <div className="space-y-3 pt-3 border-t">
+                              <p className="text-sm font-medium">Навыки компетенции:</p>
+                              {compReward.skillRewards.map(skillReward => {
+                                const skill = selectedComp.skills.find(s => s.id === skillReward.skillId);
+                                if (!skill) return null;
+
+                                return (
+                                  <div key={skillReward.skillId} className="flex items-center gap-3">
+                                    <div className="flex-1">
+                                      <p className="text-sm font-medium">{skill.name}</p>
+                                      <p className="text-xs text-muted-foreground">
+                                        Макс. уровень: {skill.maxLevel}
+                                      </p>
+                                    </div>
+                                    <div className="w-24">
+                                      <Input
+                                        type="number"
+                                        min="0"
+                                        value={skillReward.levelIncrease}
+                                        onChange={(e) => updateSkillInCompetency(compReward.id, skillReward.skillId, parseInt(e.target.value) || 0)}
+                                        placeholder="0"
+                                        className="text-sm"
+                                      />
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </CardContent>
+                </Card>
+
+                {/* Standalone Skills */}
+                <Card className="card-enhanced">
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="flex items-center gap-2">
+                        <Zap className="w-5 h-5 text-info" />
+                        Отдельные навыки
+                      </CardTitle>
+                      <Button variant="outline" size="sm" onClick={addStandaloneSkill}>
+                        <Plus className="w-4 h-4 mr-2" />
+                        Добавить навык
+                      </Button>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <p className="text-sm text-muted-foreground">
+                      Навыки, не связанные с компетенциями (необязательно)
+                    </p>
+                    
+                    {standaloneSkillRewards.length === 0 ? (
+                      <p className="text-sm text-muted-foreground text-center py-4">
+                        Нет отдельных навыков
+                      </p>
+                    ) : (
+                      <div className="space-y-3">
+                        {standaloneSkillRewards.map((skillReward, index) => (
+                          <div key={skillReward.id} className="border rounded-lg p-4 space-y-3">
+                            <div className="flex items-center justify-between">
+                              <Badge variant="outline" className="text-xs">
+                                Навык {index + 1}
+                              </Badge>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => removeStandaloneSkill(skillReward.id)}
+                                className="text-destructive hover:text-destructive"
+                              >
+                                <X className="w-4 h-4" />
+                              </Button>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div className="space-y-2">
+                                <Label>Навык *</Label>
+                                <Select
+                                  value={skillReward.skill?.id.toString() || ""}
+                                  onValueChange={(value) => {
+                                    const skill = skills.find(s => s.id.toString() === value);
+                                    updateStandaloneSkill(skillReward.id, 'skill', skill || null);
+                                  }}
+                                >
+                                  <SelectTrigger>
+                                    <SelectValue placeholder={skillsLoading ? "Загрузка..." : "Выберите навык"} />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {skills.map((skill) => (
+                                      <SelectItem key={skill.id} value={skill.id.toString()}>
+                                        {skill.name}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label>Повышение уровня *</Label>
+                                <Input
+                                  type="number"
+                                  min="1"
+                                  value={skillReward.levelIncrease}
+                                  onChange={(e) => updateStandaloneSkill(skillReward.id, 'levelIncrease', parseInt(e.target.value) || 1)}
+                                  placeholder="1"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     )}
                   </CardContent>
                 </Card>
@@ -736,13 +943,35 @@ export function MissionCreationDrawer({
                         </div>
                         
                         <div className="space-y-2">
-                          <Label htmlFor={`artifact-image-${artifact.id}`}>URL изображения</Label>
-                          <Input
-                            id={`artifact-image-${artifact.id}`}
-                            placeholder="https://example.com/artifact-image.jpg"
-                            value={artifact.imageUrl}
-                            onChange={(e) => updateArtifact(artifact.id, "imageUrl", e.target.value)}
-                          />
+                          <Label htmlFor={`artifact-image-${artifact.id}`}>Изображение артефакта</Label>
+                          <div className="flex items-center gap-3">
+                            <Input
+                              id={`artifact-image-${artifact.id}`}
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) {
+                                  handleImageUpload(artifact.id, file);
+                                }
+                              }}
+                              disabled={uploadingImages[artifact.id]}
+                              className="flex-1"
+                            />
+                            {uploadingImages[artifact.id] && (
+                              <span className="text-xs text-muted-foreground">Загрузка...</span>
+                            )}
+                            {artifact.imageUrl && !uploadingImages[artifact.id] && (
+                              <Badge variant="outline" className="text-xs bg-success/10 text-success">
+                                ✓ Загружено
+                              </Badge>
+                            )}
+                          </div>
+                          {artifact.imageUrl && (
+                            <p className="text-xs text-muted-foreground truncate">
+                              {artifact.imageUrl}
+                            </p>
+                          )}
                         </div>
                       </div>
                     ))}
@@ -968,21 +1197,6 @@ export function MissionCreationDrawer({
                         }
                       />
                     </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="competency-level">Увеличение уровня компетенции</Label>
-                      <Input
-                        id="competency-level"
-                        type="number"
-                        min="1"
-                        value={competencyLevelIncrease}
-                        onChange={(e) => setCompetencyLevelIncrease(parseInt(e.target.value) || 1)}
-                        placeholder="Введите количество уровней"
-                      />
-                      <p className="text-xs text-muted-foreground">
-                        Количество уровней, на которое повысится компетенция при выполнении миссии
-                      </p>
-                    </div>
                   </CardContent>
                 </Card>
 
@@ -1016,32 +1230,39 @@ export function MissionCreationDrawer({
                          </Badge>
                        </div>
                      )}
-                     {selectedCompetency && (
+                     {competencyRewards.filter(cr => cr.competency).length > 0 && (
                        <div>
-                         <strong>Компетенция:</strong>
+                         <strong>Компетенции:</strong>
                          <div className="flex flex-wrap gap-1 mt-1">
-                           <Badge
-                             variant="secondary"
-                             className="text-xs"
-                           >
-                             {selectedCompetency.name} (+{competencyLevelIncrease})
-                           </Badge>
+                           {competencyRewards
+                             .filter(cr => cr.competency)
+                             .map((cr) => (
+                               <Badge
+                                 key={cr.id}
+                                 variant="secondary"
+                                 className="text-xs"
+                               >
+                                 {cr.competency!.name} (+{cr.levelIncrease})
+                               </Badge>
+                             ))}
                          </div>
                        </div>
                      )}
-                     {selectedSkills.length > 0 && (
+                     {standaloneSkillRewards.filter(sr => sr.skill).length > 0 && (
                        <div>
-                         <strong>Навыки:</strong>
+                         <strong>Отдельные навыки:</strong>
                          <div className="flex flex-wrap gap-1 mt-1">
-                           {selectedSkills.map((skillReward) => (
-                             <Badge
-                               key={skillReward.skill.id}
-                               variant="secondary"
-                               className="text-xs"
-                             >
-                               {skillReward.skill.name} (+{skillReward.levelIncrease})
-                             </Badge>
-                           ))}
+                           {standaloneSkillRewards
+                             .filter(sr => sr.skill)
+                             .map((sr) => (
+                               <Badge
+                                 key={sr.id}
+                                 variant="secondary"
+                                 className="text-xs"
+                               >
+                                 {sr.skill!.name} (+{sr.levelIncrease})
+                               </Badge>
+                             ))}
                          </div>
                        </div>
                      )}
