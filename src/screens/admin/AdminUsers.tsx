@@ -1,6 +1,7 @@
+import { useState } from "react";
 import { TabsContent } from "../../components/ui/tabs";
 import { Button } from "../../components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, Users as UsersIcon, Shield, Code } from "lucide-react";
 import {
   Card,
   CardHeader,
@@ -11,12 +12,15 @@ import { Search } from "lucide-react";
 import { Input } from "../../components/ui/input";
 import { Badge } from "../../components/ui/badge";
 import { Eye, Edit, Trash2, Filter } from "lucide-react";
+import { AdminModeration } from "./AdminModeration";
+import { AdminRules } from "./AdminRules";
 
 interface AdminUsersProps {
   onUserDetailOpen: (userId: string) => void;
 }
 
 export function AdminUsers({ onUserDetailOpen }: AdminUsersProps) {
+  const [usersTab, setUsersTab] = useState("users");
   const recentUsers = [
     {
       id: "user-1",
@@ -50,18 +54,54 @@ export function AdminUsers({ onUserDetailOpen }: AdminUsersProps) {
     <TabsContent value="users" className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-            <h2 className="text-lg font-semibold">Управление пользователями</h2>
-            <p className="text-sm text-muted-foreground">
-              Управление учетными записями и правами пользователей
-            </p>
-          </div>
-          <Button className="bg-primary hover:bg-primary-600 text-white">
-            <Plus className="w-4 h-4 mr-2" />
-            Добавить пользователя
-          </Button>
+          <h2 className="text-lg font-semibold">Управление пользователями</h2>
+          <p className="text-sm text-muted-foreground">
+            Управление учетными записями, модерация и правила системы
+          </p>
         </div>
+      </div>
 
-        <Card className="card-enhanced">
+      {/* Users Tabs */}
+      <Card className="card-enhanced">
+        <CardHeader>
+          <div className="flex gap-1 bg-muted rounded-lg p-1">
+            {[
+              { key: "users", label: "Пользователи", icon: UsersIcon },
+              { key: "moderation", label: "Модерация", icon: Shield },
+              { key: "rules", label: "Правила", icon: Code },
+            ].map(({ key, label, icon: Icon }) => (
+              <button
+                key={key}
+                onClick={() => setUsersTab(key)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                  usersTab === key
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <Icon className="w-4 h-4" />
+                {label}
+              </button>
+            ))}
+          </div>
+        </CardHeader>
+        <CardContent>
+          {usersTab === "users" && (
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-base font-semibold">Все пользователи</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Управление учетными записями и правами пользователей
+                  </p>
+                </div>
+                <Button className="bg-primary hover:bg-primary-600 text-white">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Добавить пользователя
+                </Button>
+              </div>
+
+              <Card className="card-enhanced">
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle>Все пользователи</CardTitle>
@@ -135,6 +175,18 @@ export function AdminUsers({ onUserDetailOpen }: AdminUsersProps) {
             </div>
           </CardContent>
         </Card>
+            </div>
+          )}
+
+          {usersTab === "moderation" && (
+            <AdminModeration />
+          )}
+
+          {usersTab === "rules" && (
+            <AdminRules />
+          )}
+        </CardContent>
+      </Card>
     </TabsContent>
   );
 }
