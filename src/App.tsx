@@ -134,7 +134,7 @@ const AppContent: React.FC = () => {
               }}
               onSettingsOpen={() => navigate("/settings")}
               onGuildProgressOpen={() => {}}
-              onArtifactsOpen={() => navigate("/artifacts")}
+              onArtifactsOpen={() => navigate("/artifact-hub")}
             />
           }
         />
