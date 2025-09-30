@@ -50,12 +50,12 @@ const AppContent: React.FC = () => {
     );
   }, [shouldShowOnboarding]);
 
-  // Управление видимостью топ-бара на основе маршрута
+  // Управление видимостью навигационных вкладок на основе маршрута
   useEffect(() => {
     const pathname = location.pathname;
     
-    // Маршруты, где топ-бар должен быть скрыт
-    const hideTopBarRoutes = [
+    // Маршруты, где навигационные вкладки должны быть скрыты
+    const hideNavigationTabsRoutes = [
       '/notifications',
       '/admin',
       '/settings',
@@ -64,11 +64,11 @@ const AppContent: React.FC = () => {
     ];
     
     // Проверяем, начинается ли текущий путь с любого из маршрутов для скрытия
-    const shouldHideTopBar = hideTopBarRoutes.some(route => 
+    const shouldHideNavigationTabs = hideNavigationTabsRoutes.some(route => 
       pathname === route || pathname.startsWith(route + '/')
     );
     
-    setTopNavigationVisible(!shouldHideTopBar);
+    setTopNavigationVisible(!shouldHideNavigationTabs);
   }, [location.pathname, setTopNavigationVisible]);
 
   return isAuthenticated ? (

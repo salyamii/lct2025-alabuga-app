@@ -1,7 +1,8 @@
 import React, { useMemo } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { useNavigation } from '../navigation/Navigation';
-import { DesktopNavigationTopBar } from './DesktopNavigationTopBar';
+import { TopAppBar } from './TopAppBar';
+import { TopNavigationTabs } from './TopNavigationTabs';
 import { useIsMobile } from '../components/ui/use-mobile';
 import { MobileNavigationBottomBar } from './MobileNavigationBottomBar';
 import { useNavigationStore } from '../stores/useNavigationStore';
@@ -56,13 +57,21 @@ export default function AppLayout() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      { !isMobile && isTopNavigationVisible && <DesktopNavigationTopBar
-        activeTab={activeTab}
-        onTabChange={handleTabChange}
-        onAdminOpen={handleAdminOpen}
-        onNotificationsOpen={handleNotificationsOpen}
-        onSettingsOpen={handleSettingsOpen}
-      />}
+      {/* TopAppBar - всегда видимый на всех устройствах */}
+      <div className="cosmic-gradient">
+        <TopAppBar
+          onAdminOpen={handleAdminOpen}
+          onNotificationsOpen={handleNotificationsOpen}
+          onSettingsOpen={handleSettingsOpen}
+        />
+        {/* TopNavigationTabs - только на десктопе и скрывается на определенных страницах */}
+        { !isMobile && isTopNavigationVisible && (
+          <TopNavigationTabs
+            activeTab={activeTab}
+            onTabChange={handleTabChange}
+          />
+        )}
+      </div>
       <main className={`flex-1 ${isMobile ? 'pb-16' : ''}`}>
         <Outlet />
         {isMobile && (
