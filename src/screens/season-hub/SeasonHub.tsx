@@ -12,102 +12,88 @@ import { SeasonHubInfo } from "./SeasonHubInfo";
 import { SeasonHubActiveEvents } from "./SeasonActiveEvents";
 import { MissionChainCard } from "./MissionChainCard";
 import { MissionCard } from "./MissionCard";
+import { MissionChainOverlay } from "./MissionChainOverlay";
 import { useSeasonStore } from "../../stores/useSeasonStore";
-import { useMissionStore } from "../../stores/useMissionStore";
 import { useMissionChainStore } from "../../stores/useMissionChainStore";
+import { useOverlayStore } from "../../stores/useOverlayStore";
+import { useUserStore } from "../../stores/useUserStore";
 import { SeasonHubRightRail } from "./SeasonHubRightRail";
 import { SeasonHubMissionChains } from "./SeasonHubMissionChains";
-import { SeasonHubMissions } from "./SeasonHubMissions";
+import { SeasonHubMissions, SeasonHubMissionsProps } from "./SeasonHubMissions";
 
 interface SeasonHubProps {
-    onSkillPathOpen: () => void;
     onMissionLaunch: (missionId: number) => void;
     onMissionDetails: (missionId: number) => void;
     onSquadronDetails: () => void;
     onShipLogOpen: () => void;
     onMentorRatingOpen?: () => void;
-    onSeasonSettings?: () => void;
     onMissionChainOpen: (missionChainId: number) => void;
   }
 
   export function SeasonHub({ 
-    onSkillPathOpen, 
     onMissionLaunch, 
     onMissionDetails, 
     onSquadronDetails,
     onShipLogOpen,
     onMentorRatingOpen,
-    onSeasonSettings,
     onMissionChainOpen: onMissionChainOpen
   }: SeasonHubProps) {
 
 
-    const { seasons, currentSeason, isLoading } = useSeasonStore();
-    const { missions } = useMissionStore();
+    const { seasons, isLoading } = useSeasonStore();
     const { missionChains } = useMissionChainStore();
+    const { user } = useUserStore();
+    const { 
+      missionChainViewOpen, 
+      selectedMissionChainId, 
+      openMissionChainView, 
+      closeMissionChainView 
+    } = useOverlayStore();
 
-    const displayedSeason = {
-        id: currentSeason?.id.toString() || "id сезона",
-        name: currentSeason?.name || "Наименование сезона",
-        phase: "Операции в глубоком космосе",
+    // Сортируем сезоны по дате начала
+    const sortedSeasons = [...seasons].sort((a, b) => 
+      a.startDate.getTime() - b.startDate.getTime()
+    );
+
+    // Находим активный сезон - первый сезон, дата окончания которого >= текущей даты
+    const now = new Date();
+    const activeSeason = sortedSeasons.find(season => season.endDate >= now) || null;
+
+    // Остальные сезоны (следующие сезоны)
+    const upcomingSeasons = sortedSeasons.filter(season => 
+      activeSeason ? season.id !== activeSeason.id && season.startDate > now : season.startDate > now
+    );
+
+    // Получаем миссии пользователя (из user.missions)
+    const userMissions = user?.missions || [];
+
+    // Фильтруем миссии по активному сезону
+    const seasonUserMissions = activeSeason 
+      ? userMissions.filter(m => m.seasonId === activeSeason.id)
+      : userMissions;
+
+    // Вычисляем реальные данные из пользователя для активного сезона
+    const seasonCompletedCount = seasonUserMissions.filter(m => m.isCompleted).length;
+    const seasonTotalCount = seasonUserMissions.length;
+    const seasonProgress = seasonTotalCount > 0 
+      ? Math.round((seasonCompletedCount / seasonTotalCount) * 100) 
+      : 0;
+
+    const displayedSeason = activeSeason ? {
+        id: activeSeason.id.toString(),
+        name: activeSeason.name,
         description: "Навигация через сложные космические задачи и установка новых торговых маршрутов",
-        timeRemaining: currentSeason ? `${currentSeason.getRemainingDays()} дней` : "unknown дней",
-        progress: 67,
-        totalMissions: 12,
-        completedMissions: 8,
-        participants: 2847,
+        timeRemaining: `${activeSeason.getRemainingDays()} дней`,
+        progress: seasonProgress, // ✅ Прогресс по активному сезону
+        totalMissions: seasonTotalCount, // ✅ Миссии активного сезона
+        completedMissions: seasonCompletedCount, // ✅ Выполненные миссии сезона
+        participants: 2847, // Mock - количество участников сезона
         rewards: {
           seasonBadge: "Навигатор Дельты",
           finalReward: "Сертификат Командира Космических Операций",
           bonusMana: 2500
         }
-      };
-
-      // Season Branches - mission chains with different completion rules
-  const seasonBranches = [
-    {
-      id: "branch-recruiting",
-      title: "Рекрутинг • Оффер",
-      description: "Завершите процесс рекрутинга от оценки кандидата до доставки окончательного оффера",
-      rule: {
-        type: "MAND_AND_ANY" as const,
-        display: "Обязательно 3 + Любые 2"
-      },
-      progress: {
-        completed: 3,
-        total: 6
-      },
-      nextMission: {
-        title: "Согласовать процесс найма"
-      },
-      rewards: {
-        xp: 100,
-        mana: 150,
-        artifacts: ["Специалист найма", "Искатель талантов"]
-      }
-    },
-    {
-      id: "branch-tech-mastery",
-      title: "Тех-мастерство • Фронтенд",
-      description: "Прокачай frontend-скиллы: от React-паттернов до оптимизации перформанса",
-      rule: {
-        type: "ALL" as const,
-        display: "Все обязательны"
-      },
-      progress: {
-        completed: 2,
-        total: 4
-      },
-      nextMission: {
-        title: "Оптимизация перформанса"
-      },
-      rewards: {
-        xp: 1200,
-        mana: 1500,
-        artifacts: ["Мастер фронтенда", "Эксперт по перформансу"]
-      }
-    }
-  ];
+      } : null;
 
   // Космические ивенты — лимитированные спец-миссии
   const cosmicEvents = [
@@ -207,6 +193,28 @@ interface SeasonHubProps {
 
   const currentEpisodeMissions = seasonMissions.filter(m => m.episode === 1 && !m.isLocked);
 
+  // Обработчик открытия цепочки миссий
+  const handleMissionChainOpen = (chainId: number) => {
+    openMissionChainView(chainId.toString());
+  };
+
+  // Обработчик выбора миссии внутри цепочки (переход на экран деталей)
+  const handleMissionSelect = (missionId: string) => {
+    // Преобразуем строковый ID в number, если нужно
+    const numericId = parseInt(missionId, 10);
+    if (!isNaN(numericId)) {
+      onMissionDetails(numericId); // Ведет на /mission-detail/:missionId
+    }
+  };
+
+  // Обработчик запуска следующей миссии
+  const handleStartNextMission = (missionId: string) => {
+    const numericId = parseInt(missionId, 10);
+    if (!isNaN(numericId)) {
+      onMissionLaunch(numericId);
+    }
+  };
+
     return (
         <div className="min-h-screen bg-background relative">
           {/* Cosmic Background Elements */}
@@ -223,45 +231,61 @@ interface SeasonHubProps {
               <div className="lg:col-span-2 space-y-4 md:space-y-6">
                 
                 {/* Season Hero - Enhanced Cosmic Design */}
-                <SeasonHubInfo 
-                  season={displayedSeason}
-                  onSkillPathOpen={onSkillPathOpen}
-                  onSeasonSettings={onSeasonSettings}
-                />
+                {displayedSeason && (
+                  <SeasonHubInfo 
+                    season={displayedSeason}
+                  />
+                )}
 
                 {/* Mock Active Events */}
                 <SeasonHubActiveEvents cosmicEvents={cosmicEvents} />
     
                 {/* Real Mission Chains */}
-                {missionChains.length > 0 && <SeasonHubMissionChains onMissionChainOpen={onMissionChainOpen} />}
+                {missionChains.length > 0 && <SeasonHubMissionChains onMissionChainOpen={handleMissionChainOpen} />}
 
-
-
-                <SeasonHubMissions currentSeason={currentSeason} missions={missions} onMissionLaunch={onMissionLaunch} onMissionDetails={onMissionDetails} />
+                {/* Missions from Active Season */}
+                <SeasonHubMissions 
+                  currentSeason={activeSeason} 
+                  missions={seasonUserMissions} 
+                  user={user}
+                  onMissionLaunch={onMissionLaunch} 
+                  onMissionDetails={onMissionDetails} 
+                />
     
-                {/* Next Episode Preview */}
-                <Card className="border-dashed border-2 border-primary/30 bg-primary/5">
-                  <CardContent className="p-6 md:p-8 text-center space-y-3">
-                    <div className="w-12 h-12 bg-primary/20 rounded-lg mx-auto flex items-center justify-center">
-                      <Shield className="w-6 h-6 text-primary" />
-                    </div>
-                    <h4 className="font-medium">Следующий сезон: Глубокие космо-операции</h4>
-                    <p className="text-sm text-muted-foreground">
-                      Завершите миссии этого сезона, чтобы открыть более сложные мульти-сквад операции.
-                    </p>
-                    <div className="flex justify-center">
-                      <Badge variant="outline">
-                        <Star className="w-3 h-3 mr-1" />
-                        Требуется ранг Навигатора
-                      </Badge>
-                    </div>
-                  </CardContent>
-                </Card>
+                {/* Upcoming Seasons */}
+                {upcomingSeasons.map((upcomingSeason) => (
+                  <Card key={upcomingSeason.id} className="border-dashed border-2 border-primary/30 bg-primary/5">
+                    <CardContent className="p-6 md:p-8 text-center space-y-3">
+                      <div className="w-12 h-12 bg-primary/20 rounded-lg mx-auto flex items-center justify-center">
+                        <Shield className="w-6 h-6 text-primary" />
+                      </div>
+                      <h4 className="font-medium">Следующий сезон: {upcomingSeason.name}</h4>
+                      <p className="text-sm text-muted-foreground">
+                        Начало: {upcomingSeason.startDate.toLocaleDateString('ru-RU')}
+                      </p>
+                      <div className="flex justify-center">
+                        <Badge variant="outline">
+                          <Star className="w-3 h-3 mr-1" />
+                          Требуется ранг Навигатора
+                        </Badge>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
     
-              <SeasonHubRightRail />
+              <SeasonHubRightRail user={user} />
             </div>
           </div>
+
+          {/* Mission Chain Overlay */}
+          <MissionChainOverlay
+            open={missionChainViewOpen}
+            onOpenChange={closeMissionChainView}
+            branchId={selectedMissionChainId}
+            onMissionSelect={handleMissionSelect}
+            onStartNextMission={handleStartNextMission}
+          />
         </div>
       );
 }

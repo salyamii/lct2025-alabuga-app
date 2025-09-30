@@ -3,9 +3,24 @@ import { Button } from "../../components/ui/button";
 import { Progress } from "../../components/ui/progress";
 import { Badge } from "../../components/ui/badge";
 import { Trophy, Sparkles, Users, Globe, ChevronRight, TrendingUp, FileText, Star } from "lucide-react";
+import { User } from "../../domain";
+import { useRankStore } from "../../stores/useRankStore";
+import { useEffect } from "react";
 
+interface SeasonHubRightRailProps {
+  user: User | null;
+}
 
-export function SeasonHubRightRail() {
+export function SeasonHubRightRail({ user }: SeasonHubRightRailProps) {
+    const { ranks, fetchRanks } = useRankStore();
+
+    // Загружаем ранги при монтировании компонента
+    useEffect(() => {
+      if (ranks.length === 0) {
+        fetchRanks();
+      }
+    }, [ranks.length, fetchRanks]);
+
     // Обработчики событий
     const onSquadronDetails = () => {
         console.log('Открыть детали сквада');
@@ -18,6 +33,34 @@ export function SeasonHubRightRail() {
     const onMentorRatingOpen = () => {
         console.log('Открыть оценку ментора');
     };
+
+    // Вычисляем данные пользователя
+    const userXP = user?.xp || 0;
+    const userMana = user?.mana || 0;
+    const userRankId = user?.rankId || 1;
+
+    // Находим текущий ранг пользователя
+    const currentRank = ranks.find(r => r.id === userRankId);
+    
+    // Сортируем ранги по requiredXp для нахождения следующего
+    const sortedRanks = [...ranks].sort((a, b) => a.requiredXp - b.requiredXp);
+    
+    // Находим следующий ранг (первый ранг с requiredXp больше текущего)
+    const currentRankXP = currentRank?.requiredXp || 0;
+    const nextRank = sortedRanks.find(r => r.requiredXp > currentRankXP);
+    
+    // Находим предыдущий ранг для расчета прогресса
+    const currentRankIndex = sortedRanks.findIndex(r => r.id === userRankId);
+    const previousRank = currentRankIndex > 0 ? sortedRanks[currentRankIndex - 1] : null;
+
+    const currentRankName = currentRank?.name || "Космический кадет";
+    const nextRankXP = nextRank?.requiredXp || currentRankXP;
+    const previousRankXP = previousRank?.requiredXp || 0;
+    
+    const xpInCurrentRank = userXP - previousRankXP;
+    const xpNeededForRank = nextRankXP - previousRankXP;
+    const xpProgress = xpNeededForRank > 0 ? Math.round((xpInCurrentRank / xpNeededForRank) * 100) : 100;
+    const xpToNextRank = Math.max(0, nextRankXP - userXP);
 
     return (
         <div className="space-y-4 md:space-y-6 lg:block">
@@ -36,20 +79,29 @@ export function SeasonHubRightRail() {
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-muted-foreground">Текущий ранг</span>
-                        <Badge className="bg-primary-200 text-primary-600">Космический кадет</Badge>
+                        <Badge className="bg-primary-200 text-primary-600">{currentRankName}</Badge>
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-muted-foreground">XP полёта</span>
-                        <span className="font-mono text-sm md:text-base">2,450 / 3,000</span>
+                        <span className="font-mono text-sm md:text-base">
+                          {userXP.toLocaleString()} / {nextRankXP.toLocaleString()}
+                        </span>
                       </div>
-                      <Progress value={81.7} className="h-2" />
-                      <p className="text-xs text-muted-foreground">550 XP to Commander</p>
+                      <Progress value={xpProgress} className="h-2" />
+                      <p className="text-xs text-muted-foreground">
+                        {nextRank 
+                          ? `${xpToNextRank.toLocaleString()} XP до ${nextRank.name}`
+                          : "Максимальный ранг достигнут!"
+                        }
+                      </p>
                     </div>
                     
                     <div className="pt-3 border-t border-border">
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-muted-foreground">Баланс маны</span>
-                        <span className="font-mono text-lg text-rewards-amber">1,250</span>
+                        <span className="font-mono text-lg text-rewards-amber">
+                          {userMana.toLocaleString()}
+                        </span>
                       </div>
                     </div>
                   </CardContent>

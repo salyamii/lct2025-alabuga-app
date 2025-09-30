@@ -1,14 +1,12 @@
 import { Card, CardContent } from "../../components/ui/card";
-import { Stars, Target, Calendar, Users, FileText, Orbit } from "lucide-react";
+import { Stars, Calendar, Users, Orbit } from "lucide-react";
 import { Badge } from "../../components/ui/badge";
-import { Button } from "../../components/ui/button";
 import { Progress } from "../../components/ui/progress";
 
 interface SeasonHubInfoProps {
   season: {
     id: string;
     name: string;
-    phase: string;
     description: string;
     timeRemaining: string;
     progress: number;
@@ -21,15 +19,9 @@ interface SeasonHubInfoProps {
       bonusMana: number;
     };
   };
-  onSkillPathOpen: () => void;
-  onSeasonSettings?: () => void;
 }
 
-export function SeasonHubInfo({ 
-  season, 
-  onSkillPathOpen, 
-  onSeasonSettings 
-}: SeasonHubInfoProps) {
+export function SeasonHubInfo({ season }: SeasonHubInfoProps) {
   return (
     <Card className="cosmic-gradient text-white overflow-hidden relative">
       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-50"></div>
@@ -45,7 +37,6 @@ export function SeasonHubInfo({
               </div>
               <div>
                 <h2 className="text-xl md:text-2xl font-bold">{season.name}</h2>
-                <p className="text-white/80 text-sm">Сезон {season.phase}</p>
               </div>
             </div>
             <p className="text-white/90 text-sm md:text-base max-w-md">
@@ -67,14 +58,6 @@ export function SeasonHubInfo({
               <div className="font-bold text-lg">{season.completedMissions}/{season.totalMissions}</div>
               <div className="text-xs">Заданий завершено</div>
             </div>
-            <Button 
-              variant="secondary"
-              onClick={onSkillPathOpen}
-              className="bg-white/20 text-white border-white/30 hover:bg-white/30 w-full sm:w-auto"
-            >
-              <Target className="w-4 h-4 mr-2" />
-              Дерево компетенций
-            </Button>
           </div>
         </div>
         <div className="mt-4">
@@ -84,18 +67,6 @@ export function SeasonHubInfo({
           </div>
           <Progress value={season.progress} className="h-2 bg-white/20" />
         </div>
-        {onSeasonSettings && (
-          <div className="mt-4 pt-4 border-t border-white/20">
-            <Button 
-              variant="ghost"
-              onClick={onSeasonSettings}
-              className="text-white/90 hover:text-white hover:bg-white/10 text-sm w-full sm:w-auto"
-            >
-              <FileText className="w-4 h-4 mr-2" />
-              Центр управления сезоном
-            </Button>
-          </div>
-        )}
       </CardContent>
     </Card>
   );

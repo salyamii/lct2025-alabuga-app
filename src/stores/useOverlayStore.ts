@@ -21,11 +21,13 @@ interface OverlayState {
   storeManagementOpen: boolean;
   chainCreationOpen: boolean;
   chainEditOpen: boolean;
+  missionChainViewOpen: boolean;
   seasonCreationOpen: boolean;
   seasonEditOpen: boolean;
   
   // Выбранные элементы для редактирования
   selectedChain: any;
+  selectedMissionChainId: string | null;
   selectedBranch: any;
   selectedMission: any;
   selectedCompetency: any;
@@ -75,6 +77,8 @@ interface OverlayState {
   closeChainCreation: () => void;
   openChainEdit: (chain?: any) => void;
   closeChainEdit: () => void;
+  openMissionChainView: (chainId: string) => void;
+  closeMissionChainView: () => void;
   openSeasonCreation: () => void;
   closeSeasonCreation: () => void;
   openSeasonEdit: (season?: any) => void;
@@ -115,10 +119,12 @@ export const useOverlayStore = create<OverlayState>()((set, get) => ({
   storeManagementOpen: false,
   chainCreationOpen: false,
   chainEditOpen: false,
+  missionChainViewOpen: false,
   seasonCreationOpen: false,
   seasonEditOpen: false,
   
   selectedChain: null,
+  selectedMissionChainId: null,
   selectedBranch: null,
   selectedMission: null,
   selectedCompetency: null,
@@ -240,6 +246,15 @@ export const useOverlayStore = create<OverlayState>()((set, get) => ({
     selectedChain: null 
   }),
   
+  openMissionChainView: (chainId: string) => set({ 
+    missionChainViewOpen: true, 
+    selectedMissionChainId: chainId 
+  }),
+  closeMissionChainView: () => set({ 
+    missionChainViewOpen: false, 
+    selectedMissionChainId: null 
+  }),
+  
   openSeasonCreation: () => set({ seasonCreationOpen: true }),
   closeSeasonCreation: () => set({ seasonCreationOpen: false }),
   
@@ -273,9 +288,11 @@ export const useOverlayStore = create<OverlayState>()((set, get) => ({
     storeManagementOpen: false,
     chainCreationOpen: false,
     chainEditOpen: false,
+    missionChainViewOpen: false,
     seasonCreationOpen: false,
     seasonEditOpen: false,
     selectedChain: null,
+    selectedMissionChainId: null,
     selectedBranch: null,
     selectedMission: null,
     selectedCompetency: null,

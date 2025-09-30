@@ -1,5 +1,9 @@
 // Экспорт всех доменных моделей
 export * from './user/user';
+export * from './user/userMission';
+export * from './user/userTask';
+export * from './user/userSkill';
+export * from './user/userCompetency';
 export * from './mission';
 export * from './missionChain';
 export * from './artifact';
@@ -11,6 +15,10 @@ export * from './season';
 
 // Переэкспорт основных доменных моделей для удобства
 export { User } from './user/user';
+export { UserMission } from './user/userMission';
+export { UserTask } from './user/userTask';
+export { UserSkill } from './user/userSkill';
+export { UserCompetency } from './user/userCompetency';
 export { Mission, MissionTask } from './mission';
 export { MissionChain, MissionDependency, MissionChainMission } from './missionChain';
 export { Artifact } from './artifact';

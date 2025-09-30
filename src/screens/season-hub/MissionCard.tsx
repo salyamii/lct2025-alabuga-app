@@ -1,53 +1,39 @@
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 import { Badge } from "../../components/ui/badge";
 import { Button } from "../../components/ui/button";
-import { Clock, Coins, ChevronRight, MapPin, Users, Star, Shield, Zap, Rocket } from "lucide-react";
-import { Mission } from "../../domain/mission";
+import { Clock, Coins, ChevronRight, MapPin, Users, Star, Shield, Zap, Rocket, CheckCircle, Lock } from "lucide-react";
+import { UserMission } from "../../domain";
+import { useRankStore } from "../../stores/useRankStore";
+import { useEffect } from "react";
 
 interface MissionCardProps {
-  // mission: {
-  //   id: string;
-  //   title: string;
-  //   purpose: string;
-  //   tags: string[];
-  //   timeEstimate: string;
-  //   rewards: {
-  //     mana: number;
-  //     xp: number;
-  //   };
-  //   location?: string;
-  //   participants?: number;
-  //   maxParticipants?: number;
-  //   difficulty: "Cadet" | "Navigator" | "Commander" | "Admiral" | "Fleet Admiral";
-  //   isPaired?: boolean;
-  //   isGroupMission?: boolean;
-  //   mentorRatingRequired?: boolean;
-  //   requiresTeam?: boolean;
-  //   steps: number;
-  //   proofs: number;
-  //   episode?: number;
-  //   isLocked?: boolean;
-  // };
-  mission: Mission;
+  mission: UserMission;  // ✅ Теперь UserMission
+  seasonName: string;
+  isCompleted?: boolean;
+  isLocked?: boolean;
   onLaunch: (missionId: number) => void;
   onViewDetails: (missionId: number) => void;
 }
 
-export function MissionCard({ mission, onLaunch, onViewDetails }: MissionCardProps) {
+export function MissionCard({ mission, seasonName, isCompleted = false, isLocked = false, onLaunch, onViewDetails }: MissionCardProps) {
+  const { ranks, fetchRanks } = useRankStore();
+
+  // Загружаем ранги при монтировании
+  useEffect(() => {
+    if (ranks.length === 0) {
+      fetchRanks();
+    }
+  }, [ranks.length, fetchRanks]);
+  // Находим ранг для миссии
+  const requiredRank = ranks.find(r => r.id === mission.rankRequirement);
+  const requiredRankName = requiredRank?.name || `Ранг ${mission.rankRequirement}`;
+
   const difficultyColors = {
     1: "bg-green-500/15 text-green-700 border-green-500/20",
     2: "bg-blue-500/15 text-blue-700 border-blue-500/20", 
     3: "bg-purple-500/15 text-purple-700 border-purple-500/20",
     4: "bg-orange-500/15 text-orange-700 border-orange-500/20",
     5: "bg-red-500/15 text-red-700 border-red-500/20"
-  };
-
-  const difficultyCaptions = {
-    1: "Cadet",
-    2: "Navigator",
-    3: "Commander",
-    4: "Admiral",
-    5: "Fleet Admiral"
   };
 
   const getDifficultyIcon = () => {
@@ -65,8 +51,14 @@ export function MissionCard({ mission, onLaunch, onViewDetails }: MissionCardPro
   const isPairedMission = mission.category === "Paired";
 
   return (
-    <Card className={`group hover:elevation-cosmic transition-all duration-300 mission-card relative overflow-hidden ${
-      isGroupMission ? 'border-info/30 bg-gradient-to-r from-card to-info/5' : ''
+    <Card className={`group transition-all duration-300 mission-card relative overflow-hidden ${
+      isLocked 
+        ? 'opacity-60 border-muted bg-muted/5 cursor-not-allowed' 
+        : 'hover:elevation-cosmic'
+    } ${
+      isGroupMission && !isLocked ? 'border-info/30 bg-gradient-to-r from-card to-info/5' : ''
+    } ${
+      isCompleted ? 'border-success/30 bg-success/5' : ''
     }`}>
       {/* Cosmic accent for group missions */}
       {isGroupMission && (
@@ -79,26 +71,38 @@ export function MissionCard({ mission, onLaunch, onViewDetails }: MissionCardPro
       )}
 
       <CardHeader className="pb-4 relative">
-        <div className="flex items-start justify-between gap-3">
+            <div className="flex items-start justify-between gap-3">
           <div className="space-y-3 flex-1 min-w-0">
             <div className="flex items-start gap-2 flex-wrap">
               <CardTitle className="text-base md:text-lg leading-tight text-foreground">
                 {mission.title}
               </CardTitle>
               <div className="flex items-center gap-1 shrink-0">
-                {isPairedMission&& (
+                {isLocked && (
+                  <Badge variant="outline" className="text-xs bg-muted text-muted-foreground border-muted">
+                    <Lock className="w-3 h-3 mr-1" />
+                    Заблокировано
+                  </Badge>
+                )}
+                {isCompleted && (
+                  <Badge variant="outline" className="text-xs bg-success/10 text-success border-success/30">
+                    <CheckCircle className="w-3 h-3 mr-1" />
+                    Завершено
+                  </Badge>
+                )}
+                {isPairedMission && !isLocked && (
                   <Badge variant="outline" className="text-xs bg-soft-cyan/10 text-primary border-soft-cyan/30">
                     <Users className="w-3 h-3 mr-1" />
                     Paired
                   </Badge>
                 )}
-                {isGroupMission && (
+                {isGroupMission && !isLocked && (
                   <Badge variant="outline" className="text-xs bg-info/10 text-info border-info/30">
                     <Shield className="w-3 h-3 mr-1" />
                     Squad
                   </Badge>
                 )}
-                {mission.rankRequirement === 1 && (
+                {mission.rankRequirement === 1 && !isLocked && (
                   <Badge variant="outline" className="text-xs bg-rewards-amber/10 text-rewards-amber border-rewards-amber/30">
                     <Star className="w-3 h-3 mr-1" />
                     Rating
@@ -109,23 +113,23 @@ export function MissionCard({ mission, onLaunch, onViewDetails }: MissionCardPro
             <div className="flex items-center gap-2">
               <Badge className={`text-xs border ${difficultyColors[mission.rankRequirement as keyof typeof difficultyColors]} w-fit`}>
                 <span className="mr-1">{getDifficultyIcon()}</span>
-                {difficultyCaptions[mission.rankRequirement as keyof typeof difficultyCaptions]}
+                {requiredRankName}
               </Badge>
-              { (
-                <Badge variant="secondary" className="text-xs">
-                  Season 1
-                </Badge>
-              )}
+              <Badge variant="secondary" className="text-xs">
+                {seasonName}
+              </Badge>
             </div>
           </div>
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => onViewDetails(mission.id)}
-            className="opacity-60 md:opacity-0 group-hover:opacity-100 transition-opacity shrink-0 p-2"
-          >
-            <ChevronRight className="w-4 h-4" />
-          </Button>
+          {!isLocked && (
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => onViewDetails(mission.id)}
+              className="opacity-60 md:opacity-0 group-hover:opacity-100 transition-opacity shrink-0 p-2"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </Button>
+          )}
         </div>
       </CardHeader>
       
@@ -196,31 +200,59 @@ export function MissionCard({ mission, onLaunch, onViewDetails }: MissionCardPro
 
         {/* Actions */}
         <div className="flex items-center justify-between pt-2 gap-3">
+          {!isLocked && (
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => onViewDetails(mission.id)}
+              className="text-sm text-muted-foreground border-border flex-1 sm:flex-none"
+            >
+              {mission.tasks.length} шагов • {mission.tasks.length} доказательств
+            </Button>
+          )}
+          {isLocked && (
+            <div className="flex items-center gap-2 flex-1 text-sm text-muted-foreground">
+              <Lock className="w-4 h-4" />
+              <span>Требуется ранг: {requiredRankName}</span>
+            </div>
+          )}
           <Button 
-            variant="outline" 
-            size="sm"
-            onClick={() => onViewDetails(mission.id)}
-            className="text-sm text-muted-foreground border-border flex-1 sm:flex-none"
-          >
-            {mission.tasks.length} шагов • {mission.tasks.length} доказательств
-          </Button>
-          <Button 
-            onClick={() => onLaunch(mission.id)}
+            onClick={() => isCompleted ? onViewDetails(mission.id) : onLaunch(mission.id)}
             size="sm"
             className={`shrink-0 mission-launch-btn ${
-              isGroupMission 
-                ? 'bg-info hover:bg-info/80 text-white' 
-                : 'bg-primary hover:bg-primary-600 text-white'
+              isLocked
+                ? 'bg-muted text-muted-foreground cursor-not-allowed'
+                : isCompleted 
+                  ? 'bg-success/10 hover:bg-success/20 text-success border border-success/30' 
+                  : isGroupMission 
+                    ? 'bg-info hover:bg-info/80 text-white' 
+                    : 'bg-primary hover:bg-primary-600 text-white'
             }`}
-            disabled={mission.rankRequirement > 2}
+            disabled={isLocked}
           >
-            <Rocket className="w-4 h-4 mr-2" />
-            <span className="hidden sm:inline">
-              {isGroupMission ? 'Присоединиться к команде' : 'Запустить миссию'}
-            </span>
-            <span className="sm:hidden">
-              {isGroupMission ? 'Присоединиться' : 'Запустить'}
-            </span>
+            {isLocked ? (
+              <>
+                <Lock className="w-4 h-4 mr-2" />
+                <span className="hidden sm:inline">Недоступно</span>
+                <span className="sm:hidden">Закрыто</span>
+              </>
+            ) : isCompleted ? (
+              <>
+                <CheckCircle className="w-4 h-4 mr-2" />
+                <span className="hidden sm:inline">Посмотреть детали</span>
+                <span className="sm:hidden">Детали</span>
+              </>
+            ) : (
+              <>
+                <Rocket className="w-4 h-4 mr-2" />
+                <span className="hidden sm:inline">
+                  {isGroupMission ? 'Присоединиться к команде' : 'Запустить миссию'}
+                </span>
+                <span className="sm:hidden">
+                  {isGroupMission ? 'Присоединиться' : 'Запустить'}
+                </span>
+              </>
+            )}
           </Button>
         </div>
       </CardContent>

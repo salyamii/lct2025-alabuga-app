@@ -41,11 +41,6 @@ export class AuthService {
     localStorage.removeItem('accessToken');
   }
 
-  // Получение профиля пользователя
-  async getProfile(): Promise<ApiResponse<UserResponse>> {
-    return httpClient.get<UserResponse>(API_ENDPOINTS.AUTH.PROFILE);
-  }
-
   // Проверка авторизации
   isAuthenticated(): boolean {
     return !!localStorage.getItem('accessToken');

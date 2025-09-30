@@ -420,3 +420,19 @@ export interface UserTaskResponse {
   description: string;
   isCompleted: boolean;
 }
+
+// ===== ПОЛЬЗОВАТЕЛЬСКИЕ КОМПЕТЕНЦИИ И НАВЫКИ =====
+export interface UserSkillResponse {
+  id: number;
+  name: string;
+  maxLevel: number;
+  userLevel: number;
+}
+
+export interface UserCompetencyResponse {
+  id: number;
+  name: string;
+  maxLevel: number;
+  userLevel: number;
+  skills: UserSkillResponse[];
+}

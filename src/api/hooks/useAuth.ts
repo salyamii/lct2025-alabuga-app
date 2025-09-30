@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { authService } from '../services/authService';
+import { userService } from '../services/userService';
 import { useDataLoader } from './useDataLoader';
 import { 
   UserResponse, 
@@ -31,7 +32,7 @@ export function useAuth() {
     const checkAuth = async () => {
       if (authService.isAuthenticated()) {
         try {
-          const response = await authService.getProfile();
+          const response = await userService.getProfile();
           setState({
             user: response.data,
             isAuthenticated: true,
@@ -69,7 +70,7 @@ export function useAuth() {
       const response = await authService.login(credentials);
       
       // После успешного входа получаем профиль пользователя
-      const profileResponse = await authService.getProfile();
+      const profileResponse = await userService.getProfile();
       setState({
         user: profileResponse.data,
         isAuthenticated: true,

@@ -26,6 +26,7 @@ export type {
 
 // Экспорт сервисов
 export { authService } from './services/authService';
+export { userService } from './services/userService';
 export { missionChainService } from './services/missionChainService';
 
 // Экспорт интерцепторов

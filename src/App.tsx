@@ -18,6 +18,7 @@ import { ProgressHub } from "./screens/progress-hub/ProgressHub";
 import { SettingsScreen } from "./screens/settings/SettingsScreen";
 import { useNavigationStore } from "./stores/useNavigationStore";
 import { NotificationsScreen } from "./screens/notifications/NotificationScreen";
+import { MissionExecutionScreen, MissionDetailScreen } from "./screens/mission-execution";
 
 // Компонент приложения с проверкой авторизации
 const AppContent: React.FC = () => {
@@ -54,7 +55,9 @@ const AppContent: React.FC = () => {
     const hideTopBarRoutes = [
       '/notifications',
       '/admin',
-      '/settings'
+      '/settings',
+      '/mission',
+      '/mission-detail'
     ];
     
     // Проверяем, начинается ли текущий путь с любого из маршрутов для скрытия
@@ -83,20 +86,18 @@ const AppContent: React.FC = () => {
           index
           element={
             <SeasonHub
-              onSkillPathOpen={() => {}}
-              onMissionLaunch={() => {}}
-              onMissionDetails={() => {}}
+              onMissionLaunch={(missionId) => navigate(`/mission/${missionId}`)}
+              onMissionDetails={(missionId) => navigate(`/mission-detail/${missionId}`)}
               onSquadronDetails={() => {}}
               onShipLogOpen={() => {}}
               onMentorRatingOpen={() => {}}
-              onSeasonSettings={() => {}}
               onMissionChainOpen={() => {}}
             />
           }
         />
       </Route>
       <Route path="/progress" element={<AppLayout />}>
-        <Route index element={<ProgressHub onMissionDetails={() => {}} />} />
+        <Route index element={<ProgressHub onMissionDetails={(missionId) => navigate(`/mission/${missionId}`)} />} />
       </Route>
       <Route path="/store" element={<AppLayout />}>
         <Route index element={<StoreHub />} />
@@ -135,6 +136,23 @@ const AppContent: React.FC = () => {
          element={<SettingsScreen onBack={back} />}
        />
        <Route path="/notifications" element={<NotificationsScreen onBack={back} />} />
+       <Route
+         path="/mission/:missionId"
+         element={
+           <MissionExecutionScreen 
+             onBack={back} 
+             onCompleteMission={(missionId) => {
+               // TODO: Отправить результат на сервер
+               console.log('Миссия завершена:', missionId);
+               navigate('/season-hub');
+             }}
+           />
+         }
+       />
+       <Route
+         path="/mission-detail/:missionId"
+         element={<MissionDetailScreen onBack={back} />}
+       />
       <Route
         path="*"
         element={

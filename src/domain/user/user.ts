@@ -1,36 +1,88 @@
 import { UserResponse } from "../../api/types/apiTypes";
-import { UserPreferences } from "./preferences";
+import { UserMission } from "./userMission";
+import { Artifact } from "../artifact";
+import { UserCompetency } from "./userCompetency";
 
 export class User {
     constructor(
-      public readonly userId: string,
       public readonly login: string,
       public readonly firstName: string,
       public readonly lastName: string,
       public readonly role: string,
+      public readonly rankId: number,
       public readonly xp: number,
       public readonly mana: number,
-      public readonly artifactIds: number[],
-      public readonly badgesIds: number[],
-      public readonly competencyIds: number[],
-      public readonly guildId: number,
-      public readonly preferences: UserPreferences,
+      public readonly missions: UserMission[] = [],
+      public readonly artifacts: Artifact[] = [],
+      public readonly competencies: UserCompetency[] = [],
     ) {}
     
     static fromResponse(response: UserResponse): User {
       return new User(  
-        "NAVIGATOR-001", // default id
         response.login,
         response.firstName,
         response.lastName,
         response.role,
-        2150, // default xp
-        1500, // default mana 
+        0,
+        0,
+        0,
         [],
         [],
-        [],
-        1,
-        UserPreferences.defaults()
+        []
       );
+    }
+    
+    // Вспомогательные методы
+    get fullName(): string {
+      return `${this.firstName} ${this.lastName}`;
+    }
+    
+    get isAdmin(): boolean {
+      return this.role === 'Admin' || this.role === 'HR';
+    }
+    
+    // Артефакты пользователя
+    get artifactIds(): number[] {
+      return this.artifacts.map(a => a.id);
+    }
+
+    // Статистика миссий
+    get completedMissionsCount(): number {
+      return this.missions.filter(m => m.isCompleted).length;
+    }
+
+    get totalMissionsCount(): number {
+      return this.missions.length;
+    }
+
+    get missionProgress(): number {
+      if (this.totalMissionsCount === 0) return 0;
+      return Math.round((this.completedMissionsCount / this.totalMissionsCount) * 100);
+    }
+
+    // Статистика компетенций
+    get averageCompetencyLevel(): number {
+      if (this.competencies.length === 0) return 0;
+      const totalLevel = this.competencies.reduce((sum, c) => sum + c.userLevel, 0);
+      return Math.round(totalLevel / this.competencies.length);
+    }
+
+    get masterCompetenciesCount(): number {
+      return this.competencies.filter(c => c.isMaxLevel).length;
+    }
+
+    // Поиск миссии по ID
+    getMissionById(id: number): UserMission | undefined {
+      return this.missions.find(m => m.id === id);
+    }
+
+    // Поиск компетенции по ID
+    getCompetencyById(id: number): UserCompetency | undefined {
+      return this.competencies.find(c => c.id === id);
+    }
+
+    // Поиск артефакта по ID
+    getArtifactById(id: number): Artifact | undefined {
+      return this.artifacts.find(a => a.id === id);
     }
   }

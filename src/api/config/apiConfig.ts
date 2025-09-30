@@ -24,7 +24,10 @@ export const API_ENDPOINTS = {
     LOGIN: '/users/login',
     REGISTER_HR: '/users/register',
     REGISTER_CANDIDATE: '/mobile/users/register',
-    PROFILE: '/users/me',
+  },
+  USERS: {
+    ME: '/users/me',
+    MISSION: (missionId: number) => `/users/missions/${missionId}`,
   },
   ARTIFACTS: {
     LIST: '/artifacts',

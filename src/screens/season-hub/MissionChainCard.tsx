@@ -8,36 +8,25 @@ import {
   Zap,
   Award
 } from "lucide-react";
-import { MissionChain } from "../../domain/missionChain";
+import { MissionChain, User } from "../../domain";
 
 interface MissionChainCardProps {
-  // missionChain: {
-  //   id: string;
-  //   title: string;
-  //   description?: string;
-  //   rule: {
-  //     type: "ALL" | "ANY" | "MAND_AND_ANY";
-  //     display: string;
-  //   };
-  //   progress: {  
-  //     completed: number;
-  //     total: number;
-  //   };
-  //   nextMission?: {
-  //     title: string;
-  //   } | null;
-  //   rewards?: {
-  //     xp?: number;
-  //     mana?: number;
-  //     artifacts?: string[];
-  //   };
-  // };
   missionChain: MissionChain;
+  user: User | null;
   onOpenChain: (missionChainId: number) => void;
 }
 
-export function MissionChainCard({ missionChain: missionChain, onOpenChain: onOpenChain }: MissionChainCardProps) {
-  const progressPercentage = Math.round((1 / missionChain.missions.length) * 100);
+export function MissionChainCard({ missionChain, user, onOpenChain }: MissionChainCardProps) {
+  // Вычисляем количество завершенных миссий в цепочке
+  const completedMissionsCount = missionChain.missions.filter(mission => {
+    const userMission = user?.getMissionById(mission.id);
+    return userMission?.isCompleted || false;
+  }).length;
+
+  const totalMissionsCount = missionChain.missions.length;
+  const progressPercentage = totalMissionsCount > 0 
+    ? Math.round((completedMissionsCount / totalMissionsCount) * 100) 
+    : 0;
   
   const getRuleChipClass = (ruleType: string) => {
     switch (ruleType) {
@@ -70,7 +59,7 @@ export function MissionChainCard({ missionChain: missionChain, onOpenChain: onOp
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">Прогресс</span>
-            <span>{1} of {missionChain.missions.length} миссий • {progressPercentage}%</span>
+            <span>{completedMissionsCount} из {totalMissionsCount} миссий • {progressPercentage}%</span>
           </div>
           <Progress value={progressPercentage} className="h-2" />
         </div>

@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
 import { useAppStore } from '../../stores/useAppStore';
+import { useUserStore } from '../../stores/useUserStore';
 
 interface DataLoaderState {
   isLoading: boolean;
@@ -17,8 +18,18 @@ interface DataLoaderActions {
 
 export function useDataLoader() {
   const appStore = useAppStore();
+  const { fetchUserProfile, fetchAllUserMissions, clearUserData } = useUserStore();
 
   const loadAllData = useCallback(async () => {
+    // Сначала загружаем профиль пользователя
+    try {
+      console.log('👤 Загружаем профиль пользователя...');
+      await fetchUserProfile();
+      console.log('✅ Профиль пользователя загружен');
+    } catch (error) {
+      console.error('❌ Ошибка загрузки профиля пользователя:', error);
+    }
+
     const stores = [
       { name: 'skills', loader: appStore.skills.fetchSkills },
       { name: 'missions', loader: appStore.missions.fetchMissions },
@@ -43,6 +54,18 @@ export function useDataLoader() {
     });
 
     const results = await Promise.allSettled(loadPromises);
+
+    // После загрузки миссий, загружаем миссии пользователя
+    try {
+      const missionIds = appStore.missions.missions.map(m => m.id);
+      if (missionIds.length > 0) {
+        console.log(`📥 Загружаем ${missionIds.length} миссий пользователя...`);
+        await fetchAllUserMissions(missionIds);
+        console.log('✅ Миссии пользователя успешно загружены');
+      }
+    } catch (error) {
+      console.error('❌ Ошибка загрузки миссий пользователя:', error);
+    }
     
     // Логируем результаты загрузки
     results.forEach((result, index) => {
@@ -72,7 +95,7 @@ export function useDataLoader() {
     } else {
       console.log('🎉 Все данные успешно загружены');
     }
-  }, [appStore]);
+  }, [appStore, fetchUserProfile, fetchAllUserMissions]);
 
   const loadSpecificData = useCallback(async (storeNames: string[]) => {
     const storeMap: Record<string, () => Promise<void>> = {
@@ -133,6 +156,7 @@ export function useDataLoader() {
   const clearAllData = useCallback(() => {
     // Очищаем все сторы от данных
     try {
+      clearUserData();
       appStore.skills.clearSkills?.();
       appStore.missions.clearMissions?.();
       appStore.missionChains.clearMissionChains?.();
@@ -145,7 +169,7 @@ export function useDataLoader() {
     } catch (error) {
       console.error('❌ Ошибка при очистке сторов:', error);
     }
-  }, [appStore]);
+  }, [appStore, clearUserData]);
 
   const reset = useCallback(() => {
     clearAllData();
