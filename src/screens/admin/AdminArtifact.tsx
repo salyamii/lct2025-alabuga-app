@@ -39,15 +39,16 @@ export function AdminArtifact({
   }, [imageBlobs]);
 
   const loadImageAsBlob = async (imageUrl: string, artifactId: string) => {
-    // If already loaded, return existing blob URL
+    // Если уже загружено, возвращаем существующий blob URL
     if (imageBlobs[artifactId]) {
       return imageBlobs[artifactId];
     }
 
     try {
+      // Загружаем изображение с авторизацией и получаем blob URL
       const blobUrl = await mediaService.loadImageWithAuth(imageUrl);
       
-      // Store the blob URL and trigger re-render
+      // Сохраняем blob URL для повторного использования
       setImageBlobs(prev => ({
         ...prev,
         [artifactId]: blobUrl
@@ -55,22 +56,23 @@ export function AdminArtifact({
       
       return blobUrl;
     } catch (error) {
-      console.error('Error loading image:', error);
+      // Тихо игнорируем ошибки - показываем fallback иконку
       return null;
     }
   };
 
   const getImageUrl = (imageUrl: string, artifactId: string) => {
-    // If blob URL is available, use it
+    // Если blob URL уже доступен, используем его
     if (imageBlobs[artifactId]) {
       return imageBlobs[artifactId];
     }
     
-    // If no blob URL yet, trigger loading and return placeholder
+    // Если еще не загружено, запускаем загрузку
     if (imageUrl && !imageBlobs[artifactId]) {
       loadImageAsBlob(imageUrl, artifactId);
     }
     
+    // Возвращаем оригинальный URL как placeholder до загрузки blob
     return imageUrl;
   };
 

@@ -57,22 +57,40 @@ export class MediaService {
 
   // Загрузить изображение с авторизацией и вернуть Blob URL
   async loadImageWithAuth(imageUrl: string): Promise<string> {
+    // Валидация URL
+    if (!imageUrl || imageUrl.trim() === '') {
+      throw new Error('Image URL is empty');
+    }
+
+    // Проверка на невалидные URL (например, "broken link", "New Mission")
+    if (!imageUrl.startsWith('http://') && 
+        !imageUrl.startsWith('https://') && 
+        !imageUrl.startsWith('/')) {
+      throw new Error(`Invalid image URL: ${imageUrl}`);
+    }
+
     try {
-      // Если это полный URL, загружаем через httpClient с авторизацией
-      if (imageUrl.startsWith('http')) {
-        const response = await httpClient.get(imageUrl, {
-          responseType: 'blob'
-        });
-        
-        const blob = new Blob([response.data], { type: 'image/*' });
-        return URL.createObjectURL(blob);
+      let apiPath: string;
+      
+      // Если это полный URL, извлекаем путь для использования через API
+      if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+        // Извлекаем путь из URL (например, /media/2025/09/29/image.png)
+        const url = new URL(imageUrl);
+        apiPath = url.pathname + url.search; // Добавляем query параметры если есть
       } else {
-        // Если это ключ файла, используем downloadFile
-        const blob = await this.downloadFile(imageUrl);
-        return URL.createObjectURL(blob);
+        // Если это уже путь, используем как есть
+        apiPath = imageUrl;
       }
-    } catch (error) {
-      console.error('Error loading image with auth:', error);
+      
+      // Загружаем через httpClient с авторизацией
+      const response = await httpClient.get(apiPath, {
+        responseType: 'blob'
+      });
+      
+      // Создаем Blob URL для отображения
+      const blob = new Blob([response.data], { type: 'image/*' });
+      return URL.createObjectURL(blob);
+    } catch (error: any) {
       throw error;
     }
   }
