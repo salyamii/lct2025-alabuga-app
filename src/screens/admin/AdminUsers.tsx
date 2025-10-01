@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { TabsContent } from "../../components/ui/tabs";
 import { Button } from "../../components/ui/button";
-import { Plus, Users as UsersIcon, Shield, Code } from "lucide-react";
+import { Users as UsersIcon, Shield, Code } from "lucide-react";
 import {
   Card,
   CardHeader,
@@ -11,45 +11,59 @@ import {
 import { Search } from "lucide-react";
 import { Input } from "../../components/ui/input";
 import { Badge } from "../../components/ui/badge";
-import { Eye, Edit, Trash2, Filter } from "lucide-react";
+import { Edit, Filter, Eye } from "lucide-react";
 import { AdminModeration } from "./AdminModeration";
 import { AdminRules } from "./AdminRules";
+import { useUserStore } from "../../stores/useUserStore";
 
 interface AdminUsersProps {
-  onUserDetailOpen: (userId: string) => void;
+  onUserEditOpen: (userLogin: string) => void;
+  onUserPreviewOpen: (userLogin: string) => void;
 }
 
-export function AdminUsers({ onUserDetailOpen }: AdminUsersProps) {
+export function AdminUsers({ onUserEditOpen, onUserPreviewOpen }: AdminUsersProps) {
   const [usersTab, setUsersTab] = useState("users");
-  const recentUsers = [
-    {
-      id: "user-1",
-      name: "Alex Morgan",
-      email: "alex.morgan@company.com",
-      rank: "Navigator",
-      joinDate: "2024-03-10",
-      lastActive: "2 hours ago",
-      status: "active",
-    },
-    {
-      id: "user-2",
-      name: "Sarah Chen",
-      email: "sarah.chen@company.com",
-      rank: "Commander",
-      joinDate: "2024-02-15",
-      lastActive: "1 day ago",
-      status: "active",
-    },
-    {
-      id: "user-3",
-      name: "Mike Johnson",
-      email: "mike.johnson@company.com",
-      rank: "Cadet",
-      joinDate: "2024-03-12",
-      lastActive: "3 days ago",
-      status: "inactive",
-    },
-  ];
+  const [searchQuery, setSearchQuery] = useState("");
+  const { allUsers, fetchAllUsers } = useUserStore();
+
+  useEffect(() => {
+    // Загружаем пользователей при открытии компонента
+    fetchAllUsers();
+  }, [fetchAllUsers]);
+
+  // Фильтруем пользователей по роли (только candidate) и поисковому запросу
+  const filteredUsers = useMemo(() => {
+    // Сначала фильтруем только кандидатов
+    const candidateUsers = allUsers.filter(user => 
+      user.role.toLowerCase() === 'candidate'
+    );
+    
+    // Затем применяем поисковый фильтр
+    if (!searchQuery.trim()) {
+      return candidateUsers;
+    }
+    
+    const query = searchQuery.toLowerCase();
+    return candidateUsers.filter(user => 
+      user.firstName.toLowerCase().includes(query) ||
+      user.lastName.toLowerCase().includes(query) ||
+      user.login.toLowerCase().includes(query)
+    );
+  }, [allUsers, searchQuery]);
+
+  // Функция для получения перевода роли
+  const getRoleText = (role: string): string => {
+    switch (role.toLowerCase()) {
+      case 'hr':
+        return 'HR';
+      case 'candidate':
+        return 'Кандидат';
+      case 'admin':
+        return 'Администратор';
+      default:
+        return role;
+    }
+  };
   return (
     <TabsContent value="users" className="space-y-6">
       <div className="flex items-center justify-between">
@@ -95,22 +109,20 @@ export function AdminUsers({ onUserDetailOpen }: AdminUsersProps) {
                     Управление учетными записями и правами пользователей
                   </p>
                 </div>
-                <Button className="bg-primary hover:bg-primary-600 text-white">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Добавить пользователя
-                </Button>
               </div>
 
               <Card className="card-enhanced">
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle>Все пользователи</CardTitle>
+              <CardTitle>Все пользователи ({filteredUsers.length})</CardTitle>
               <div className="flex items-center gap-2">
                 <div className="relative">
                   <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
                   <Input
                     placeholder="Поиск пользователей..."
                     className="pl-9 w-64"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
                   />
                 </div>
                 <Button variant="outline" size="sm">
@@ -121,58 +133,55 @@ export function AdminUsers({ onUserDetailOpen }: AdminUsersProps) {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {recentUsers.map((user) => (
-                <div
-                  key={user.id}
-                  className="flex items-center justify-between p-4 rounded-lg border border-border"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 bg-gradient-to-br from-primary to-info rounded-full flex items-center justify-center">
-                      <span className="text-white font-semibold text-sm">
-                        {user.name.charAt(0)}
-                      </span>
+            {filteredUsers.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                {searchQuery ? 'Пользователи не найдены' : 'Нет пользователей'}
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {filteredUsers.map((user) => (
+                  <div
+                    key={user.login}
+                    className="flex items-center justify-between p-4 rounded-lg border border-border"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 bg-gradient-to-br from-primary to-info rounded-full flex items-center justify-center">
+                        <span className="text-white font-semibold text-sm">
+                          {user.firstName.charAt(0)}{user.lastName.charAt(0)}
+                        </span>
+                      </div>
+                      <div>
+                        <h4 className="font-medium">{user.fullName}</h4>
+                        <p className="text-sm text-muted-foreground">
+                          {user.login}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <h4 className="font-medium">{user.name}</h4>
-                      <p className="text-sm text-muted-foreground">
-                        {user.email}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        Присоединился {user.joinDate}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <Badge variant="outline" className="text-xs">
-                      {user.rank}
-                    </Badge>
-                    <span className="text-sm text-muted-foreground">
-                      {user.lastActive}
-                    </span>
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => onUserDetailOpen(user.id)}
-                      >
-                        <Eye className="w-4 h-4" />
-                      </Button>
-                      <Button variant="ghost" size="sm">
-                        <Edit className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-danger hover:text-danger"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
+                    <div className="flex items-center gap-4">
+                      <Badge variant="outline" className="text-xs">
+                        {getRoleText(user.role)}
+                      </Badge>
+                      <div className="flex items-center gap-2">
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => onUserPreviewOpen(user.login)}
+                        >
+                          <Eye className="w-4 h-4" />
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => onUserEditOpen(user.login)}
+                        >
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
             </div>

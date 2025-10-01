@@ -31,6 +31,8 @@ import { SeasonCreationDrawer } from "./SeasonCreationDrawer";
 import { SeasonEditDrawer } from "./SeasonEditDrawer";
 import { MissionChainCreationDrawer } from "./MissionChainCreationDrawer";
 import { MissionChainEditDrawer } from "./MissionChainEditDrawer";
+import { UserPreviewOverlay } from "./UserPreviewOverlay";
+import { UserEditDrawer } from "./UserEditDrawer";
 import { ArrowLeft, Shield } from "lucide-react";
 import { useOverlayStore } from "../../stores/useOverlayStore";
 import { useSeasonStore } from "../../stores/useSeasonStore";
@@ -52,10 +54,9 @@ import { toast } from "sonner";
 
 interface AdminScreenProps {
   onBack: () => void;
-  onUserDetailOpen: (userId: string) => void;
 }
 
-export function AdminScreen({ onBack, onUserDetailOpen }: AdminScreenProps) {
+export function AdminScreen({ onBack }: AdminScreenProps) {
   const {
     // Состояния оверлеев
     missionCreationOpen,
@@ -77,6 +78,8 @@ export function AdminScreen({ onBack, onUserDetailOpen }: AdminScreenProps) {
     chainEditOpen,
     seasonCreationOpen,
     seasonEditOpen,
+    userPreviewOpen,
+    userEditOpen,
     selectedChain,
     selectedMission,
     selectedCompetency,
@@ -86,6 +89,7 @@ export function AdminScreen({ onBack, onUserDetailOpen }: AdminScreenProps) {
     selectedArtifact,
     selectedStoreItem,
     selectedSeason,
+    selectedUserLogin,
     
     // Действия
     openMissionCreation,
@@ -130,6 +134,10 @@ export function AdminScreen({ onBack, onUserDetailOpen }: AdminScreenProps) {
     closeSeasonCreation,
     openSeasonEdit,
     closeSeasonEdit,
+    openUserPreview,
+    closeUserPreview,
+    openUserEdit,
+    closeUserEdit,
     setSelectedChain,
     setSelectedMission,
     setSelectedCompetency,
@@ -139,6 +147,7 @@ export function AdminScreen({ onBack, onUserDetailOpen }: AdminScreenProps) {
     setSelectedArtifact,
     setSelectedStoreItem,
     setSelectedSeason,
+    setSelectedUserLogin,
   } = useOverlayStore();
 
   const { deleteSeason } = useSeasonStore();
@@ -375,7 +384,16 @@ export function AdminScreen({ onBack, onUserDetailOpen }: AdminScreenProps) {
             setSelectedSeason={setSelectedSeason}
           />
 
-          <AdminUsers onUserDetailOpen={onUserDetailOpen} />
+          <AdminUsers 
+            onUserEditOpen={(userLogin) => {
+              setSelectedUserLogin(userLogin);
+              openUserEdit(userLogin);
+            }}
+            onUserPreviewOpen={(userLogin) => {
+              setSelectedUserLogin(userLogin);
+              openUserPreview(userLogin);
+            }}
+          />
 
           <AdminSettings
             handleCreateCompetency={openCompetencyCreation}
@@ -478,6 +496,14 @@ export function AdminScreen({ onBack, onUserDetailOpen }: AdminScreenProps) {
           <StoreItemCreationDrawer />
 
           <StoreItemEditDrawer item={selectedStoreItem} />
+
+          <UserPreviewOverlay
+            open={userPreviewOpen}
+            onOpenChange={(open) => open ? openUserPreview(selectedUserLogin || '') : closeUserPreview()}
+            userLogin={selectedUserLogin}
+          />
+
+          <UserEditDrawer />
         </div>
       );
     }

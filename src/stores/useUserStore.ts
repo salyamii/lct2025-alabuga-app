@@ -15,6 +15,7 @@ interface UserActions {
   fetchAllUsers: () => Promise<void>;
   fetchUser: (userLogin: string) => Promise<User | null>;
   updateUserProfile: (userData: any) => Promise<void>;
+  updateUserByLogin: (userLogin: string, userData: any) => Promise<void>;
   fetchUserMission: (missionId: number) => Promise<void>;
   fetchAllUserMissions: (missionIds: number[]) => Promise<void>;
   fetchUserMissionsByLogin: (userLogin: string) => Promise<UserMission[]>;
@@ -70,7 +71,7 @@ export const useUserStore = create<UserState & UserActions>((set: (partial: Part
   fetchAllUsers: async () => {
     try {
       const currentUser = get().user;
-      if (!currentUser || currentUser.role !== 'HR') {
+      if (!currentUser || currentUser.role !== 'hr') {
         console.log('🔒 Доступ к списку пользователей запрещен (только для HR)');
         return;
       }
@@ -89,13 +90,11 @@ export const useUserStore = create<UserState & UserActions>((set: (partial: Part
   // Загрузить конкретного пользователя по логину
   fetchUser: async (userLogin: string): Promise<User | null> => {
     try {
-      console.log(`📥 Fetching user: ${userLogin}`);
       const response = await userService.getUser(userLogin);
       const user = User.fromDetailedResponse(response.data);
-      console.log(`✅ User loaded: ${user.fullName}`);
+      console.log('✅ User loaded:', user);
       return user;
     } catch (error: any) {
-      console.error(`❌ Error fetching user ${userLogin}:`, error);
       set({ error: error.message || `Не удалось получить данные пользователя ${userLogin}` });
       return null;
     }
@@ -130,6 +129,29 @@ export const useUserStore = create<UserState & UserActions>((set: (partial: Part
     } catch (error: any) {
       console.error('❌ Error updating user profile:', error);
       set({ error: error.message || 'Не удалось обновить профиль пользователя' });
+    }
+  },
+
+  // Обновить пользователя по логину (для HR/Admin)
+  updateUserByLogin: async (userLogin: string, userData: any) => {
+    try {
+      await userService.updateUser(userLogin, userData);
+      
+      // Если обновляем текущего пользователя, обновляем локальный стор
+      const currentUser = get().user;
+      if (currentUser && currentUser.login === userLogin) {
+        await get().fetchUserProfile();
+      }
+      
+      // Если обновляем пользователя из списка allUsers, обновляем его там
+      const allUsers = get().allUsers;
+      if (allUsers.some(u => u.login === userLogin)) {
+        await get().fetchAllUsers();
+      }
+      
+    } catch (error: any) {
+      set({ error: error.message || `Не удалось обновить данные пользователя ${userLogin}` });
+      throw error;
     }
   },
 
@@ -468,6 +490,7 @@ export const useUserStore = create<UserState & UserActions>((set: (partial: Part
         mission.seasonId,
         mission.category,
         mission.isCompleted,
+        mission.isApproved,
         updatedTasks,
         mission.rewardArtifacts,
         mission.rewardCompetencies,
@@ -520,6 +543,7 @@ export const useUserStore = create<UserState & UserActions>((set: (partial: Part
         mission.seasonId,
         mission.category,
         mission.isCompleted,
+        mission.isApproved,
         updatedTasks,
         mission.rewardArtifacts,
         mission.rewardCompetencies,
@@ -569,6 +593,7 @@ export const useUserStore = create<UserState & UserActions>((set: (partial: Part
       mission.seasonId,
       mission.category,
       true, // isCompleted = true
+      mission.isApproved, // isApproved остается без изменений
       mission.tasks,
       mission.rewardArtifacts,
       mission.rewardCompetencies,
@@ -717,6 +742,7 @@ export const useUserStore = create<UserState & UserActions>((set: (partial: Part
         mission.seasonId,
         mission.category,
         false, // isCompleted = false
+        mission.isApproved, // isApproved остается без изменений
         updatedTasks,
         mission.rewardArtifacts,
         mission.rewardCompetencies,

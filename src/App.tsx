@@ -145,10 +145,9 @@ const AppContent: React.FC = () => {
        <Route
          path="/admin"
          element={
-           <AdminScreen
-             onBack={back}
-             onUserDetailOpen={(userId) => {}}
-           />
+          <AdminScreen
+            onBack={back}
+          />
          }
        />
        <Route

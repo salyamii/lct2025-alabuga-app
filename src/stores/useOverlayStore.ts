@@ -24,6 +24,8 @@ interface OverlayState {
   missionChainViewOpen: boolean;
   seasonCreationOpen: boolean;
   seasonEditOpen: boolean;
+  userPreviewOpen: boolean;
+  userEditOpen: boolean;
   
   // Выбранные элементы для редактирования
   selectedChain: any;
@@ -37,6 +39,7 @@ interface OverlayState {
   selectedArtifact: any;
   selectedStoreItem: any;
   selectedSeason: any;
+  selectedUserLogin: string | null;
   
   // Действия для управления оверлеями
   openMissionCreation: () => void;
@@ -83,6 +86,10 @@ interface OverlayState {
   closeSeasonCreation: () => void;
   openSeasonEdit: (season?: any) => void;
   closeSeasonEdit: () => void;
+  openUserPreview: (userLogin: string) => void;
+  closeUserPreview: () => void;
+  openUserEdit: (userLogin: string) => void;
+  closeUserEdit: () => void;
   
   // Универсальные методы
   closeAllOverlays: () => void;
@@ -96,6 +103,7 @@ interface OverlayState {
   setSelectedArtifact: (artifact: any) => void;
   setSelectedStoreItem: (storeItem: any) => void;
   setSelectedSeason: (season: any) => void;
+  setSelectedUserLogin: (userLogin: string | null) => void;
 }
 
 export const useOverlayStore = create<OverlayState>()((set, get) => ({
@@ -122,6 +130,8 @@ export const useOverlayStore = create<OverlayState>()((set, get) => ({
   missionChainViewOpen: false,
   seasonCreationOpen: false,
   seasonEditOpen: false,
+  userPreviewOpen: false,
+  userEditOpen: false,
   
   selectedChain: null,
   selectedMissionChainId: null,
@@ -134,6 +144,7 @@ export const useOverlayStore = create<OverlayState>()((set, get) => ({
   selectedArtifact: null,
   selectedStoreItem: null,
   selectedSeason: null,
+  selectedUserLogin: null,
   
   // Действия для управления оверлеями
   openMissionCreation: () => set({ missionCreationOpen: true }),
@@ -267,6 +278,24 @@ export const useOverlayStore = create<OverlayState>()((set, get) => ({
     selectedSeason: null 
   }),
   
+  openUserPreview: (userLogin: string) => set({ 
+    userPreviewOpen: true, 
+    selectedUserLogin: userLogin 
+  }),
+  closeUserPreview: () => set({ 
+    userPreviewOpen: false, 
+    selectedUserLogin: null 
+  }),
+  
+  openUserEdit: (userLogin: string) => set({ 
+    userEditOpen: true, 
+    selectedUserLogin: userLogin 
+  }),
+  closeUserEdit: () => set({ 
+    userEditOpen: false, 
+    selectedUserLogin: null 
+  }),
+  
   // Универсальные методы
   closeAllOverlays: () => set({
     missionCreationOpen: false,
@@ -291,6 +320,8 @@ export const useOverlayStore = create<OverlayState>()((set, get) => ({
     missionChainViewOpen: false,
     seasonCreationOpen: false,
     seasonEditOpen: false,
+    userPreviewOpen: false,
+    userEditOpen: false,
     selectedChain: null,
     selectedMissionChainId: null,
     selectedBranch: null,
@@ -302,6 +333,7 @@ export const useOverlayStore = create<OverlayState>()((set, get) => ({
     selectedArtifact: null,
     selectedStoreItem: null,
     selectedSeason: null,
+    selectedUserLogin: null,
   }),
   
   setSelectedChain: (chain) => set({ selectedChain: chain }),
@@ -314,4 +346,5 @@ export const useOverlayStore = create<OverlayState>()((set, get) => ({
   setSelectedArtifact: (artifact) => set({ selectedArtifact: artifact }),
   setSelectedStoreItem: (storeItem) => set({ selectedStoreItem: storeItem }),
   setSelectedSeason: (season) => set({ selectedSeason: season }),
+  setSelectedUserLogin: (userLogin) => set({ selectedUserLogin: userLogin }),
 }));
