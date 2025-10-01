@@ -16,6 +16,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { toast } from "sonner";
 
 interface AdminRankProps {
+  handleFetchRanks: () => Promise<void>;
+  handleFetchMissions: () => Promise<void>;
+  handleFetchCompetencies: () => Promise<void>;
   handleCreateRank: () => void;
   handleEditRank: (rank: Rank) => void;
   handleDeleteRank: (rank: Rank) => void;
@@ -23,6 +26,9 @@ interface AdminRankProps {
 }
 
 export function AdminRank({ 
+  handleFetchRanks,
+  handleFetchMissions,
+  handleFetchCompetencies,
   handleCreateRank, 
   handleEditRank, 
   handleDeleteRank, 
@@ -30,25 +36,24 @@ export function AdminRank({
 }: AdminRankProps) {
   const { 
     ranks, 
-    fetchRanks, 
     isLoading, 
     addRequiredMissionToRank,
     removeRequiredMissionFromRank,
     addRequiredCompetencyToRank,
     removeRequiredCompetencyFromRank
   } = useRankStore();
-  const { missions, fetchMissions } = useMissionStore();
-  const { competencies, fetchCompetencies } = useCompetencyStore();
+  const { missions } = useMissionStore();
+  const { competencies } = useCompetencyStore();
   const [expandedRank, setExpandedRank] = useState<number | null>(null);
   const [selectedMission, setSelectedMission] = useState<string>("");
   const [selectedCompetency, setSelectedCompetency] = useState<string>("");
   const [competencyLevel, setCompetencyLevel] = useState<number>(1);
 
   useEffect(() => {
-    fetchRanks();
-    fetchMissions();
-    fetchCompetencies();
-  }, [fetchRanks, fetchMissions, fetchCompetencies]);
+    handleFetchRanks();
+    handleFetchMissions();
+    handleFetchCompetencies();
+  }, []);
 
   // Обработчик добавления миссии к рангу
   const handleAddMissionToRank = async (rankId: number, missionId: number) => {

@@ -9,6 +9,7 @@ import { useEffect } from "react";
 import { Task } from "../../domain/task";
 
 interface AdminTaskProps {
+  handleFetchTasks: () => Promise<void>;
   handleCreateTask: () => void;
   handleEditTask: (task: Task) => void;
   handleDeleteTask: (task: Task) => void;
@@ -16,16 +17,17 @@ interface AdminTaskProps {
 }
 
 export function AdminTask({ 
+  handleFetchTasks,
   handleCreateTask, 
   handleEditTask, 
   handleDeleteTask, 
   setSelectedTask 
 }: AdminTaskProps) {
-  const { tasks, fetchTasks, isLoading } = useTaskStore();
+  const { tasks, isLoading } = useTaskStore();
 
   useEffect(() => {
-    fetchTasks();
-  }, [fetchTasks]);
+    handleFetchTasks();
+  }, []);
 
   return (
     <div className="space-y-6">

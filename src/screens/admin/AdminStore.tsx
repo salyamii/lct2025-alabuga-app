@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { StoreItem } from "../../domain/store";
 
 interface AdminStoreProps {
+  handleFetchStoreItems: () => Promise<void>;
   handleCreateStoreItem: () => void;
   handleEditStoreItem: (item: StoreItem) => void;
   handleDeleteStoreItem: (item: StoreItem) => void;
@@ -16,17 +17,18 @@ interface AdminStoreProps {
 }
 
 export function AdminStore({ 
+  handleFetchStoreItems,
   handleCreateStoreItem, 
   handleEditStoreItem, 
   handleDeleteStoreItem, 
   setSelectedStoreItem 
 }: AdminStoreProps) {
-  const { items, fetchItems, isLoading } = useStoreStore();
+  const { items, isLoading } = useStoreStore();
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
-    fetchItems();
-  }, [fetchItems]);
+    handleFetchStoreItems();
+  }, []);
 
   // Фильтрация товаров по поисковому запросу
   const filteredItems = items.filter(item => 

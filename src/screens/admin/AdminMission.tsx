@@ -15,6 +15,8 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../../components/ui/tooltip";
 
 interface AdminMissionProps {
+  handleFetchMissions: () => Promise<void>;
+  handleFetchMissionChains: () => Promise<void>;
   handleCreateMission: () => void;
   handleEditMission: (mission: any) => void;
   handleDeleteMission: (mission: any) => void;
@@ -26,6 +28,8 @@ interface AdminMissionProps {
 }
 
 export function AdminMission({
+  handleFetchMissions,
+  handleFetchMissionChains,
   handleCreateMission,
   handleEditMission,
   handleDeleteMission,
@@ -35,8 +39,8 @@ export function AdminMission({
   handleDeleteChain,
   setSelectedChain,
 }: AdminMissionProps) {
-  const { missions, fetchMissions } = useMissionStore();
-  const { missionChains, fetchMissionChains } = useMissionChainStore();
+  const { missions } = useMissionStore();
+  const { missionChains } = useMissionChainStore();
   const { currentSeason } = useSeasonStore();
   const [isLoading, setIsLoading] = useState(true);
   
@@ -48,8 +52,8 @@ export function AdminMission({
     const loadData = async () => {
       try {
         await Promise.all([
-          fetchMissions(),
-          fetchMissionChains(),
+          handleFetchMissions(),
+          handleFetchMissionChains(),
         ]);
       } catch (error) {
         console.error("Ошибка при загрузке данных:", error);
@@ -59,7 +63,8 @@ export function AdminMission({
     };
 
     loadData();
-  }, [fetchMissions, fetchMissionChains]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Функция для получения статуса миссии
   const getMissionStatus = (mission: Mission) => {

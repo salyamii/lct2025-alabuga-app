@@ -17,19 +17,28 @@ import { AdminRules } from "./AdminRules";
 import { useUserStore } from "../../stores/useUserStore";
 
 interface AdminUsersProps {
+  handleFetchAllUsers: () => Promise<void>;
+  handleFetchUserMissionsByLogin: (userLogin: string) => Promise<any[]>;
+  handleApproveUserMission: (missionId: number, userLogin: string) => Promise<void>;
   onUserEditOpen: (userLogin: string) => void;
   onUserPreviewOpen: (userLogin: string) => void;
 }
 
-export function AdminUsers({ onUserEditOpen, onUserPreviewOpen }: AdminUsersProps) {
+export function AdminUsers({ 
+  handleFetchAllUsers,
+  handleFetchUserMissionsByLogin,
+  handleApproveUserMission,
+  onUserEditOpen, 
+  onUserPreviewOpen 
+}: AdminUsersProps) {
   const [usersTab, setUsersTab] = useState("users");
   const [searchQuery, setSearchQuery] = useState("");
-  const { allUsers, fetchAllUsers } = useUserStore();
+  const { allUsers } = useUserStore();
 
   useEffect(() => {
     // Загружаем пользователей при открытии компонента
-    fetchAllUsers();
-  }, [fetchAllUsers]);
+    handleFetchAllUsers();
+  }, []);
 
   // Фильтруем пользователей по роли (только candidate) и поисковому запросу
   const filteredUsers = useMemo(() => {
@@ -188,7 +197,12 @@ export function AdminUsers({ onUserEditOpen, onUserPreviewOpen }: AdminUsersProp
           )}
 
           {usersTab === "moderation" && (
-            <AdminModeration />
+            <AdminModeration 
+              handleFetchAllUsers={handleFetchAllUsers}
+              handleFetchUserMissionsByLogin={handleFetchUserMissionsByLogin}
+              handleApproveUserMission={handleApproveUserMission}
+              onUserPreviewOpen={onUserPreviewOpen} 
+            />
           )}
 
           {usersTab === "rules" && (

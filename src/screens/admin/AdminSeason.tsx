@@ -11,19 +11,21 @@ import { useSeasonStore } from "../../stores/useSeasonStore";
 import { useEffect } from "react";
 
 interface AdminSeasonProps {
+  handleFetchSeasons: () => Promise<void>;
   handleCreateSeason: () => void;
   handleEditSeason: (season: any) => void;
   handleDeleteSeason: (season: any) => void;
   setSelectedSeason: (season: any) => void;
 }
 
-export function AdminSeason({ handleCreateSeason, handleEditSeason, handleDeleteSeason, setSelectedSeason }: AdminSeasonProps) {
-  const { seasons, fetchSeasons, isLoading } = useSeasonStore();
+export function AdminSeason({ handleFetchSeasons, handleCreateSeason, handleEditSeason, handleDeleteSeason, setSelectedSeason }: AdminSeasonProps) {
+  const { seasons, isLoading } = useSeasonStore();
 
   // Загружаем сезоны при монтировании компонента
   useEffect(() => {
-    fetchSeasons();
-  }, [fetchSeasons]);
+    handleFetchSeasons();
+    // однократная загрузка
+  }, []);
 
   // Функция для определения статуса сезона
   const getSeasonStatus = (startDate: Date, endDate: Date) => {

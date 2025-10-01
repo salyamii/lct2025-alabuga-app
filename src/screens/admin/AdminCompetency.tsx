@@ -14,6 +14,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { toast } from "sonner";
 
 interface AdminCompetencyProps {
+  handleFetchCompetencies: () => Promise<void>;
+  handleFetchSkills: () => Promise<void>;
   handleCreateCompetency: () => void;
   handleEditCompetency: (competency: Competency) => void;
   handleDeleteCompetency: (competency: Competency) => void;
@@ -21,6 +23,8 @@ interface AdminCompetencyProps {
 }
 
 export function AdminCompetency({ 
+  handleFetchCompetencies,
+  handleFetchSkills,
   handleCreateCompetency, 
   handleEditCompetency, 
   handleDeleteCompetency, 
@@ -28,19 +32,18 @@ export function AdminCompetency({
 }: AdminCompetencyProps) {
   const { 
     competencies, 
-    fetchCompetencies, 
     isLoading,
     addSkillToCompetency,
     removeSkillFromCompetency
   } = useCompetencyStore();
-  const { skills, fetchSkills } = useSkillStore();
+  const { skills } = useSkillStore();
   const [expandedCompetency, setExpandedCompetency] = useState<number | null>(null);
   const [selectedSkill, setSelectedSkill] = useState<string>("");
 
   useEffect(() => {
-    fetchCompetencies();
-    fetchSkills();
-  }, [fetchCompetencies, fetchSkills]);
+    handleFetchCompetencies();
+    handleFetchSkills();
+  }, []);
 
   // Обработчик добавления навыка к компетенции
   const handleAddSkillToCompetency = async (competencyId: number, skillId: number) => {

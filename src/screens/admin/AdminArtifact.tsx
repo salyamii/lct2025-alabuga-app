@@ -10,6 +10,7 @@ import { Artifact } from "../../domain/artifact";
 import { mediaService } from "../../api/services/mediaService";
 
 interface AdminArtifactProps {
+  handleFetchArtifacts: () => Promise<void>;
   handleCreateArtifact: () => void;
   handleEditArtifact: (artifact: Artifact) => void;
   handleDeleteArtifact: (artifact: Artifact) => void;
@@ -17,17 +18,18 @@ interface AdminArtifactProps {
 }
 
 export function AdminArtifact({ 
+  handleFetchArtifacts,
   handleCreateArtifact, 
   handleEditArtifact, 
   handleDeleteArtifact, 
   setSelectedArtifact 
 }: AdminArtifactProps) {
-  const { artifacts, fetchArtifacts, isLoading } = useArtifactStore();
+  const { artifacts, isLoading } = useArtifactStore();
   const [imageBlobs, setImageBlobs] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    fetchArtifacts();
-  }, [fetchArtifacts]);
+    handleFetchArtifacts();
+  }, []);
 
   // Cleanup blob URLs on unmount
   useEffect(() => {

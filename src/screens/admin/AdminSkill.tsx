@@ -10,6 +10,7 @@ import { useEffect } from "react";
 import { Skill } from "../../domain/skill";
 
 interface AdminSkillProps {
+  handleFetchSkills: () => Promise<void>;
   handleCreateSkill: () => void;
   handleEditSkill: (skill: Skill) => void;
   handleDeleteSkill: (skill: Skill) => void;
@@ -17,16 +18,17 @@ interface AdminSkillProps {
 }
 
 export function AdminSkill({ 
+  handleFetchSkills,
   handleCreateSkill, 
   handleEditSkill, 
   handleDeleteSkill, 
   setSelectedSkill 
 }: AdminSkillProps) {
-  const { skills, fetchSkills, isLoading } = useSkillStore();
+  const { skills, isLoading } = useSkillStore();
 
   useEffect(() => {
-    fetchSkills();
-  }, [fetchSkills]);
+    handleFetchSkills();
+  }, []);
 
   return (
     <div className="space-y-6">
