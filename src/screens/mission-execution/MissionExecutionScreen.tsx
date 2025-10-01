@@ -37,9 +37,7 @@ export function MissionExecutionScreen({ onBack, onCompleteMission }: MissionExe
     user,
     fetchUserProfile, 
     fetchUserMission,
-    completeTaskLocal, 
-    uncompleteTask, 
-    completeMission: completeUserMission 
+    completeTask
   } = useUserStore();
   const { ranks } = useRankStore();
 
@@ -71,7 +69,7 @@ export function MissionExecutionScreen({ onBack, onCompleteMission }: MissionExe
   }, [missionId, userMission, user, fetchUserMission]);
 
   // Обработчики задач
-  const handleToggleTask = (taskId: number) => {
+  const handleToggleTask = async (taskId: number) => {
     if (!missionId) return;
     
     const numericMissionId = parseInt(missionId, 10);
@@ -85,12 +83,11 @@ export function MissionExecutionScreen({ onBack, onCompleteMission }: MissionExe
       tasksCount: userMission?.tasks.length
     });
     
-    if (userTask?.isCompleted) {
-      console.log('⬇️ Uncompleting task...');
-      uncompleteTask(numericMissionId, taskId);
-    } else {
+    if (!userTask?.isCompleted) {
       console.log('✅ Completing task...');
-      completeTaskLocal(numericMissionId, taskId);
+      await completeTask(taskId);
+    } else {
+      console.log('⚠️ Task already completed, cannot uncomplete');
     }
   };
 
@@ -98,69 +95,12 @@ export function MissionExecutionScreen({ onBack, onCompleteMission }: MissionExe
   const handleCompleteMission = () => {
     if (!missionId || !mission || !user) return;
     
-    const numericMissionId = parseInt(missionId, 10);
-    
-    // Сохраняем текущий ранг для проверки повышения
-    const currentRankId = user.rankId;
-    const currentRank = ranks.find(r => r.id === currentRankId);
-    const newXP = user.xp + mission.rewardXp;
-    
-    // Обновляем локальный store с начислением наград
-    completeUserMission(numericMissionId);
-    
-    // Проверяем, был ли повышен ранг
-    const availableRanks = ranks.filter(rank => rank.requiredXp <= newXP);
-    const highestRank = availableRanks.length > 0
-      ? availableRanks.reduce((prev, current) => 
-          (current.requiredXp > prev.requiredXp) ? current : prev
-        )
-      : null;
-    
-    const rankIncreased = highestRank && highestRank.id !== currentRankId;
-    
-    // Формируем описание наград
-    const rewardParts = [];
-    
-    // Основные награды
-    rewardParts.push(`+${mission.rewardXp} XP`);
-    rewardParts.push(`+${mission.rewardMana} Мана`);
-    
-    // Артефакты
-    if (mission.rewardArtifacts.length > 0) {
-      rewardParts.push(`+${mission.rewardArtifacts.length} ${mission.rewardArtifacts.length === 1 ? 'Артефакт' : 'Артефактов'}`);
-    }
-    
-    // Компетенции
-    if (mission.rewardCompetencies.length > 0) {
-      const compCount = mission.rewardCompetencies.length;
-      rewardParts.push(`${compCount} ${compCount === 1 ? 'компетенция' : 'компетенций'} улучшено`);
-    }
-    
-    // Навыки
-    if (mission.rewardSkills.length > 0) {
-      const skillCount = mission.rewardSkills.length;
-      rewardParts.push(`${skillCount} ${skillCount === 1 ? 'навык' : 'навыков'} улучшено`);
-    }
-    
-    // Показываем уведомление о наградах
-    toast.success('🎉 Миссия завершена!', {
-      description: rewardParts.join(', '),
-      duration: 5000,
-    });
-    
-    // Показываем отдельное уведомление о повышении ранга
-    if (rankIncreased && highestRank) {
-      setTimeout(() => {
-        toast.success('⬆️ Повышение ранга!', {
-          description: `${currentRank?.name || 'Ранг'} → ${highestRank.name}`,
-          duration: 6000,
-        });
-      }, 500);
-    }
+    // Метод завершения миссии удален
+    console.log('⚠️ Mission completion method removed');
     
     // Вызываем проп для отправки на сервер
     if (onCompleteMission) {
-      onCompleteMission(numericMissionId);
+      onCompleteMission(parseInt(missionId, 10));
     }
   };
 

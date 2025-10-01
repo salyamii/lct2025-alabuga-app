@@ -29,7 +29,8 @@ import { useUserStore } from "../../stores/useUserStore";
 import { useArtifactStore } from "../../stores/useArtifactStore";
 import { useCompetencyStore } from "../../stores/useCompetencyStore";
 import { useSkillStore } from "../../stores/useSkillStore";
-import { User, Artifact, Competency, Skill, UserCompetency } from "../../domain";
+import userService from "../../api/services/userService";
+import { User, DetailedUser, Artifact, Competency, Skill, UserCompetency, UserSkill } from "../../domain";
 import { Skeleton } from "../../components/ui/skeleton";
 
 export function UserEditDrawer() {
@@ -50,7 +51,7 @@ export function UserEditDrawer() {
   const { competencies, fetchCompetencies } = useCompetencyStore();
   const { skills, fetchSkills } = useSkillStore();
 
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<DetailedUser | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
@@ -84,18 +85,19 @@ export function UserEditDrawer() {
 
     setIsLoading(true);
     try {
-      // Загружаем данные пользователя
-      const userData = await fetchUser(selectedUserLogin);
-      setUser(userData);
+      // Загружаем детализированные данные пользователя
+      const response = await userService.getUser(selectedUserLogin);
+      const detailedUser = DetailedUser.fromDetailedResponse(response.data);
+      setUser(detailedUser);
       
-      if (userData) {
+      if (detailedUser) {
         setFormData({
-          firstName: userData.firstName,
-          lastName: userData.lastName,
+          firstName: detailedUser.firstName,
+          lastName: detailedUser.lastName,
           password: "",
-          rankId: userData.rankId,
-          xp: userData.xp,
-          mana: userData.mana,
+          rankId: detailedUser.rankId,
+          xp: detailedUser.xp,
+          mana: detailedUser.mana,
         });
       }
 
@@ -261,12 +263,12 @@ export function UserEditDrawer() {
 
   // Доступные для добавления артефакты
   const availableArtifacts = artifacts.filter(
-    art => !user?.artifacts.some(uArt => uArt.id === art.id)
+    art => !user?.artifacts.some((uArt: Artifact) => uArt.id === art.id)
   );
 
   // Доступные для добавления компетенции
   const availableCompetencies = competencies.filter(
-    comp => !user?.competencies.some(uComp => uComp.id === comp.id)
+    comp => !user?.competencies.some((uComp: UserCompetency) => uComp.id === comp.id)
   );
 
   return (
@@ -411,7 +413,7 @@ export function UserEditDrawer() {
                       </div>
                     ) : (
                       <div className="space-y-2">
-                        {user.artifacts.map((artifact) => (
+                        {user.artifacts.map((artifact: Artifact) => (
                           <div
                             key={artifact.id}
                             className="flex items-center justify-between p-3 rounded-lg border"
@@ -496,7 +498,7 @@ export function UserEditDrawer() {
                       </div>
                     ) : (
                       <div className="space-y-4">
-                        {user.competencies.map((userComp) => (
+                        {user.competencies.map((userComp: UserCompetency) => (
                           <Card key={userComp.id} className="border">
                             <CardContent className="p-4 space-y-3">
                               <div className="flex items-center justify-between">
@@ -537,7 +539,7 @@ export function UserEditDrawer() {
                                     <div className="text-xs font-medium text-muted-foreground">
                                       Навыки:
                                     </div>
-                                    {userComp.skills.map((skill) => (
+                                    {userComp.skills.map((skill: UserSkill) => (
                                       <div
                                         key={skill.id}
                                         className="flex items-center justify-between p-2 rounded bg-muted/50"
@@ -584,7 +586,7 @@ export function UserEditDrawer() {
                                         </SelectTrigger>
                                         <SelectContent>
                                           {skills
-                                            .filter(skill => !userComp.skills.some(s => s.id === skill.id))
+                                            .filter(skill => !userComp.skills.some((s: UserSkill) => s.id === skill.id))
                                             .map((skill) => (
                                               <SelectItem key={skill.id} value={skill.id.toString()}>
                                                 {skill.name}

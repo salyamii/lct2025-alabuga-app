@@ -1,10 +1,10 @@
 import { GitBranch } from "lucide-react"
 import { MissionChainCard } from "./MissionChainCard"
-import { MissionChain, User } from "../../domain"
+import { MissionChain, DetailedUser } from "../../domain"
 
 interface SeasonHubMissionChainsProps {
     missionChains: MissionChain[];
-    user: User | null;
+    user: DetailedUser | null;
     onMissionChainOpen: (missionChainId: number) => void
 }
 

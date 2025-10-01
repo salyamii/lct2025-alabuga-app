@@ -18,7 +18,8 @@ import {
   Zap
 } from "lucide-react";
 import { useUserStore } from "../../stores/useUserStore";
-import { User, UserMission } from "../../domain";
+import userService from "../../api/services/userService";
+import { User, DetailedUser, UserMission } from "../../domain";
 import { Skeleton } from "../../components/ui/skeleton";
 
 interface UserPreviewOverlayProps {
@@ -33,7 +34,7 @@ export function UserPreviewOverlay({
   userLogin,
 }: UserPreviewOverlayProps) {
   const { fetchUser, fetchUserMissionsByLogin } = useUserStore();
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<DetailedUser | null>(null);
   const [userMissions, setUserMissions] = useState<UserMission[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [expandedMissions, setExpandedMissions] = useState<Set<number>>(new Set());
@@ -54,9 +55,10 @@ export function UserPreviewOverlay({
     
     setIsLoading(true);
     try {
-      // Загружаем основную информацию пользователя
-      const userData = await fetchUser(userLogin);
-      setUser(userData);
+      // Загружаем детализированную информацию пользователя
+      const response = await userService.getUser(userLogin);
+      const detailedUser = DetailedUser.fromDetailedResponse(response.data);
+      setUser(detailedUser);
 
       // Загружаем миссии пользователя
       const missionsData = await fetchUserMissionsByLogin(userLogin);

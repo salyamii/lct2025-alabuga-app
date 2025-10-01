@@ -8,11 +8,11 @@ import {
   Zap,
   Award
 } from "lucide-react";
-import { MissionChain, User } from "../../domain";
+import { MissionChain, DetailedUser } from "../../domain";
 
 interface MissionChainCardProps {
   missionChain: MissionChain;
-  user: User | null;
+  user: DetailedUser | null;
   onOpenChain: (missionChainId: number) => void;
 }
 
