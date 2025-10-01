@@ -1,0 +1,12 @@
+name: alabuga
+services:
+  frontend:
+    profiles: [ "frontend" ]
+    container_name: alabuga.frontend
+    image: ${DOCKER_FRONTEND_IMAGE:-alabuga-frontend}
+    restart: unless-stopped
+    ports:
+      - "0.0.0.0:${FRONTEND_PORT:-3000}:3000"
+    environment:
+      - REACT_APP_API_URL=${REACT_APP_API_URL:-http://91.219.150.15}
+      - NODE_ENV=${NODE_ENV:-development}

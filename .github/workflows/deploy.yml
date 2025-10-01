@@ -1,0 +1,41 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Copy docker-compose.yaml to VPS
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          port: ${{ secrets.SERVER_PORT }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          password: ${{ secrets.SERVER_SSH_PRIVATE_KEY }}
+          source: "docker-compose.yaml"
+          target: "/tmp/frontend/"
+          overwrite: true
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          port: ${{ secrets.SERVER_PORT }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          password: ${{ secrets.SERVER_SSH_PRIVATE_KEY }}
+          script: |
+            COMPOSE_FILE="/tmp/frontend/docker-compose.yaml"
+            PROJECT_NAME="alabuga"
+      
+            export DOCKER_FRONTEND_IMAGE=${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKERHUB_REPONAME }}:latest
+            export REACT_APP_API_URL=http//:${{ secrets.SERVER_HOST }}
+            export NODE_ENV=production
+
+            docker compose -p "$PROJECT_NAME" -f "$COMPOSE_FILE" --profile frontend pull frontend || exit 1
+            docker compose -p "$PROJECT_NAME" -f "$COMPOSE_FILE" --profile frontend up -d --force-recreate || exit 1
+            docker compose -p "$PROJECT_NAME" -f "$COMPOSE_FILE" ps
