@@ -11,7 +11,7 @@ import { useMemo } from "react";
 interface MissionChainOverlayProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    branchId?: string | null;
+    chainId?: string | null;
     onMissionSelect: (missionId: string) => void;
     onStartNextMission: (missionId: string) => void;
   }
@@ -19,7 +19,7 @@ interface MissionChainOverlayProps {
   export function MissionChainOverlay({ 
     open, 
     onOpenChange, 
-    branchId,
+    chainId: branchId,
     onMissionSelect,
     onStartNextMission
   }: MissionChainOverlayProps) {

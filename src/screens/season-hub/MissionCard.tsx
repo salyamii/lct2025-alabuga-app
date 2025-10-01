@@ -2,20 +2,21 @@ import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/ca
 import { Badge } from "../../components/ui/badge";
 import { Button } from "../../components/ui/button";
 import { Clock, Coins, ChevronRight, MapPin, Users, Star, Shield, Zap, Rocket, CheckCircle, Lock } from "lucide-react";
-import { UserMission } from "../../domain";
+import { Mission, UserMission } from "../../domain";
 import { useRankStore } from "../../stores/useRankStore";
 import { useEffect } from "react";
 
 interface MissionCardProps {
-  mission: UserMission;  // ✅ Теперь UserMission
+  mission: Mission;  // Миссия из useMissionStore
+  userMission?: UserMission | null; // Миссия пользователя (может быть null)
   seasonName: string;
   isCompleted?: boolean;
-  isLocked?: boolean;
+  isApproved?: boolean;
   onLaunch: (missionId: number) => void;
   onViewDetails: (missionId: number) => void;
 }
 
-export function MissionCard({ mission, seasonName, isCompleted = false, isLocked = false, onLaunch, onViewDetails }: MissionCardProps) {
+export function MissionCard({ mission, userMission, seasonName, isCompleted = false, isApproved = false, onLaunch, onViewDetails }: MissionCardProps) {
   const { ranks, fetchRanks } = useRankStore();
 
   // Загружаем ранги при монтировании
@@ -28,35 +29,25 @@ export function MissionCard({ mission, seasonName, isCompleted = false, isLocked
   const requiredRank = ranks.find(r => r.id === mission.rankRequirement);
   const requiredRankName = requiredRank?.name || `Ранг ${mission.rankRequirement}`;
 
-  const difficultyColors = {
-    1: "bg-green-500/15 text-green-700 border-green-500/20",
-    2: "bg-blue-500/15 text-blue-700 border-blue-500/20", 
-    3: "bg-purple-500/15 text-purple-700 border-purple-500/20",
-    4: "bg-orange-500/15 text-orange-700 border-orange-500/20",
-    5: "bg-red-500/15 text-red-700 border-red-500/20"
-  };
-
-  const getDifficultyIcon = () => {
-    switch (mission.rankRequirement) {
-      case 1: return "🛸";
-      case 2: return "🚀";
-      case 3: return "⭐";
-      case 4: return "🌟";
-      case 5: return "👑";
-      default: return "🚀";
-    }
+  const getDifficultyColor = (rankRequirement: number) => {
+    const colors = {
+      0: "bg-green-500/15 text-green-700 border-green-500/20",
+      1: "bg-blue-500/15 text-blue-700 border-blue-500/20", 
+      2: "bg-purple-500/15 text-purple-700 border-purple-500/20",
+      3: "bg-orange-500/15 text-orange-700 border-orange-500/20",
+      4: "bg-red-500/15 text-red-700 border-red-500/20"
+    };
+    
+    // Для рангов 6 и выше используем цвет 5-го ранга
+    return colors[Math.min(rankRequirement, 4) as keyof typeof colors] || colors[4];
   };
 
   const isGroupMission = mission.category === "Group";
   const isPairedMission = mission.category === "Paired";
 
   return (
-    <Card className={`group transition-all duration-300 mission-card relative overflow-hidden ${
-      isLocked 
-        ? 'opacity-60 border-muted bg-muted/5 cursor-not-allowed' 
-        : 'hover:elevation-cosmic'
-    } ${
-      isGroupMission && !isLocked ? 'border-info/30 bg-gradient-to-r from-card to-info/5' : ''
+    <Card className={`group transition-all duration-300 mission-card relative overflow-hidden hover:elevation-cosmic ${
+      isGroupMission ? 'border-info/30 bg-gradient-to-r from-card to-info/5' : ''
     } ${
       isCompleted ? 'border-success/30 bg-success/5' : ''
     }`}>
@@ -78,31 +69,31 @@ export function MissionCard({ mission, seasonName, isCompleted = false, isLocked
                 {mission.title}
               </CardTitle>
               <div className="flex items-center gap-1 shrink-0">
-                {isLocked && (
-                  <Badge variant="outline" className="text-xs bg-muted text-muted-foreground border-muted">
-                    <Lock className="w-3 h-3 mr-1" />
-                    Заблокировано
-                  </Badge>
-                )}
-                {isCompleted && (
-                  <Badge variant="outline" className="text-xs bg-success/10 text-success border-success/30">
+                {isCompleted && isApproved && (
+                  <Badge variant="outline" className="text-xs bg-green-100 text-green-700 border-green-300">
                     <CheckCircle className="w-3 h-3 mr-1" />
                     Завершено
                   </Badge>
                 )}
-                {isPairedMission && !isLocked && (
+                {isCompleted && !isApproved && (
+                  <Badge variant="outline" className="text-xs bg-orange-100 text-orange-700 border-orange-300">
+                    <Clock className="w-3 h-3 mr-1" />
+                    На проверке
+                  </Badge>
+                )}
+                {isPairedMission && (
                   <Badge variant="outline" className="text-xs bg-soft-cyan/10 text-primary border-soft-cyan/30">
                     <Users className="w-3 h-3 mr-1" />
                     Paired
                   </Badge>
                 )}
-                {isGroupMission && !isLocked && (
+                {isGroupMission && (
                   <Badge variant="outline" className="text-xs bg-info/10 text-info border-info/30">
                     <Shield className="w-3 h-3 mr-1" />
                     Squad
                   </Badge>
                 )}
-                {mission.rankRequirement === 1 && !isLocked && (
+                {mission.rankRequirement === 1 && (
                   <Badge variant="outline" className="text-xs bg-rewards-amber/10 text-rewards-amber border-rewards-amber/30">
                     <Star className="w-3 h-3 mr-1" />
                     Rating
@@ -111,8 +102,7 @@ export function MissionCard({ mission, seasonName, isCompleted = false, isLocked
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Badge className={`text-xs border ${difficultyColors[mission.rankRequirement as keyof typeof difficultyColors]} w-fit`}>
-                <span className="mr-1">{getDifficultyIcon()}</span>
+              <Badge className={`text-xs border ${getDifficultyColor(mission.rankRequirement)} w-fit`}>
                 {requiredRankName}
               </Badge>
               <Badge variant="secondary" className="text-xs">
@@ -120,16 +110,14 @@ export function MissionCard({ mission, seasonName, isCompleted = false, isLocked
               </Badge>
             </div>
           </div>
-          {!isLocked && (
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={() => onViewDetails(mission.id)}
-              className="opacity-60 md:opacity-0 group-hover:opacity-100 transition-opacity shrink-0 p-2"
-            >
-              <ChevronRight className="w-4 h-4" />
-            </Button>
-          )}
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => onViewDetails(mission.id)}
+            className="opacity-60 md:opacity-0 group-hover:opacity-100 transition-opacity shrink-0 p-2"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </Button>
         </div>
       </CardHeader>
       
@@ -200,60 +188,58 @@ export function MissionCard({ mission, seasonName, isCompleted = false, isLocked
 
         {/* Actions */}
         <div className="flex items-center justify-between pt-2 gap-3">
-          {!isLocked && (
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => onViewDetails(mission.id)}
+            className="text-sm text-muted-foreground border-border flex-1 sm:flex-none"
+          >
+            {mission.tasks.length} шагов • {mission.tasks.length} доказательств
+          </Button>
+          {!isCompleted && (
             <Button 
-              variant="outline" 
+              onClick={() => onLaunch(mission.id)}
               size="sm"
-              onClick={() => onViewDetails(mission.id)}
-              className="text-sm text-muted-foreground border-border flex-1 sm:flex-none"
+              className={`shrink-0 mission-launch-btn ${
+                isGroupMission 
+                  ? 'bg-info hover:bg-info/80 text-white' 
+                  : 'bg-primary hover:bg-primary-600 text-white'
+              }`}
             >
-              {mission.tasks.length} шагов • {mission.tasks.length} доказательств
+              <Rocket className="w-4 h-4 mr-2" />
+              <span className="hidden sm:inline">
+                {isGroupMission ? 'Присоединиться к команде' : 'Запустить миссию'}
+              </span>
+              <span className="sm:hidden">
+                {isGroupMission ? 'Присоединиться' : 'Запустить'}
+              </span>
             </Button>
           )}
-          {isLocked && (
-            <div className="flex items-center gap-2 flex-1 text-sm text-muted-foreground">
-              <Lock className="w-4 h-4" />
-              <span>Требуется ранг: {requiredRankName}</span>
-            </div>
+          {isCompleted && (
+            <Button 
+              onClick={() => onViewDetails(mission.id)}
+              size="sm"
+              className={`shrink-0 mission-launch-btn ${
+                isApproved 
+                  ? 'bg-green-100 hover:bg-green-200 text-green-700 border border-green-300' 
+                  : 'bg-orange-100 hover:bg-orange-200 text-orange-700 border border-orange-300'
+              }`}
+            >
+              {isApproved ? (
+                <>
+                  <CheckCircle className="w-4 h-4 mr-2" />
+                  <span className="hidden sm:inline">Посмотреть детали</span>
+                  <span className="sm:hidden">Детали</span>
+                </>
+              ) : (
+                <>
+                  <Clock className="w-4 h-4 mr-2" />
+                  <span className="hidden sm:inline">Ожидает проверки</span>
+                  <span className="sm:hidden">На проверке</span>
+                </>
+              )}
+            </Button>
           )}
-          <Button 
-            onClick={() => isCompleted ? onViewDetails(mission.id) : onLaunch(mission.id)}
-            size="sm"
-            className={`shrink-0 mission-launch-btn ${
-              isLocked
-                ? 'bg-muted text-muted-foreground cursor-not-allowed'
-                : isCompleted 
-                  ? 'bg-success/10 hover:bg-success/20 text-success border border-success/30' 
-                  : isGroupMission 
-                    ? 'bg-info hover:bg-info/80 text-white' 
-                    : 'bg-primary hover:bg-primary-600 text-white'
-            }`}
-            disabled={isLocked}
-          >
-            {isLocked ? (
-              <>
-                <Lock className="w-4 h-4 mr-2" />
-                <span className="hidden sm:inline">Недоступно</span>
-                <span className="sm:hidden">Закрыто</span>
-              </>
-            ) : isCompleted ? (
-              <>
-                <CheckCircle className="w-4 h-4 mr-2" />
-                <span className="hidden sm:inline">Посмотреть детали</span>
-                <span className="sm:hidden">Детали</span>
-              </>
-            ) : (
-              <>
-                <Rocket className="w-4 h-4 mr-2" />
-                <span className="hidden sm:inline">
-                  {isGroupMission ? 'Присоединиться к команде' : 'Запустить миссию'}
-                </span>
-                <span className="sm:hidden">
-                  {isGroupMission ? 'Присоединиться' : 'Запустить'}
-                </span>
-              </>
-            )}
-          </Button>
         </div>
       </CardContent>
     </Card>

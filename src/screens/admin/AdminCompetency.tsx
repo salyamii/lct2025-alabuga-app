@@ -103,14 +103,14 @@ export function AdminCompetency({
                     const isExpanded = expandedCompetency === competency.id;
                     return (
                   <div key={competency.id} className="admin-card p-4 rounded-lg">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-start gap-4 flex-1">
-                        <div className="w-12 h-12 bg-gradient-to-br from-primary to-info rounded-lg flex items-center justify-center">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex items-start gap-4 flex-1 min-w-0">
+                        <div className="w-12 h-12 bg-gradient-to-br from-primary to-info rounded-lg flex items-center justify-center flex-shrink-0">
                           <Star className="w-6 h-6 text-white" />
                         </div>
-                        <div className="space-y-2 flex-1">
+                        <div className="space-y-2 flex-1 min-w-0">
                           <div>
-                            <h4 className="font-semibold text-base">
+                            <h4 className="font-semibold text-base truncate">
                               {competency.name}
                             </h4>
                             <p className="text-sm text-muted-foreground">
@@ -120,13 +120,13 @@ export function AdminCompetency({
                             {/* Связанные навыки */}
                             {competency.skills && competency.skills.length > 0 && (
                               <div className="mt-3">
-                                <p className="text-xs text-muted-foreground mb-1 flex items-center gap-1">
+                                <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
                                   <Target className="w-3 h-3" />
                                   Связанные навыки ({competency.skills.length}):
                                 </p>
                                 <div className="flex flex-wrap gap-1">
                                   {competency.skills.map((skill) => (
-                                    <Badge key={skill.id} variant="outline" className="text-xs">
+                                    <Badge key={skill.id} variant="outline" className="text-xs text-wrap">
                                       {skill.name}
                                     </Badge>
                                   ))}
@@ -136,7 +136,7 @@ export function AdminCompetency({
                           </div>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-shrink-0">
                         <Button 
                           variant="ghost" 
                           size="sm"
