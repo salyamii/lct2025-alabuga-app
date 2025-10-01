@@ -172,11 +172,6 @@ const AppContent: React.FC = () => {
         element={
           <MissionExecutionScreen
             onBack={back}
-            onCompleteMission={(missionId) => {
-              // TODO: Отправить результат на сервер
-              console.log("Миссия завершена:", missionId);
-              navigate("/season-hub");
-            }}
           />
         }
       />
