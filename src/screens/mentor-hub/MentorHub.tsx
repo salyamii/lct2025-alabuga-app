@@ -20,103 +20,103 @@ interface MentorshipScreenProps {
     const myPairs = [
       {
         id: "pair-1",
-        mentor: { name: "Sarah Chen", avatar: "SC", rank: "Senior Navigator", rating: 4.9 },
-        mentee: { name: "Alex Morgan", avatar: "AM", rank: "Pilot", rating: 4.7 },
-        program: "Frontend Mastery",
+        mentor: { name: "Сара Чен", avatar: "СЧ", rank: "Старший Навигатор", rating: 4.9 },
+        mentee: { name: "Алекс Морган", avatar: "АМ", rank: "Пилот", rating: 4.7 },
+        program: "Мастерство Frontend",
         progress: 75,
-        nextSession: "Tomorrow at 2:00 PM",
+        nextSession: "Завтра в 14:00",
         sessionsCompleted: 8,
         totalSessions: 12,
-        status: "active"
+        status: "активно"
       },
       {
         id: "pair-2", 
-        mentor: { name: "Mike Johnson", avatar: "MJ", rank: "Captain", rating: 4.8 },
-        mentee: { name: "Emma Davis", avatar: "ED", rank: "Cadet", rating: 4.5 },
-        program: "React Fundamentals",
+        mentor: { name: "Майк Джонсон", avatar: "МД", rank: "Капитан", rating: 4.8 },
+        mentee: { name: "Эмма Дэвис", avatar: "ЭД", rank: "Кадет", rating: 4.5 },
+        program: "Основы React",
         progress: 45,
-        nextSession: "Friday at 3:30 PM",
+        nextSession: "Пятница в 15:30",
         sessionsCompleted: 5,
         totalSessions: 10,
-        status: "active"
+        status: "активно"
       },
       {
         id: "pair-3",
-        mentor: { name: "Lisa Anderson", avatar: "LA", rank: "Navigator", rating: 4.6 },
-        mentee: { name: "James Wilson", avatar: "JW", rank: "Cadet", rating: 4.3 },
-        program: "TypeScript Basics",
+        mentor: { name: "Лиза Андерсон", avatar: "ЛА", rank: "Навигатор", rating: 4.6 },
+        mentee: { name: "Джеймс Уилсон", avatar: "ДУ", rank: "Кадет", rating: 4.3 },
+        program: "Основы TypeScript",
         progress: 90,
-        nextSession: "Completed",
+        nextSession: "Завершено",
         sessionsCompleted: 9,
         totalSessions: 9,
-        status: "completed"
+        status: "завершено"
       }
     ];
   
     const availableMentors = [
       {
         id: "mentor-1",
-        name: "Dr. Jennifer Liu",
-        avatar: "JL",
-        rank: "Master Navigator",
-        specialty: "Full Stack Architecture",
+        name: "Др. Дженнифер Лю",
+        avatar: "ДЛ",
+        rank: "Мастер Навигатор",
+        specialty: "Архитектура Full Stack",
         rating: 4.9,
         sessions: 47,
-        experience: "8 years",
-        nextAvailable: "Next week",
-        skills: ["React", "Node.js", "System Design", "Leadership"]
+        experience: "8 лет",
+        nextAvailable: "На следующей неделе",
+        skills: ["React", "Node.js", "Системный дизайн", "Лидерство"]
       },
       {
         id: "mentor-2",
-        name: "Carlos Rodriguez",
-        avatar: "CR", 
-        rank: "Senior Captain",
-        specialty: "DevOps & Cloud",
+        name: "Карлос Родригес",
+        avatar: "КР", 
+        rank: "Старший Капитан",
+        specialty: "DevOps и Облачные технологии",
         rating: 4.8,
         sessions: 32,
-        experience: "6 years", 
-        nextAvailable: "In 3 days",
+        experience: "6 лет", 
+        nextAvailable: "Через 3 дня",
         skills: ["AWS", "Docker", "Kubernetes", "CI/CD"]
       },
       {
         id: "mentor-3",
-        name: "Nina Patel",
-        avatar: "NP",
-        rank: "Senior Navigator", 
-        specialty: "UI/UX Design",
+        name: "Нина Патель",
+        avatar: "НП",
+        rank: "Старший Навигатор", 
+        specialty: "UI/UX Дизайн",
         rating: 4.7,
         sessions: 28,
-        experience: "5 years",
-        nextAvailable: "Available now",
-        skills: ["Figma", "Design Systems", "User Research", "Prototyping"]
+        experience: "5 лет",
+        nextAvailable: "Доступна сейчас",
+        skills: ["Figma", "Дизайн-системы", "Исследования пользователей", "Прототипирование"]
       }
     ];
   
     const programs = [
       {
         id: "prog-1",
-        title: "Frontend Mastery Track",
-        description: "Advanced React, TypeScript, and modern web development",
-        duration: "12 weeks",
-        level: "Intermediate to Advanced",
+        title: "Трек Мастерства Frontend",
+        description: "Продвинутый React, TypeScript и современная веб-разработка",
+        duration: "12 недель",
+        level: "Средний - Продвинутый",
         participants: 24,
         rating: 4.8
       },
       {
         id: "prog-2", 
-        title: "Leadership & Communication",
-        description: "Develop leadership skills and effective communication",
-        duration: "8 weeks",
-        level: "All levels",
+        title: "Лидерство и Коммуникация",
+        description: "Развитие лидерских навыков и эффективной коммуникации",
+        duration: "8 недель",
+        level: "Все уровни",
         participants: 18,
         rating: 4.9
       },
       {
         id: "prog-3",
-        title: "System Design & Architecture", 
-        description: "Learn to design scalable systems and architectures",
-        duration: "16 weeks",
-        level: "Advanced", 
+        title: "Системный дизайн и Архитектура", 
+        description: "Изучение проектирования масштабируемых систем и архитектур",
+        duration: "16 недель",
+        level: "Продвинутый", 
         participants: 12,
         rating: 4.7
       }
