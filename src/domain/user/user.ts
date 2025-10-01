@@ -67,7 +67,7 @@ export class DetailedUser {
     }
     
     get isAdmin(): boolean {
-      return this.role === 'Admin' || this.role === 'HR';
+      return this.role === 'admin' || this.role === 'hr';
     }
     
     // Артефакты пользователя

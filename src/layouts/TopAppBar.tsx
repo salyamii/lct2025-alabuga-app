@@ -78,15 +78,17 @@ export function TopAppBar({
             </div>
             
             <div className="flex items-center gap-1 md:gap-2">
-              <Button 
-                size="sm" 
-                variant="ghost" 
-                className="text-white hover:bg-white/20 p-2"
-                onClick={onAdminOpen}
-                title="Admin Panel"
-              >
-                <Shield className="w-4 h-4" />
-              </Button>
+              {user?.isAdmin && (
+                <Button 
+                  size="sm" 
+                  variant="ghost" 
+                  className="text-white hover:bg-white/20 p-2"
+                  onClick={onAdminOpen}
+                  title="Admin Panel"
+                >
+                  <Shield className="w-4 h-4" />
+                </Button>
+              )}
               <Button 
                 size="sm" 
                 variant="ghost" 

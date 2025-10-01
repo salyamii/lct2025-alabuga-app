@@ -161,24 +161,31 @@ const AppContent: React.FC = () => {
       <Route path="/mentors" element={<AppLayout />}>
         <Route index element={<MentorshipScreen onBack={back} />} />
       </Route>
-      <Route path="/admin" element={<AdminHubScreen onBack={back} />} />
-      <Route path="/settings" element={<SettingsScreen onBack={back} />} />
-      <Route
-        path="/notifications"
-        element={<NotificationsScreen onBack={back} />}
-      />
-      <Route
-        path="/mission/:missionId"
-        element={
-          <MissionExecutionScreen
-            onBack={back}
-          />
-        }
-      />
-      <Route
-        path="/mission-detail/:missionId"
-        element={<MissionDetailScreen onBack={back} />}
-      />
+      <Route path="/admin" element={<AppLayout />}>
+        <Route index element={<AdminHubScreen onBack={back} />} />
+      </Route>
+      <Route path="/settings" element={<AppLayout />}>
+        <Route index element={<SettingsScreen onBack={back} />} />
+      </Route>
+      <Route path="/notifications" element={<AppLayout />}>
+        <Route index element={<NotificationsScreen onBack={back} />} />
+      </Route>
+      <Route path="/mission/:missionId" element={<AppLayout />}>
+        <Route
+          index
+          element={
+            <MissionExecutionScreen
+              onBack={back}
+            />
+          }
+        />
+      </Route>
+      <Route path="/mission-detail/:missionId" element={<AppLayout />}>
+        <Route
+          index
+          element={<MissionDetailScreen onBack={back} />}
+        />
+      </Route>
       <Route
         path="*"
         element={

@@ -1,4 +1,4 @@
-import { Award, Rocket, Store, Trophy, User, Users } from "lucide-react";
+import { Rocket, Trophy, User, GraduationCap, TrendingUp, ShoppingBag } from "lucide-react";
 import { Button } from "../components/ui/button";
 
 
@@ -12,11 +12,11 @@ interface MobileNavigationBottomBarProps {
 
     const tabs = [
         { id: "season", label: "Сезон", icon: Rocket },
-        { id: "progress", label: "Прогресс", icon: Trophy },
-        { id: "store", label: "Магазин", icon: Store },
-        { id: "badges", label: "Артефакты", icon: Award },
+        { id: "progress", label: "Прогресс", icon: TrendingUp },
+        { id: "mentors", label: "Ментор-хаб", icon: GraduationCap },
+        { id: "store", label: "Магазин", icon: ShoppingBag },
+        { id: "badges", label: "Артефакты", icon: Trophy },
         { id: "profile", label: "Профиль", icon: User },
-        { id: "mentors", label: "Ментор-хаб", icon: Users },
       ];
 
 
@@ -33,14 +33,14 @@ interface MobileNavigationBottomBarProps {
               key={tab.id}
               variant="ghost"
               onClick={() => onTabChange(tab.id)}
-              className={`h-full flex-1 px-0 rounded-none flex flex-col items-center justify-center gap-1 ${
+              className={`h-full flex-1 px-0 rounded-none flex items-center justify-center ${
                 isActive 
                   ? 'text-primary bg-primary/5 border-t-2 border-primary' 
                   : 'text-muted-foreground hover:text-foreground'
               }`}
+              title={tab.label}
             >
-              <Icon className="w-5 h-5" />
-              <span className="text-[10px] leading-none">{tab.label}</span>
+              <Icon className="w-6 h-6" />
             </Button>
           );
         })}

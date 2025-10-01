@@ -1,4 +1,4 @@
-import { Rocket, Trophy, Store, Award, User, Users } from "lucide-react";
+import { Rocket, Trophy, User, GraduationCap, TrendingUp, ShoppingBag } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "../components/ui/tabs";
 
 interface TopNavigationTabsProps {
@@ -28,21 +28,28 @@ export function TopNavigationTabs({
               value="progress" 
               className="flex-1 min-w-0 flex items-center justify-center gap-2 whitespace-nowrap data-[state=active]:bg-white/20 data-[state=active]:text-white text-white/80"
             >
-              <Trophy className="w-4 h-4" />
+              <TrendingUp className="w-4 h-4" />
               <span className="hidden sm:inline truncate">Прогресс</span>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="mentors" 
+              className="flex-1 min-w-0 flex items-center justify-center gap-2 whitespace-nowrap data-[state=active]:bg-white/20 data-[state=active]:text-white text-white/80"
+            >
+              <GraduationCap className="w-4 h-4" />
+              <span className="hidden sm:inline truncate">Ментор-хаб</span>
             </TabsTrigger>
             <TabsTrigger 
               value="store" 
               className="flex-1 min-w-0 flex items-center justify-center gap-2 whitespace-nowrap data-[state=active]:bg-white/20 data-[state=active]:text-white text-white/80"
             >
-              <Store className="w-4 h-4" />
+              <ShoppingBag className="w-4 h-4" />
               <span className="hidden sm:inline truncate">Магазин</span>
             </TabsTrigger>
             <TabsTrigger 
               value="badges" 
               className="flex-1 min-w-0 flex items-center justify-center gap-2 whitespace-nowrap data-[state=active]:bg-white/20 data-[state=active]:text-white text-white/80"
             >
-              <Award className="w-4 h-4" />
+              <Trophy className="w-4 h-4" />
               <span className="hidden sm:inline truncate">Артефакты</span>
             </TabsTrigger>
             <TabsTrigger 
@@ -51,13 +58,6 @@ export function TopNavigationTabs({
             >
               <User className="w-4 h-4" />
               <span className="hidden sm:inline truncate">Профиль</span>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="mentors" 
-              className="flex-1 min-w-0 flex items-center justify-center gap-2 whitespace-nowrap data-[state=active]:bg-white/20 data-[state=active]:text-white text-white/80"
-            >
-              <Users className="w-4 h-4" />
-              <span className="hidden sm:inline truncate">Ментор-хаб</span>
             </TabsTrigger>
           </TabsList>
         </Tabs>
