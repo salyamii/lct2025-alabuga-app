@@ -5137,7 +5137,7 @@
   --popover-foreground: var(--text-primary);
   --primary-foreground: #fff;
   --secondary: var(--navy-accent);
-  --secondary-foreground: var(--text-primary);
+  --secondary-foreground: #fff;
   --muted: #f0f6fc;
   --muted-foreground: var(--text-secondary);
   --accent: var(--info);
@@ -5176,7 +5176,7 @@
   --primary: #3b82f6;
   --primary-foreground: #fff;
   --secondary: #475569;
-  --secondary-foreground: #f8fafc;
+  --secondary-foreground: #fff;
   --muted: #334155;
   --muted-foreground: #94a3b8;
   --accent: #0ea5e9;
