@@ -1,16 +1,14 @@
 import { GitBranch } from "lucide-react"
 import { MissionChainCard } from "./MissionChainCard"
-import { MissionChain, User } from "../../domain"
-import { useMissionChainStore } from "../../stores/useMissionChainStore"
-import { useUserStore } from "../../stores/useUserStore"
+import { MissionChain, DetailedUser } from "../../domain"
 
 interface SeasonHubMissionChainsProps {
+    missionChains: MissionChain[];
+    user: DetailedUser | null;
     onMissionChainOpen: (missionChainId: number) => void
 }
 
-export function SeasonHubMissionChains({ onMissionChainOpen: onMissionChainOpen }: SeasonHubMissionChainsProps) {
-  const { missionChains } = useMissionChainStore();
-  const { user } = useUserStore();
+export function SeasonHubMissionChains({ missionChains, user, onMissionChainOpen: onMissionChainOpen }: SeasonHubMissionChainsProps) {
     // Не отображать, если нет цепочек или если во всех цепочках нет ни одной миссии
     const chainsWithMissions = missionChains.filter(chain => chain.missions && chain.missions.length > 0);
 

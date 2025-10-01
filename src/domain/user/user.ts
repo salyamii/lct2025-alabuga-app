@@ -3,7 +3,36 @@ import { UserMission } from "./userMission";
 import { Artifact } from "../artifact";
 import { UserCompetency } from "./userCompetency";
 
+// Базовая модель пользователя (только основная информация)
 export class User {
+    constructor(
+      public readonly login: string,
+      public readonly firstName: string,
+      public readonly lastName: string,
+      public readonly role: string,
+    ) {}
+    
+    static fromResponse(response: UserResponse): User {
+      return new User(  
+        response.login,
+        response.firstName,
+        response.lastName,
+        response.role
+      );
+    }
+    
+    // Вспомогательные методы
+    get fullName(): string {
+      return `${this.firstName} ${this.lastName}`;
+    }
+    
+    get isAdmin(): boolean {
+      return this.role === 'Admin' || this.role === 'HR';
+    }
+  }
+
+// Расширенная модель пользователя (с детальной информацией)
+export class DetailedUser {
     constructor(
       public readonly login: string,
       public readonly firstName: string,
@@ -17,23 +46,8 @@ export class User {
       public readonly competencies: UserCompetency[] = [],
     ) {}
     
-    static fromResponse(response: UserResponse): User {
-      return new User(  
-        response.login,
-        response.firstName,
-        response.lastName,
-        response.role,
-        0,
-        0,
-        0,
-        [],
-        [],
-        []
-      );
-    }
-
-    static fromDetailedResponse(response: UserDetailedResponse): User {
-      return new User(
+    static fromDetailedResponse(response: UserDetailedResponse): DetailedUser {
+      return new DetailedUser(
         response.login,
         response.firstName,
         response.lastName,

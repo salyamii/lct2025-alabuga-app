@@ -18,6 +18,13 @@ import { StoreItem } from "../../domain/store";
 import { useState } from "react";
 
 interface AdminSettingsProps {
+    handleFetchCompetencies: () => Promise<void>;
+    handleFetchRanks: () => Promise<void>;
+    handleFetchMissions: () => Promise<void>;
+    handleFetchSkills: () => Promise<void>;
+    handleFetchTasks: () => Promise<void>;
+    handleFetchArtifacts: () => Promise<void>;
+    handleFetchStoreItems: () => Promise<void>;
     handleCreateCompetency: () => void;
     handleEditCompetency: (competency: Competency) => void;
     handleDeleteCompetency: (competency: Competency) => void;
@@ -45,6 +52,13 @@ interface AdminSettingsProps {
 }
 
 export function AdminSettings({ 
+    handleFetchCompetencies,
+    handleFetchRanks,
+    handleFetchMissions,
+    handleFetchSkills,
+    handleFetchTasks,
+    handleFetchArtifacts,
+    handleFetchStoreItems,
     handleCreateCompetency,
     handleEditCompetency,
     handleDeleteCompetency,
@@ -210,6 +224,8 @@ export function AdminSettings({
                       </Button>
                     </div>
                     <AdminCompetency
+                      handleFetchCompetencies={handleFetchCompetencies}
+                      handleFetchSkills={handleFetchSkills}
                       handleCreateCompetency={handleCreateCompetency}
                       handleEditCompetency={handleEditCompetency}
                       handleDeleteCompetency={handleDeleteCompetency}
@@ -236,6 +252,9 @@ export function AdminSettings({
                       </Button>
                     </div>
                     <AdminRank
+                      handleFetchRanks={handleFetchRanks}
+                      handleFetchMissions={handleFetchMissions}
+                      handleFetchCompetencies={handleFetchCompetencies}
                       handleCreateRank={handleCreateRank}
                       handleEditRank={handleEditRank}
                       handleDeleteRank={handleDeleteRank}
@@ -262,6 +281,7 @@ export function AdminSettings({
                       </Button>
                     </div>
                     <AdminSkill
+                      handleFetchSkills={handleFetchSkills}
                       handleCreateSkill={handleCreateSkill}
                       handleEditSkill={handleEditSkill}
                       handleDeleteSkill={handleDeleteSkill}
@@ -288,6 +308,7 @@ export function AdminSettings({
                       </Button>
                     </div>
                     <AdminTask
+                      handleFetchTasks={handleFetchTasks}
                       handleCreateTask={handleCreateTask}
                       handleEditTask={handleEditTask}
                       handleDeleteTask={handleDeleteTask}
@@ -314,6 +335,7 @@ export function AdminSettings({
                       </Button>
                     </div>
                     <AdminArtifact
+                      handleFetchArtifacts={handleFetchArtifacts}
                       handleCreateArtifact={handleCreateArtifact}
                       handleEditArtifact={handleEditArtifact}
                       handleDeleteArtifact={handleDeleteArtifact}
@@ -340,6 +362,7 @@ export function AdminSettings({
                       </Button>
                     </div>
                     <AdminStore
+                      handleFetchStoreItems={handleFetchStoreItems}
                       handleCreateStoreItem={handleCreateStoreItem}
                       handleEditStoreItem={handleEditStoreItem}
                       handleDeleteStoreItem={handleDeleteStoreItem}

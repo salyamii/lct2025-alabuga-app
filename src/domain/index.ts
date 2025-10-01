@@ -14,7 +14,7 @@ export * from './competency';
 export * from './season';
 
 // Переэкспорт основных доменных моделей для удобства
-export { User } from './user/user';
+export { User, DetailedUser } from './user/user';
 export { UserMission } from './user/userMission';
 export { UserTask } from './user/userTask';
 export { UserSkill } from './user/userSkill';

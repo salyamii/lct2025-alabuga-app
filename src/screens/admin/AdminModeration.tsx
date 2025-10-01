@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select";
@@ -24,71 +24,119 @@ import {
   Wifi,
   Navigation
 } from "lucide-react";
+import { useUserStore } from "../../stores/useUserStore";
+import { UserMission, User } from "../../domain";
 
-export function AdminModeration() {
+interface AdminModerationProps {
+  handleFetchAllUsers: () => Promise<void>;
+  handleFetchUserMissionsByLogin: (userLogin: string) => Promise<UserMission[]>;
+  handleApproveUserMission: (missionId: number, userLogin: string) => Promise<void>;
+  onUserPreviewOpen: (userLogin: string) => void;
+}
+
+export function AdminModeration({
+  handleFetchAllUsers,
+  handleFetchUserMissionsByLogin,
+  handleApproveUserMission,
+  onUserPreviewOpen
+}: AdminModerationProps) {
+  const { allUsers } = useUserStore();
   const [selectedSubmissions, setSelectedSubmissions] = useState<string[]>([]);
-  const [statusFilter, setStatusFilter] = useState("pending");
   const [typeFilter, setTypeFilter] = useState("all");
-  const [missionFilter, setMissionFilter] = useState("all");
   const [riskFilter, setRiskFilter] = useState("all");
-  const [selectedSubmission, setSelectedSubmission] = useState<any>(null);
+  const [selectedSubmission, setSelectedSubmission] = useState<{mission: UserMission, user: User} | null>(null);
+  const [isLoadingMissions, setIsLoadingMissions] = useState(false);
+  const [pendingMissions, setPendingMissions] = useState<Array<{mission: UserMission, user: User}>>([]);
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const submissions = [
-    {
-      id: "1",
-      user: "Elena Volkov",
-      mission: "Smart Factory IoT Setup",
-      step: "Equipment Photo",
-      type: "photo",
-      status: "pending",
-      submittedAt: "2024-12-15 14:30",
-      riskScore: "low",
-      content: {
-        photos: ["/submission-1.jpg", "/submission-2.jpg"],
-        description: "Completed IoT sensor installation on production line A. All sensors are now connected and sending data to the monitoring dashboard.",
-        location: { lat: 55.7558, lng: 49.1221, name: "Factory Floor - Zone A" },
-        exif: { camera: "iPhone 14", timestamp: "2024-12-15T14:28:33Z", gps: true },
-        deviceIntegrity: "verified"
-      },
-      flagged: false
-    },
-    {
-      id: "2", 
-      user: "Mikhail Petrov",
-      mission: "Safety Protocol Training",
-      step: "Emergency QR Scan",
-      type: "qr",
-      status: "pending",
-      submittedAt: "2024-12-15 13:45",
-      riskScore: "medium",
-      content: {
-        qrCode: "SF-SAFETY-2024-001",
-        qrPayload: { type: "emergency_drill", location: "assembly_point_b", timestamp: "2024-12-15T13:45:12Z" },
-        description: "Scanned safety checkpoint QR codes during emergency drill",
-        location: { lat: 55.7520, lng: 49.1180, name: "Emergency Assembly Point B" },
-        deviceIntegrity: "flagged"
-      },
-      flagged: true
-    },
-    {
-      id: "3",
-      user: "Anna Kozlova", 
-      mission: "Lean Manufacturing Assessment",
-      step: "Configuration Entry",
-      type: "config",
-      status: "pending", 
-      submittedAt: "2024-12-15 12:15",
-      riskScore: "low",
-      content: {
-        configCode: "LEAN_PARAMS: efficiency=0.85, waste_reduction=12%, cycle_time=45s",
-        description: "Optimized production line parameters following lean principles assessment",
-        notes: "Achieved 12% waste reduction by implementing 5S methodology",
-        location: { lat: 55.7495, lng: 49.1305, name: "Production Line 3" },
-        deviceIntegrity: "verified"
-      },
-      flagged: false
+  // Загружаем миссии кандидатов при монтировании компонента
+  useEffect(() => {
+    loadPendingMissions();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const loadPendingMissions = async () => {
+    setIsLoadingMissions(true);
+    try {
+      // Загружаем всех пользователей
+      await handleFetchAllUsers();
+      
+      // Фильтруем только кандидатов
+      const candidates = allUsers.filter(user => user.role.toLowerCase() === 'candidate');
+      
+      // Загружаем миссии для каждого кандидата
+      const missionsWithUsers: Array<{mission: UserMission, user: User}> = [];
+      
+      for (const candidate of candidates) {
+        try {
+          const userMissions = await handleFetchUserMissionsByLogin(candidate.login);
+          // Фильтруем только завершенные, но не одобренные миссии
+          const pendingMissions = userMissions.filter(mission => 
+            mission.isCompleted && !mission.isApproved
+          );
+          
+          // Добавляем миссии с информацией о пользователе
+          pendingMissions.forEach(mission => {
+            missionsWithUsers.push({ mission, user: candidate });
+          });
+        } catch (error) {
+          console.error(`Ошибка загрузки миссий для ${candidate.login}:`, error);
+        }
+      }
+      
+      setPendingMissions(missionsWithUsers);
+    } catch (error) {
+      console.error('Ошибка загрузки миссий:', error);
+      toast.error('Не удалось загрузить миссии для модерации');
+    } finally {
+      setIsLoadingMissions(false);
     }
-  ];
+  };
+
+  // Генерируем моковые данные для каждой миссии
+  const getMockData = (missionId: number) => {
+    const types = ['photo', 'qr', 'config', 'location'];
+    const riskScores = ['low', 'medium', 'high'];
+    const cameras = ['iPhone 14', 'Samsung Galaxy S23', 'Google Pixel 7', 'OnePlus 11'];
+    const locations = [
+      { lat: 55.7558, lng: 49.1221, name: "Цех A - Зона производства" },
+      { lat: 55.7520, lng: 49.1180, name: "Сборочная точка B" },
+      { lat: 55.7495, lng: 49.1305, name: "Производственная линия 3" },
+      { lat: 55.7580, lng: 49.1250, name: "Склад готовой продукции" }
+    ];
+    
+    // Используем ID миссии как seed для консистентности
+    const seed = missionId;
+    const type = types[seed % types.length];
+    const riskScore = riskScores[seed % riskScores.length];
+    const camera = cameras[seed % cameras.length];
+    const location = locations[seed % locations.length];
+    const flagged = seed % 3 === 0; // 33% шанс быть отмеченным
+    
+    return {
+      type,
+      riskScore,
+      flagged,
+      content: {
+        photos: type === 'photo' ? ["/submission-1.jpg", "/submission-2.jpg"] : undefined,
+        qrCode: type === 'qr' ? `SF-SAFETY-2024-${String(missionId).padStart(3, '0')}` : undefined,
+        qrPayload: type === 'qr' ? { 
+          type: "emergency_drill", 
+          location: "assembly_point_b", 
+          timestamp: new Date().toISOString() 
+        } : undefined,
+        configCode: type === 'config' ? `LEAN_PARAMS: efficiency=0.85, waste_reduction=12%, cycle_time=45s` : undefined,
+        description: "Описание выполнения миссии с детальным отчетом о проделанной работе",
+        location,
+        exif: { 
+          camera, 
+          timestamp: new Date().toISOString(), 
+          gps: true 
+        },
+        deviceIntegrity: flagged ? "flagged" : "verified"
+      }
+    };
+  };
 
   const getTypeIcon = (type: string) => {
     switch (type) {
@@ -109,28 +157,32 @@ export function AdminModeration() {
     }
   };
 
-  const handleAccept = (submissionId: string) => {
-    toast.success("Отправка принята");
-    const currentIndex = submissions.findIndex(s => s.id === submissionId);
-    if (currentIndex < submissions.length - 1) {
-      setSelectedSubmission(submissions[currentIndex + 1]);
+  const handleApproveMission = async () => {
+    if (!selectedSubmission) return;
+    
+    try {
+      await handleApproveUserMission(selectedSubmission.mission.id, selectedSubmission.user.login);
+      toast.success("Миссия успешно подтверждена");
+      
+      // Обновляем список миссий
+      await loadPendingMissions();
+      
+      // Сбрасываем выбранную миссию
+      setSelectedSubmission(null);
+    } catch (error) {
+      console.error('Ошибка подтверждения миссии:', error);
+      toast.error("Не удалось подтвердить миссию");
     }
   };
 
-  const handleReturn = (submissionId: string, reason: string) => {
-    toast.success("Отправка возвращена на доработку");
-    const currentIndex = submissions.findIndex(s => s.id === submissionId);
-    if (currentIndex < submissions.length - 1) {
-      setSelectedSubmission(submissions[currentIndex + 1]);
-    }
+  const handleReturn = (reason: string) => {
+    toast.success(`Миссия возвращена на доработку: ${reason}`);
+    // Здесь можно добавить логику для возврата миссии
   };
 
-  const handleReject = (submissionId: string) => {
-    toast.success("Отправка отклонена, пользователь отмечен");
-    const currentIndex = submissions.findIndex(s => s.id === submissionId);
-    if (currentIndex < submissions.length - 1) {
-      setSelectedSubmission(submissions[currentIndex + 1]);
-    }
+  const handleReject = () => {
+    toast.success("Миссия отклонена");
+    // Здесь можно добавить логику для отклонения миссии
   };
 
   const handleBulkAccept = () => {
@@ -138,13 +190,38 @@ export function AdminModeration() {
     setSelectedSubmissions([]);
   };
 
-  const filteredSubmissions = submissions.filter(submission => {
-    const matchesStatus = statusFilter === "all" || submission.status === statusFilter;
-    const matchesType = typeFilter === "all" || submission.type === typeFilter;
-    const matchesMission = missionFilter === "all" || submission.mission.toLowerCase().includes(missionFilter.toLowerCase());
-    const matchesRisk = riskFilter === "all" || submission.riskScore === riskFilter;
-    return matchesStatus && matchesType && matchesMission && matchesRisk;
-  });
+  // Фильтрация миссий
+  const filteredMissions = useMemo(() => {
+    let filtered = pendingMissions;
+    
+    // Фильтр по поисковому запросу
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(({ mission, user }) => 
+        mission.title.toLowerCase().includes(query) ||
+        user.fullName.toLowerCase().includes(query) ||
+        user.login.toLowerCase().includes(query)
+      );
+    }
+    
+    // Фильтр по типу (используем моковые данные)
+    if (typeFilter !== "all") {
+      filtered = filtered.filter(({ mission }) => {
+        const mockData = getMockData(mission.id);
+        return mockData.type === typeFilter;
+      });
+    }
+    
+    // Фильтр по риску (используем моковые данные)
+    if (riskFilter !== "all") {
+      filtered = filtered.filter(({ mission }) => {
+        const mockData = getMockData(mission.id);
+        return mockData.riskScore === riskFilter;
+      });
+    }
+    
+    return filtered;
+  }, [pendingMissions, searchQuery, typeFilter, riskFilter]);
 
   return (
     <div className="flex flex-col">
@@ -157,10 +234,13 @@ export function AdminModeration() {
         
         <div className="flex items-center gap-2">
           <Badge variant="outline" className="bg-amber-50 text-amber-700">
-            {submissions.filter(s => s.status === "pending").length} На проверке
+            {pendingMissions.length} На проверке
           </Badge>
           <Badge variant="outline" className="bg-red-50 text-red-700">
-            {submissions.filter(s => s.riskScore === "high").length} Высокий риск
+            {pendingMissions.filter(({ mission }) => {
+              const mockData = getMockData(mission.id);
+              return mockData.riskScore === "high";
+            }).length} Высокий риск
           </Badge>
           <Button variant="outline" size="sm" onClick={handleBulkAccept}>
             Пакетное принятие
@@ -176,8 +256,13 @@ export function AdminModeration() {
           <Card className="p-4">
             <div className="space-y-3">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input placeholder="Поиск..." className="pl-10" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none z-10" />
+                <Input 
+                  placeholder="Поиск по названию миссии или пользователю..." 
+                  className="pl-9 truncate" 
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
               </div>
               
               <div className="grid grid-cols-2 gap-2">
@@ -210,62 +295,71 @@ export function AdminModeration() {
 
           {/* Queue List */}
           <div className="space-y-2 overflow-auto max-h-[600px]">
-            {filteredSubmissions.map((submission) => {
-              const TypeIcon = getTypeIcon(submission.type);
-              const isSelected = selectedSubmission?.id === submission.id;
-              
-              return (
-                <Card 
-                  key={submission.id} 
-                  className={`p-3 cursor-pointer transition-colors ${
-                    isSelected ? 'ring-2 ring-primary bg-primary/5' : 'hover:bg-muted/50'
-                  }`}
-                  onClick={() => setSelectedSubmission(submission)}
-                >
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 bg-gradient-to-br from-primary to-info rounded-full flex items-center justify-center flex-shrink-0">
-                      <span className="text-white font-semibold text-sm">
-                        {submission.user.charAt(0)}
-                      </span>
-                    </div>
-                    
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <TypeIcon className="w-4 h-4 text-muted-foreground" />
-                        <span className="font-medium text-sm truncate">{submission.user}</span>
-                        {submission.flagged && (
-                          <Flag className="w-3 h-3 text-orange-500" />
-                        )}
+            {isLoadingMissions ? (
+              <div className="flex items-center justify-center py-8">
+                <div className="text-muted-foreground">Загрузка миссий...</div>
+              </div>
+            ) : (
+              filteredMissions.map(({ mission, user }) => {
+                const mockData = getMockData(mission.id);
+                const TypeIcon = getTypeIcon(mockData.type);
+                const isSelected = selectedSubmission?.mission.id === mission.id;
+                
+                return (
+                  <div
+                    key={`${user.login}-${mission.id}`}
+                    className={`p-3 cursor-pointer transition-colors rounded-lg border ${
+                      isSelected 
+                        ? 'ring-2 ring-primary bg-primary/5 border-primary' 
+                        : 'hover:bg-muted/50 border-border'
+                    }`}
+                    onClick={() => setSelectedSubmission({ mission, user })}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="w-8 h-8 bg-gradient-to-br from-primary to-info rounded-full flex items-center justify-center flex-shrink-0">
+                        <span className="text-white font-semibold text-sm">
+                          {user.firstName.charAt(0)}{user.lastName.charAt(0)}
+                        </span>
                       </div>
                       
-                      <p className="text-sm text-muted-foreground truncate mb-1">
-                        {submission.mission}
-                      </p>
-                      <p className="text-xs text-muted-foreground truncate mb-2">
-                        {submission.step}
-                      </p>
-                      
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs text-muted-foreground">
-                          {submission.submittedAt.split(' ')[1]}
-                        </span>
-                        <Badge variant="outline" className={getRiskColor(submission.riskScore)}>
-                          {submission.riskScore}
-                        </Badge>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <TypeIcon className="w-4 h-4 text-muted-foreground" />
+                          <span className="font-medium text-sm truncate">{user.fullName}</span>
+                          {mockData.flagged && (
+                            <Flag className="w-3 h-3 text-orange-500" />
+                          )}
+                        </div>
+                        
+                        <p className="text-sm text-muted-foreground truncate mb-1">
+                          {mission.title}
+                        </p>
+                        <p className="text-xs text-muted-foreground truncate mb-2">
+                          ID: {mission.id}
+                        </p>
+                        
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-muted-foreground">
+                            {new Date().toLocaleTimeString()}
+                          </span>
+                          <Badge variant="outline" className={getRiskColor(mockData.riskScore)}>
+                            {mockData.riskScore === 'low' ? 'низкий' : mockData.riskScore === 'medium' ? 'средний' : 'высокий'}
+                          </Badge>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </Card>
-              );
-            })}
+                );
+              })
+            )}
           </div>
 
-          {filteredSubmissions.length === 0 && (
+          {!isLoadingMissions && filteredMissions.length === 0 && (
             <Card className="p-8 text-center">
               <div className="text-muted-foreground">
                 <Check className="w-8 h-8 mx-auto mb-2" />
                 <p className="font-medium">Очередь пуста</p>
-                <p className="text-sm">Все отправки проверены</p>
+                <p className="text-sm">Все миссии проверены</p>
               </div>
             </Card>
           )}
@@ -280,20 +374,20 @@ export function AdminModeration() {
               {/* Header */}
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-lg font-semibold">{selectedSubmission.mission}</h2>
-                  <p className="text-muted-foreground">{selectedSubmission.step}</p>
+                  <h2 className="text-lg font-semibold">{selectedSubmission.mission.title}</h2>
+                  <p className="text-muted-foreground">{selectedSubmission.user.fullName}</p>
                 </div>
-                <Badge className={getRiskColor(selectedSubmission.riskScore)}>
-                  {selectedSubmission.riskScore === 'low' ? 'низкий' : selectedSubmission.riskScore === 'medium' ? 'средний' : 'высокий'} риск
+                <Badge className={getRiskColor(getMockData(selectedSubmission.mission.id).riskScore)}>
+                  {getMockData(selectedSubmission.mission.id).riskScore === 'low' ? 'низкий' : getMockData(selectedSubmission.mission.id).riskScore === 'medium' ? 'средний' : 'высокий'} риск
                 </Badge>
               </div>
 
               {/* Media Viewer */}
-              {selectedSubmission.content.photos && (
+              {getMockData(selectedSubmission.mission.id).content.photos && (
                 <Card className="p-4">
                   <h3 className="font-medium mb-3">Медиа доказательства</h3>
-                  <div className="space-y-4">
-                    {selectedSubmission.content.photos.map((photo: string, index: number) => (
+                  <div className="grid grid-cols-2 gap-4">
+                    {getMockData(selectedSubmission.mission.id).content.photos?.map((photo: string, index: number) => (
                       <div key={index} className="relative">
                         <div className="aspect-video bg-muted rounded-lg overflow-hidden flex items-center justify-center">
                           <Camera className="w-12 h-12 text-muted-foreground" />
@@ -313,21 +407,21 @@ export function AdminModeration() {
               )}
 
               {/* QR Code Details */}
-              {selectedSubmission.content.qrCode && (
+              {getMockData(selectedSubmission.mission.id).content.qrCode && (
                 <Card className="p-4">
                   <h3 className="font-medium mb-3">QR код</h3>
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-muted-foreground">Код:</span>
                       <code className="text-sm bg-muted px-2 py-1 rounded">
-                        {selectedSubmission.content.qrCode}
+                        {getMockData(selectedSubmission.mission.id).content.qrCode}
                       </code>
                     </div>
-                    {selectedSubmission.content.qrPayload && (
+                    {getMockData(selectedSubmission.mission.id).content.qrPayload && (
                       <div>
                         <span className="text-sm text-muted-foreground">Данные:</span>
                         <pre className="text-xs bg-muted p-2 rounded mt-1 overflow-auto">
-                          {JSON.stringify(selectedSubmission.content.qrPayload, null, 2)}
+                          {JSON.stringify(getMockData(selectedSubmission.mission.id).content.qrPayload, null, 2)}
                         </pre>
                       </div>
                     )}
@@ -336,7 +430,7 @@ export function AdminModeration() {
               )}
 
               {/* EXIF/Metadata */}
-              {selectedSubmission.content.exif && (
+              {getMockData(selectedSubmission.mission.id).content.exif && (
                 <Card className="p-4">
                   <h3 className="font-medium mb-3">EXIF данные</h3>
                   <div className="grid grid-cols-2 gap-4 text-sm">
@@ -344,20 +438,20 @@ export function AdminModeration() {
                       <span className="text-muted-foreground">Устройство:</span>
                       <p className="flex items-center gap-1">
                         <Smartphone className="w-3 h-3" />
-                        {selectedSubmission.content.exif.camera}
+                        {getMockData(selectedSubmission.mission.id).content.exif.camera}
                       </p>
                     </div>
                     <div>
                       <span className="text-muted-foreground">Временная метка:</span>
                       <p className="flex items-center gap-1">
                         <Clock className="w-3 h-3" />
-                        {selectedSubmission.content.exif.timestamp}
+                        {getMockData(selectedSubmission.mission.id).content.exif.timestamp}
                       </p>
                     </div>
                     <div>
                       <span className="text-muted-foreground">GPS:</span>
                       <p className="flex items-center gap-1">
-                        {selectedSubmission.content.exif.gps ? (
+                        {getMockData(selectedSubmission.mission.id).content.exif.gps ? (
                           <><Navigation className="w-3 h-3 text-emerald-500" /> Включен</>
                         ) : (
                           <><Navigation className="w-3 h-3 text-muted-foreground" /> Выключен</>
@@ -367,7 +461,7 @@ export function AdminModeration() {
                     <div>
                       <span className="text-muted-foreground">Целостность:</span>
                       <p className="flex items-center gap-1">
-                        {selectedSubmission.content.deviceIntegrity === "verified" ? (
+                        {getMockData(selectedSubmission.mission.id).content.deviceIntegrity === "verified" ? (
                           <><Wifi className="w-3 h-3 text-emerald-500" /> Проверено</>
                         ) : (
                           <><AlertTriangle className="w-3 h-3 text-amber-500" /> Отмечено</>
@@ -379,18 +473,18 @@ export function AdminModeration() {
               )}
 
               {/* Location */}
-              {selectedSubmission.content.location && (
+              {getMockData(selectedSubmission.mission.id).content.location && (
                 <Card className="p-4">
                   <h3 className="font-medium mb-3">Местоположение</h3>
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
                       <MapPin className="w-4 h-4 text-muted-foreground" />
-                      <span>{selectedSubmission.content.location.name}</span>
+                      <span>{getMockData(selectedSubmission.mission.id).content.location.name}</span>
                     </div>
                     <div className="h-32 bg-muted/30 rounded flex items-center justify-center">
                       <div className="text-center text-muted-foreground text-sm">
                         <MapPin className="w-6 h-6 mx-auto mb-1" />
-                        <p>Карта: {selectedSubmission.content.location.lat}, {selectedSubmission.content.location.lng}</p>
+                        <p>Карта: {getMockData(selectedSubmission.mission.id).content.location.lat}, {getMockData(selectedSubmission.mission.id).content.location.lng}</p>
                       </div>
                     </div>
                   </div>
@@ -402,26 +496,27 @@ export function AdminModeration() {
                 <h3 className="font-medium mb-3">Контекст</h3>
                 <div className="space-y-2 text-sm">
                   <div>
-                    <span className="text-muted-foreground">Миссия:</span>
-                    <p>{selectedSubmission.mission}</p>
+                    <span className="text-muted-foreground">Название миссии:</span>
+                    <p>{selectedSubmission.mission.title}</p>
                   </div>
                   <div>
-                    <span className="text-muted-foreground">Шаг:</span>
-                    <p>{selectedSubmission.step}</p>
-                  </div>
-                  <div>
-                    <span className="text-muted-foreground">Пользователь:</span>
+                    <span className="text-muted-foreground">Кандидат:</span>
                     <p className="flex items-center gap-2">
-                      {selectedSubmission.user}
-                      <Button variant="ghost" size="sm" className="p-0 h-auto text-xs">
+                      {selectedSubmission.user.fullName}
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="p-0 h-auto text-xs"
+                        onClick={() => onUserPreviewOpen(selectedSubmission.user.login)}
+                      >
                         <ExternalLink className="w-3 h-3 mr-1" />
-                        Профиль 360
+                        Посмотреть профиль
                       </Button>
                     </p>
                   </div>
                   <div>
-                    <span className="text-muted-foreground">Описание:</span>
-                    <p>{selectedSubmission.content.description}</p>
+                    <span className="text-muted-foreground">Описание миссии:</span>
+                    <p>{selectedSubmission.mission.description}</p>
                   </div>
                 </div>
               </Card>
@@ -431,16 +526,16 @@ export function AdminModeration() {
                 <h3 className="font-medium mb-4">Решение</h3>
                 <div className="flex gap-3">
                   <Button 
-                    onClick={() => handleAccept(selectedSubmission.id)}
+                    onClick={handleApproveMission}
                     className="flex-1 gap-2 bg-emerald-600 hover:bg-emerald-700"
                   >
                     <Check className="w-4 h-4" />
-                    Принять
+                    Подтвердить
                   </Button>
                   
                   <Button 
                     variant="outline"
-                    onClick={() => handleReturn(selectedSubmission.id, "Требуется доработка")}
+                    onClick={() => handleReturn("Требуется доработка")}
                     className="flex-1 gap-2"
                   >
                     <X className="w-4 h-4" />
@@ -449,7 +544,7 @@ export function AdminModeration() {
                   
                   <Button 
                     variant="destructive"
-                    onClick={() => handleReject(selectedSubmission.id)}
+                    onClick={handleReject}
                     className="flex-1 gap-2"
                   >
                     <AlertTriangle className="w-4 h-4" />
@@ -466,7 +561,7 @@ export function AdminModeration() {
                         key={reason}
                         variant="outline" 
                         size="sm"
-                        onClick={() => handleReturn(selectedSubmission.id, reason)}
+                        onClick={() => handleReturn(reason)}
                       >
                         {reason}
                       </Button>
@@ -479,8 +574,8 @@ export function AdminModeration() {
             <Card className="h-full flex items-center justify-center min-h-[400px]">
               <div className="text-center text-muted-foreground">
                 <Eye className="w-12 h-12 mx-auto mb-4" />
-                <h3 className="font-medium mb-2">Отправка не выбрана</h3>
-                <p className="text-sm">Выберите отправку из очереди для проверки</p>
+                <h3 className="font-medium mb-2">Миссия не выбрана</h3>
+                <p className="text-sm">Выберите миссию из очереди для проверки</p>
               </div>
             </Card>
           )}

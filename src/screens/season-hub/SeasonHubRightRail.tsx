@@ -3,15 +3,16 @@ import { Button } from "../../components/ui/button";
 import { Progress } from "../../components/ui/progress";
 import { Badge } from "../../components/ui/badge";
 import { Trophy, Sparkles, Users, Globe, ChevronRight, TrendingUp, FileText, Star } from "lucide-react";
-import { User } from "../../domain";
 import { useRankStore } from "../../stores/useRankStore";
 import { useEffect } from "react";
 
 interface SeasonHubRightRailProps {
-  user: User | null;
+  userXp: number;
+  userMana: number;
+  userRankId: number;
 }
 
-export function SeasonHubRightRail({ user }: SeasonHubRightRailProps) {
+export function SeasonHubRightRail({ userXp, userMana, userRankId }: SeasonHubRightRailProps) {
     const { ranks, fetchRanks } = useRankStore();
 
     // Загружаем ранги при монтировании компонента
@@ -34,11 +35,6 @@ export function SeasonHubRightRail({ user }: SeasonHubRightRailProps) {
         console.log('Открыть оценку ментора');
     };
 
-    // Вычисляем данные пользователя
-    const userXP = user?.xp || 0;
-    const userMana = user?.mana || 0;
-    const userRankId = user?.rankId || 1;
-
     // Находим текущий ранг пользователя
     const currentRank = ranks.find(r => r.id === userRankId);
     
@@ -57,10 +53,10 @@ export function SeasonHubRightRail({ user }: SeasonHubRightRailProps) {
     const nextRankXP = nextRank?.requiredXp || currentRankXP;
     const previousRankXP = previousRank?.requiredXp || 0;
     
-    const xpInCurrentRank = userXP - previousRankXP;
+    const xpInCurrentRank = userXp - previousRankXP;
     const xpNeededForRank = nextRankXP - previousRankXP;
     const xpProgress = xpNeededForRank > 0 ? Math.round((xpInCurrentRank / xpNeededForRank) * 100) : 100;
-    const xpToNextRank = Math.max(0, nextRankXP - userXP);
+    const xpToNextRank = Math.max(0, nextRankXP - userXp);
 
     return (
         <div className="space-y-4 md:space-y-6 lg:block">
@@ -84,7 +80,7 @@ export function SeasonHubRightRail({ user }: SeasonHubRightRailProps) {
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-muted-foreground">XP полёта</span>
                         <span className="font-mono text-sm md:text-base">
-                          {userXP.toLocaleString()} / {nextRankXP.toLocaleString()}
+                          {userXp.toLocaleString()} / {nextRankXP.toLocaleString()}
                         </span>
                       </div>
                       <Progress value={xpProgress} className="h-2" />

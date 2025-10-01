@@ -1,38 +1,76 @@
-import { Satellite, Lock } from "lucide-react";
+import { Satellite, CheckCircle, Clock } from "lucide-react";
 import { Badge } from "../../components/ui/badge";
 import { MissionCard } from "./MissionCard";
 import { Season } from "../../domain/season";
-import { UserMission, User } from "../../domain";
+import { Mission, UserMission } from "../../domain";
+import { useRankStore } from "../../stores/useRankStore";
+import { useMissionChainStore } from "../../stores/useMissionChainStore";
 
 export interface SeasonHubMissionsProps {
     currentSeason: Season | null;
-    missions: UserMission[];  // ✅ Теперь UserMission[]
-    user: User | null;
+    missions: Mission[];  // Миссии сезона из useMissionStore
+    userRankId: number;
+    userMissions: UserMission[];
     onMissionLaunch: (missionId: number) => void;
     onMissionDetails: (missionId: number) => void;
 }
 
-export function SeasonHubMissions({ currentSeason, missions, user, onMissionLaunch, onMissionDetails }: SeasonHubMissionsProps) {
-    const userRankId = user?.rankId || 1;
+export function SeasonHubMissions({ currentSeason, missions, userRankId, userMissions, onMissionLaunch, onMissionDetails }: SeasonHubMissionsProps) {
+    const { ranks } = useRankStore();
+    const { missionChains } = useMissionChainStore();
 
-    // Фильтруем только незавершенные миссии с задачами
-    const incompleteMissions = missions.filter((mission) => {
-        return !mission.isCompleted && mission.tasks.length > 0;
+    // Создаем мапу миссий пользователя для быстрого поиска
+    const userMissionsMap = new Map(
+        userMissions.map(userMission => [userMission.id, userMission])
+    );
+
+    // Получаем миссии, которые находятся в цепочках
+    const missionsInChains = new Set(
+        missionChains.flatMap(chain => chain.missions.map(mission => mission.id))
+    );
+
+    // Фильтруем миссии: исключаем те, что в цепочках, и показываем только доступные по рангу
+    const availableMissions = missions.filter(mission => {
+        // Исключаем миссии из цепочек
+        if (missionsInChains.has(mission.id)) {
+            return false;
+        }
+
+        // Проверяем доступность по рангу
+        const userRank = ranks.find(r => r.id === userRankId);
+        if (!userRank) return false;
+
+        // Пользователь видит миссии своего ранга и всех предыдущих рангов
+        return mission.rankRequirement <= userRankId;
     });
 
-    // Разделяем на доступные и недоступные по рангу
-    const availableMissions = incompleteMissions.filter(
-        mission => mission.rankRequirement <= userRankId
-    );
-
-    const lockedMissions = incompleteMissions.filter(
-        mission => mission.rankRequirement > userRankId
-    );
+    // Классифицируем доступные миссии по статусу
+    const missionsByStatus = availableMissions.reduce((acc, mission) => {
+        const userMission = userMissionsMap.get(mission.id);
+        
+        if (userMission) {
+            if (userMission.isCompleted && userMission.isApproved) {
+                acc.completed.push({ mission, userMission });
+            } else if (userMission.isCompleted && !userMission.isApproved) {
+                acc.pendingReview.push({ mission, userMission });
+            } else {
+                acc.available.push({ mission, userMission });
+            }
+        } else {
+            acc.available.push({ mission, userMission: null });
+        }
+        
+        return acc;
+    }, {
+        available: [] as Array<{ mission: Mission; userMission: UserMission | null }>,
+        pendingReview: [] as Array<{ mission: Mission; userMission: UserMission }>,
+        completed: [] as Array<{ mission: Mission; userMission: UserMission }>
+    });
 
     return ( currentSeason &&(
         <>
         {/* Available Missions */}
-        {availableMissions.length > 0 && (
+        {missionsByStatus.available.length > 0 && (
             <div className="space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                     <div className="flex items-center gap-2">
@@ -40,18 +78,18 @@ export function SeasonHubMissions({ currentSeason, missions, user, onMissionLaun
                         <h3 className="text-lg md:text-xl font-semibold">Доступные миссии</h3>
                     </div>
                     <Badge variant="outline" className="text-sm w-fit">
-                        {availableMissions.length} {availableMissions.length === 1 ? 'миссия' : 'миссий'}
+                        {missionsByStatus.available.length} {missionsByStatus.available.length === 1 ? 'миссия' : 'миссий'}
                     </Badge>
                 </div>
                 
                 <div className="space-y-4">
-                {availableMissions.map((mission) => (
+                {missionsByStatus.available.map(({ mission, userMission }) => (
                     <MissionCard
                         key={mission.id}
                         mission={mission}
+                        userMission={userMission}
                         seasonName={currentSeason.name}
                         isCompleted={false}
-                        isLocked={false}
                         onLaunch={onMissionLaunch}
                         onViewDetails={onMissionDetails}
                     />
@@ -60,27 +98,28 @@ export function SeasonHubMissions({ currentSeason, missions, user, onMissionLaun
             </div>
         )}
 
-        {/* Locked Missions */}
-        {lockedMissions.length > 0 && (
+        {/* Pending Review Missions */}
+        {missionsByStatus.pendingReview.length > 0 && (
             <div className="space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                     <div className="flex items-center gap-2">
-                        <Lock className="w-5 h-5 text-muted-foreground" />
-                        <h3 className="text-lg md:text-xl font-semibold text-muted-foreground">Недоступные миссии</h3>
+                        <Clock className="w-5 h-5 text-orange-500" />
+                        <h3 className="text-lg md:text-xl font-semibold text-orange-600">На проверке</h3>
                     </div>
-                    <Badge variant="outline" className="text-sm w-fit bg-muted">
-                        {lockedMissions.length} {lockedMissions.length === 1 ? 'миссия' : 'миссий'}
+                    <Badge variant="outline" className="text-sm w-fit bg-orange-50 text-orange-600 border-orange-200">
+                        {missionsByStatus.pendingReview.length} {missionsByStatus.pendingReview.length === 1 ? 'миссия' : 'миссий'}
                     </Badge>
                 </div>
                 
                 <div className="space-y-4">
-                {lockedMissions.map((mission) => (
+                {missionsByStatus.pendingReview.map(({ mission, userMission }) => (
                     <MissionCard
                         key={mission.id}
                         mission={mission}
+                        userMission={userMission}
                         seasonName={currentSeason.name}
-                        isCompleted={false}
-                        isLocked={true}
+                        isCompleted={true}
+                        isApproved={false}
                         onLaunch={onMissionLaunch}
                         onViewDetails={onMissionDetails}
                     />
@@ -88,6 +127,37 @@ export function SeasonHubMissions({ currentSeason, missions, user, onMissionLaun
                 </div>
             </div>
         )}
+
+        {/* Completed Missions */}
+        {missionsByStatus.completed.length > 0 && (
+            <div className="space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                        <CheckCircle className="w-5 h-5 text-green-500" />
+                        <h3 className="text-lg md:text-xl font-semibold text-green-600">Завершенные миссии</h3>
+                    </div>
+                    <Badge variant="outline" className="text-sm w-fit bg-green-50 text-green-600 border-green-200">
+                        {missionsByStatus.completed.length} {missionsByStatus.completed.length === 1 ? 'миссия' : 'миссий'}
+                    </Badge>
+                </div>
+                
+                <div className="space-y-4">
+                {missionsByStatus.completed.map(({ mission, userMission }) => (
+                    <MissionCard
+                        key={mission.id}
+                        mission={mission}
+                        userMission={userMission}
+                        seasonName={currentSeason.name}
+                        isCompleted={true}
+                        isApproved={true}
+                        onLaunch={onMissionLaunch}
+                        onViewDetails={onMissionDetails}
+                    />
+                ))}
+                </div>
+            </div>
+        )}
+
         </>)
     )
 }

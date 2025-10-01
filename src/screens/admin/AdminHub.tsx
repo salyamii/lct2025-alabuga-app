@@ -34,6 +34,7 @@ import { MissionChainEditDrawer } from "./MissionChainEditDrawer";
 import { UserPreviewOverlay } from "./UserPreviewOverlay";
 import { UserEditDrawer } from "./UserEditDrawer";
 import { ArrowLeft, Shield } from "lucide-react";
+import { useCallback } from "react";
 import { useOverlayStore } from "../../stores/useOverlayStore";
 import { useSeasonStore } from "../../stores/useSeasonStore";
 import { useMissionStore } from "../../stores/useMissionStore";
@@ -44,6 +45,7 @@ import { useSkillStore } from "../../stores/useSkillStore"; // NEW
 import { useTaskStore } from "../../stores/useTaskStore";
 import { useArtifactStore } from "../../stores/useArtifactStore";
 import { useStoreStore } from "../../stores/useStoreStore";
+import { useUserStore } from "../../stores/useUserStore";
 import { Competency } from "../../domain/competency";
 import { Rank } from "../../domain/rank";
 import { Skill } from "../../domain/skill"; // NEW
@@ -56,7 +58,7 @@ interface AdminScreenProps {
   onBack: () => void;
 }
 
-export function AdminScreen({ onBack }: AdminScreenProps) {
+export function AdminHubScreen({ onBack }: AdminScreenProps) {
   const {
     // Состояния оверлеев
     missionCreationOpen,
@@ -90,7 +92,7 @@ export function AdminScreen({ onBack }: AdminScreenProps) {
     selectedStoreItem,
     selectedSeason,
     selectedUserLogin,
-    
+
     // Действия
     openMissionCreation,
     closeMissionCreation,
@@ -150,21 +152,34 @@ export function AdminScreen({ onBack }: AdminScreenProps) {
     setSelectedUserLogin,
   } = useOverlayStore();
 
-  const { deleteSeason } = useSeasonStore();
-  const { deleteMission } = useMissionStore();
-  const { deleteMissionChain } = useMissionChainStore();
-  const { deleteCompetency } = useCompetencyStore();
-  const { deleteRank } = useRankStore();
-  const { deleteSkill } = useSkillStore(); // NEW
-  const { deleteTask } = useTaskStore();
-  const { deleteArtifact } = useArtifactStore();
+  // Все сторы с данными и методами
+  const seasonStore = useSeasonStore();
+  const missionStore = useMissionStore();
+  const missionChainStore = useMissionChainStore();
+  const competencyStore = useCompetencyStore();
+  const rankStore = useRankStore();
+  const skillStore = useSkillStore();
+  const taskStore = useTaskStore();
+  const artifactStore = useArtifactStore();
+  const storeItemStore = useStoreStore();
+  const userStore = useUserStore();
 
-  // Обработчик удаления сезона
+  // ===========================================
+  // ХЕНДЛЕРЫ ДЛЯ СЕЗОНОВ
+  // ===========================================
+  const handleFetchSeasons = async () => {
+    try {
+      await seasonStore.fetchSeasons();
+    } catch (error) {
+      console.error("Ошибка при загрузке сезонов:", error);
+      toast.error("Не удалось загрузить сезоны");
+    }
+  };
+
   const handleDeleteSeason = async (season: any) => {
     if (!season) return;
-
     try {
-      await deleteSeason(season.id);
+      await seasonStore.deleteSeason(season.id);
       toast.success("Сезон успешно удален! 🗑️", {
         description: `"${season.name}" был удален из системы`,
       });
@@ -174,12 +189,22 @@ export function AdminScreen({ onBack }: AdminScreenProps) {
     }
   };
 
-  // Обработчик удаления миссии
+  // ===========================================
+  // ХЕНДЛЕРЫ ДЛЯ МИССИЙ
+  // ===========================================
+  const handleFetchMissions = async () => {
+    try {
+      await missionStore.fetchMissions();
+    } catch (error) {
+      console.error("Ошибка при загрузке миссий:", error);
+      toast.error("Не удалось загрузить миссии");
+    }
+  };
+
   const handleDeleteMission = async (mission: any) => {
     if (!mission) return;
-
     try {
-      await deleteMission(mission.id);
+      await missionStore.deleteMission(mission.id);
       toast.success("Миссия успешно удалена! 🗑️", {
         description: `"${mission.title}" была удалена из системы`,
       });
@@ -189,7 +214,18 @@ export function AdminScreen({ onBack }: AdminScreenProps) {
     }
   };
 
-  // Обработчики для цепочек миссий
+  // ===========================================
+  // ХЕНДЛЕРЫ ДЛЯ ЦЕПОЧЕК МИССИЙ
+  // ===========================================
+  const handleFetchMissionChains = async () => {
+    try {
+      await missionChainStore.fetchMissionChains();
+    } catch (error) {
+      console.error("Ошибка при загрузке цепочек миссий:", error);
+      toast.error("Не удалось загрузить цепочки миссий");
+    }
+  };
+
   const handleCreateChain = () => {
     openChainCreation();
   };
@@ -201,9 +237,8 @@ export function AdminScreen({ onBack }: AdminScreenProps) {
 
   const handleDeleteChain = async (chain: any) => {
     if (!chain) return;
-
     try {
-      await deleteMissionChain(chain.id);
+      await missionChainStore.deleteMissionChain(chain.id);
       toast.success("Цепочка миссий успешно удалена! 🗑️", {
         description: `"${chain.name}" была удалена из системы`,
       });
@@ -213,12 +248,22 @@ export function AdminScreen({ onBack }: AdminScreenProps) {
     }
   };
 
-  // Обработчик удаления компетенции
+  // ===========================================
+  // ХЕНДЛЕРЫ ДЛЯ КОМПЕТЕНЦИЙ
+  // ===========================================
+  const handleFetchCompetencies = async () => {
+    try {
+      await competencyStore.fetchCompetencies();
+    } catch (error) {
+      console.error("Ошибка при загрузке компетенций:", error);
+      toast.error("Не удалось загрузить компетенции");
+    }
+  };
+
   const handleDeleteCompetency = async (competency: Competency) => {
     if (!competency) return;
-
     try {
-      await deleteCompetency(competency.id);
+      await competencyStore.deleteCompetency(competency.id);
       toast.success("Компетенция успешно удалена! 🗑️", {
         description: `"${competency.name}" была удалена из системы`,
       });
@@ -228,11 +273,22 @@ export function AdminScreen({ onBack }: AdminScreenProps) {
     }
   };
 
-  // Обработчик удаления ранга
+  // ===========================================
+  // ХЕНДЛЕРЫ ДЛЯ РАНГОВ
+  // ===========================================
+  const handleFetchRanks = async () => {
+    try {
+      await rankStore.fetchRanks();
+    } catch (error) {
+      console.error("Ошибка при загрузке рангов:", error);
+      toast.error("Не удалось загрузить ранги");
+    }
+  };
+
   const handleDeleteRank = async (rank: Rank) => {
     if (!rank) return;
     try {
-      await deleteRank(rank.id);
+      await rankStore.deleteRank(rank.id);
       toast.success("Ранг успешно удален! 🗑️", {
         description: `"${rank.name}" был удален из системы`,
       });
@@ -242,11 +298,22 @@ export function AdminScreen({ onBack }: AdminScreenProps) {
     }
   };
 
-  // Обработчик удаления навыка // NEW
+  // ===========================================
+  // ХЕНДЛЕРЫ ДЛЯ НАВЫКОВ
+  // ===========================================
+  const handleFetchSkills = async () => {
+    try {
+      await skillStore.fetchSkills();
+    } catch (error) {
+      console.error("Ошибка при загрузке навыков:", error);
+      toast.error("Не удалось загрузить навыки");
+    }
+  };
+
   const handleDeleteSkill = async (skill: Skill) => {
     if (!skill) return;
     try {
-      await deleteSkill(skill.id);
+      await skillStore.deleteSkill(skill.id);
       toast.success("Навык успешно удален! 🗑️", {
         description: `"${skill.name}" был удален из системы`,
       });
@@ -256,11 +323,22 @@ export function AdminScreen({ onBack }: AdminScreenProps) {
     }
   };
 
-  // Обработчик удаления задания
+  // ===========================================
+  // ХЕНДЛЕРЫ ДЛЯ ЗАДАНИЙ
+  // ===========================================
+  const handleFetchTasks = async () => {
+    try {
+      await taskStore.fetchTasks();
+    } catch (error) {
+      console.error("Ошибка при загрузке заданий:", error);
+      toast.error("Не удалось загрузить задания");
+    }
+  };
+
   const handleDeleteTask = async (task: Task) => {
     if (!task) return;
     try {
-      await deleteTask(task.id);
+      await taskStore.deleteTask(task.id);
       toast.success("Задание успешно удалено! 🗑️", {
         description: `"${task.title}" было удалено из системы`,
       });
@@ -270,17 +348,89 @@ export function AdminScreen({ onBack }: AdminScreenProps) {
     }
   };
 
-  // Обработчик удаления артефакта
+  // ===========================================
+  // ХЕНДЛЕРЫ ДЛЯ АРТЕФАКТОВ
+  // ===========================================
+  const handleFetchArtifacts = async () => {
+    try {
+      await artifactStore.fetchArtifacts();
+    } catch (error) {
+      console.error("Ошибка при загрузке артефактов:", error);
+      toast.error("Не удалось загрузить артефакты");
+    }
+  };
+
   const handleDeleteArtifact = async (artifact: Artifact) => {
     if (!artifact) return;
     try {
-      await deleteArtifact(artifact.id);
+      await artifactStore.deleteArtifact(artifact.id);
       toast.success("Артефакт успешно удален! 🗑️", {
         description: `"${artifact.title}" был удален из системы`,
       });
     } catch (error) {
       console.error("Ошибка при удалении артефакта:", error);
       toast.error("Ошибка при удалении артефакта. Попробуйте еще раз.");
+    }
+  };
+
+  // ===========================================
+  // ХЕНДЛЕРЫ ДЛЯ МАГАЗИНА
+  // ===========================================
+  const handleFetchStoreItems = async () => {
+    try {
+      await storeItemStore.fetchItems();
+    } catch (error) {
+      console.error("Ошибка при загрузке товаров:", error);
+      toast.error("Не удалось загрузить товары");
+    }
+  };
+
+  const handleDeleteStoreItem = async (item: StoreItem) => {
+    if (
+      window.confirm(`Вы уверены, что хотите удалить товар "${item.title}"?`)
+    ) {
+      try {
+        await storeItemStore.deleteItem(item.id);
+        toast.success("Товар успешно удален!");
+      } catch (error) {
+        console.error("Ошибка при удалении товара:", error);
+        toast.error("Ошибка при удалении товара");
+      }
+    }
+  };
+
+  // ===========================================
+  // ХЕНДЛЕРЫ ДЛЯ ПОЛЬЗОВАТЕЛЕЙ
+  // ===========================================
+  const handleFetchAllUsers = async () => {
+    try {
+      await userStore.fetchAllUsers();
+    } catch (error) {
+      console.error("Ошибка при загрузке пользователей:", error);
+      toast.error("Не удалось загрузить пользователей");
+    }
+  };
+
+  const handleFetchUserMissionsByLogin = async (userLogin: string) => {
+    try {
+      return await userStore.fetchUserMissionsByLogin(userLogin);
+    } catch (error) {
+      console.error("Ошибка при загрузке миссий пользователя:", error);
+      toast.error("Не удалось загрузить миссии пользователя");
+      return [];
+    }
+  };
+
+  const handleApproveUserMission = async (
+    missionId: number,
+    userLogin: string
+  ) => {
+    try {
+      await userStore.approveUserMission(missionId, userLogin);
+      toast.success("Миссия успешно подтверждена! ✅");
+    } catch (error) {
+      console.error("Ошибка при подтверждении миссии:", error);
+      toast.error("Не удалось подтвердить миссию");
     }
   };
 
@@ -312,19 +462,6 @@ export function AdminScreen({ onBack }: AdminScreenProps) {
   const handleEditStoreItem = (item: StoreItem) => {
     setSelectedStoreItem(item);
     openStoreItemEdit(item);
-  };
-
-  const handleDeleteStoreItem = async (item: StoreItem) => {
-    if (window.confirm(`Вы уверены, что хотите удалить товар "${item.title}"?`)) {
-      try {
-        const { deleteItem } = useStoreStore.getState();
-        await deleteItem(item.id);
-        toast.success("Товар успешно удален!");
-      } catch (error) {
-        console.error("Ошибка при удалении товара:", error);
-        toast.error("Ошибка при удалении товара");
-      }
-    }
   };
 
   return (
@@ -366,25 +503,31 @@ export function AdminScreen({ onBack }: AdminScreenProps) {
 
           <AdminDashboard />
 
-              <AdminMission
-                handleCreateMission={openMissionCreation}
-                handleEditMission={(mission) => openMissionEdit(mission)}
-                handleDeleteMission={handleDeleteMission}
-                setSelectedMission={setSelectedMission}
-                handleCreateChain={handleCreateChain}
-                handleEditChain={handleEditChain}
-                handleDeleteChain={handleDeleteChain}
-                setSelectedChain={setSelectedChain}
-              />
-          
-          <AdminSeason 
+          <AdminMission
+            handleFetchMissions={handleFetchMissions}
+            handleFetchMissionChains={handleFetchMissionChains}
+            handleCreateMission={openMissionCreation}
+            handleEditMission={(mission) => openMissionEdit(mission)}
+            handleDeleteMission={handleDeleteMission}
+            setSelectedMission={setSelectedMission}
+            handleCreateChain={handleCreateChain}
+            handleEditChain={handleEditChain}
+            handleDeleteChain={handleDeleteChain}
+            setSelectedChain={setSelectedChain}
+          />
+
+          <AdminSeason
+            handleFetchSeasons={handleFetchSeasons}
             handleCreateSeason={openSeasonCreation}
             handleEditSeason={(season) => openSeasonEdit(season)}
             handleDeleteSeason={handleDeleteSeason}
             setSelectedSeason={setSelectedSeason}
           />
 
-          <AdminUsers 
+          <AdminUsers
+            handleFetchAllUsers={handleFetchAllUsers}
+            handleFetchUserMissionsByLogin={handleFetchUserMissionsByLogin}
+            handleApproveUserMission={handleApproveUserMission}
             onUserEditOpen={(userLogin) => {
               setSelectedUserLogin(userLogin);
               openUserEdit(userLogin);
@@ -396,26 +539,42 @@ export function AdminScreen({ onBack }: AdminScreenProps) {
           />
 
           <AdminSettings
+            // Common Handlers (Data Loaders)
+            handleFetchCompetencies={handleFetchCompetencies}
+            handleFetchRanks={handleFetchRanks}
+            handleFetchMissions={handleFetchMissions}
+            handleFetchSkills={handleFetchSkills}
+            handleFetchTasks={handleFetchTasks}
+            handleFetchArtifacts={handleFetchArtifacts}
+            handleFetchStoreItems={handleFetchStoreItems}
+            // Competency Handlers
             handleCreateCompetency={openCompetencyCreation}
-            handleEditCompetency={(competency) => openCompetencyEdit(competency)}
+            handleEditCompetency={(competency) =>
+              openCompetencyEdit(competency)
+            }
             handleDeleteCompetency={handleDeleteCompetency}
             setSelectedCompetency={setSelectedCompetency}
+            // Rank Handlers
             handleCreateRank={openRankCreation}
             handleEditRank={(rank) => openRankEdit(rank)}
             handleDeleteRank={handleDeleteRank}
             setSelectedRank={setSelectedRank}
+            // Skill Handlers
             handleCreateSkill={openSkillCreation}
             handleEditSkill={(skill) => openSkillEdit(skill)}
             handleDeleteSkill={handleDeleteSkill}
             setSelectedSkill={setSelectedSkill}
+            // Task Handlers
             handleCreateTask={handleCreateTask}
             handleEditTask={handleEditTask}
             handleDeleteTask={handleDeleteTask}
             setSelectedTask={setSelectedTask}
+            // Artifact Handlers
             handleCreateArtifact={handleCreateArtifact}
             handleEditArtifact={handleEditArtifact}
             handleDeleteArtifact={handleDeleteArtifact}
             setSelectedArtifact={setSelectedArtifact}
+            // Store Item Handlers
             handleCreateStoreItem={handleCreateStoreItem}
             handleEditStoreItem={handleEditStoreItem}
             handleDeleteStoreItem={handleDeleteStoreItem}
@@ -424,89 +583,103 @@ export function AdminScreen({ onBack }: AdminScreenProps) {
         </Tabs>
       </div>
 
-          {/* Drawers */}
-          <MissionCreationDrawer
-            open={missionCreationOpen}
-            onOpenChange={(open) => open ? openMissionCreation() : closeMissionCreation()}
-          />
+      {/* Drawers */}
+      <MissionCreationDrawer
+        open={missionCreationOpen}
+        onOpenChange={(open) =>
+          open ? openMissionCreation() : closeMissionCreation()
+        }
+      />
 
-          <MissionEditDrawer // NEW
-            open={missionEditOpen}
-            onOpenChange={(open) => open ? openMissionEdit() : closeMissionEdit()}
-            mission={selectedMission}
-          />
+      <MissionEditDrawer // NEW
+        open={missionEditOpen}
+        onOpenChange={(open) => (open ? openMissionEdit() : closeMissionEdit())}
+        mission={selectedMission}
+      />
 
       <BadgeCreationDrawer
         open={badgeCreationOpen}
-        onOpenChange={(open) => open ? openBadgeCreation() : closeBadgeCreation()}
+        onOpenChange={(open) =>
+          open ? openBadgeCreation() : closeBadgeCreation()
+        }
       />
 
       <RewardCreationDrawer
         open={rewardCreationOpen}
-        onOpenChange={(open) => open ? openRewardCreation() : closeRewardCreation()}
+        onOpenChange={(open) =>
+          open ? openRewardCreation() : closeRewardCreation()
+        }
       />
 
       <StoreManagementDrawer
         open={storeManagementOpen}
-        onOpenChange={(open) => open ? openStoreManagement() : closeStoreManagement()}
+        onOpenChange={(open) =>
+          open ? openStoreManagement() : closeStoreManagement()
+        }
       />
 
       <MissionChainCreationDrawer
         open={chainCreationOpen}
-        onOpenChange={(open) => open ? openChainCreation() : closeChainCreation()}
+        onOpenChange={(open) =>
+          open ? openChainCreation() : closeChainCreation()
+        }
       />
 
       <MissionChainEditDrawer
         open={chainEditOpen}
-        onOpenChange={(open) => open ? openChainEdit() : closeChainEdit()}
+        onOpenChange={(open) => (open ? openChainEdit() : closeChainEdit())}
         chain={selectedChain}
       />
 
       <SeasonCreationDrawer
         open={seasonCreationOpen}
-        onOpenChange={(open) => open ? openSeasonCreation() : closeSeasonCreation()}
+        onOpenChange={(open) =>
+          open ? openSeasonCreation() : closeSeasonCreation()
+        }
       />
 
-          <SeasonEditDrawer
-            open={seasonEditOpen}
-            onOpenChange={(open) => open ? openSeasonEdit() : closeSeasonEdit()}
-            season={selectedSeason}
-          />
+      <SeasonEditDrawer
+        open={seasonEditOpen}
+        onOpenChange={(open) => (open ? openSeasonEdit() : closeSeasonEdit())}
+        season={selectedSeason}
+      />
 
-          <CompetencyCreationDrawer />
+      <CompetencyCreationDrawer />
 
-          <CompetencyEditDrawer competency={selectedCompetency} />
+      <CompetencyEditDrawer competency={selectedCompetency} />
 
-          <RankCreationDrawer />
+      <RankCreationDrawer />
 
-          <RankEditDrawer rank={selectedRank} />
+      <RankEditDrawer rank={selectedRank} />
 
-          <SkillCreationDrawer />
+      <SkillCreationDrawer />
 
-          <SkillEditDrawer skill={selectedSkill} />
+      <SkillEditDrawer skill={selectedSkill} />
 
-          <TaskCreationDrawer />
+      <TaskCreationDrawer />
 
-          <TaskEditDrawer task={selectedTask} />
+      <TaskEditDrawer task={selectedTask} />
 
-          <ArtifactCreationDrawer />
+      <ArtifactCreationDrawer />
 
-          <ArtifactEditDrawer artifact={selectedArtifact} />
+      <ArtifactEditDrawer artifact={selectedArtifact} />
 
-          <StoreItemCreationDrawer />
+      <StoreItemCreationDrawer />
 
-          <StoreItemEditDrawer item={selectedStoreItem} />
+      <StoreItemEditDrawer item={selectedStoreItem} />
 
-          <UserPreviewOverlay
-            open={userPreviewOpen}
-            onOpenChange={(open) => open ? openUserPreview(selectedUserLogin || '') : closeUserPreview()}
-            userLogin={selectedUserLogin}
-          />
+      <UserPreviewOverlay
+        open={userPreviewOpen}
+        onOpenChange={(open) =>
+          open ? openUserPreview(selectedUserLogin || "") : closeUserPreview()
+        }
+        userLogin={selectedUserLogin}
+      />
 
-          <UserEditDrawer />
-        </div>
-      );
-    }
+      <UserEditDrawer />
+    </div>
+  );
+}
 
 // Заглушки для компонентов Drawer
 const BadgeCreationDrawer = ({

@@ -13,7 +13,7 @@ export interface ApiError {
   details?: any;
 }
 
-// Типы для авторизации из реального API
+// ===== АВТОРИЗАЦИЯ =====
 export interface UserLoginRequest {
   login: string;
   password: string;
@@ -23,6 +23,7 @@ export interface UserTokenResponse {
   token: string;
 }
 
+// ===== ПОЛЬЗОВАТЕЛИ =====
 export interface UserResponse {
   login: string;
   firstName: string;
@@ -55,8 +56,55 @@ export interface UsersListResponse {
   users?: UserResponse[];
 }
 
+// ===== ПОЛЬЗОВАТЕЛЬСКИЕ МИССИИ =====
+export interface UserMissionResponse {
+  id: number;
+  title: string;
+  description: string;
+  rewardXp: number;
+  rewardMana: number;
+  rankRequirement: number;
+  seasonId: number;
+  category: string;
+  isCompleted: boolean;
+  isApproved: boolean;
+  tasks?: UserTaskResponse[];
+  rewardArtifacts?: ArtifactResponse[];
+  rewardCompetencies?: CompetencyRewardResponse[];
+  rewardSkills?: SkillRewardResponse[];
+}
+
 export interface UserMissionsListResponse {
   missions?: UserMissionResponse[];
+}
+
+// ===== ПОЛЬЗОВАТЕЛЬСКИЕ ЗАДАЧИ =====
+export interface UserTaskResponse {
+  id: number;
+  title: string;
+  description: string;
+  isCompleted: boolean;
+}
+
+// ===== ПОЛЬЗОВАТЕЛЬСКИЕ КОМПЕТЕНЦИИ И НАВЫКИ =====
+export interface UserSkillResponse {
+  id: number;
+  name: string;
+  maxLevel: number;
+  userLevel: number;
+}
+
+export interface UserCompetencyResponse {
+  id: number;
+  name: string;
+  maxLevel: number;
+  userLevel: number;
+  skills: UserSkillResponse[];
+}
+
+// ===== ЗАВЕРШЕНИЕ ЗАДАЧ =====
+export interface TaskCompleteRequest {
+  userLogin: string;
 }
 
 // Типы для регистрации HR пользователей
@@ -420,50 +468,4 @@ export interface StoreItemsResponse {
 
 export interface StorePurchaseRequest {
   storeItemId: number;
-}
-
-// ===== ПОЛЬЗОВАТЕЛЬСКИЕ МИССИИ =====
-export interface UserMissionResponse {
-  id: number;
-  title: string;
-  description: string;
-  rewardXp: number;
-  rewardMana: number;
-  rankRequirement: number;
-  seasonId: number;
-  category: string;
-  isCompleted: boolean;
-  isApproved: boolean;
-  tasks?: UserTaskResponse[];
-  rewardArtifacts?: ArtifactResponse[];
-  rewardCompetencies?: CompetencyRewardResponse[];
-  rewardSkills?: SkillRewardResponse[];
-}
-
-export interface UserTaskResponse {
-  id: number;
-  title: string;
-  description: string;
-  isCompleted: boolean;
-}
-
-// ===== ПОЛЬЗОВАТЕЛЬСКИЕ КОМПЕТЕНЦИИ И НАВЫКИ =====
-export interface UserSkillResponse {
-  id: number;
-  name: string;
-  maxLevel: number;
-  userLevel: number;
-}
-
-export interface UserCompetencyResponse {
-  id: number;
-  name: string;
-  maxLevel: number;
-  userLevel: number;
-  skills: UserSkillResponse[];
-}
-
-// ===== ДОПОЛНИТЕЛЬНЫЕ ТИПЫ =====
-export interface TaskCompleteRequest {
-  userLogin: string;
 }
