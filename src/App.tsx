@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { AuthProvider, useAuthContext } from "./api";
 import { LandingScreen } from "./screens/LandingScreen";
-import MainContent from "./screens/MainContent";
 import { Toaster } from "./components/ui/sonner";
 import { NavigationProvider, useNavigation } from "./navigation/Navigation";
 import { Route } from "react-router-dom";
@@ -26,67 +25,53 @@ import { useStoreStore } from "./stores/useStoreStore";
 import { useUserStore } from "./stores/useUserStore";
 import { toast } from "sonner";
 
-// Компонент приложения с проверкой авторизации
-const AppContent: React.FC = () => {
-  const { isAuthenticated, loading } = useAuthContext();
+// Утилитарная функция для определения типа контента
+const getContentType = (
+  isAuthenticated: boolean,
+  userRole: string | undefined
+) => {
+  if (!isAuthenticated) {
+    return "landing";
+  }
+
+  if (userRole === "admin" || userRole === "hr") {
+    return "admin";
+  }
+
+  return "user";
+};
+
+// Компонент для админского контента
+const AdminContent: React.FC<{ onBack: () => void }> = ({ onBack }) => (
+  <Routes>
+    <Route path="/admin" element={<AppLayout />}>
+      <Route index element={<AdminHubScreen />} />
+    </Route>
+    <Route path="*" element={<Navigate to="/admin" replace />} />
+  </Routes>
+);
+
+// Компонент для пользовательского контента
+const UserContent: React.FC<{
+  shouldShowOnboarding: boolean;
+  onSetShouldShowOnboarding: (value: boolean) => void;
+  onBack: () => void;
+}> = ({ shouldShowOnboarding, onSetShouldShowOnboarding, onBack }) => {
   const navigate = useNavigate();
-  const { back } = useNavigation();
-  const location = useLocation();
-  const { setTopNavigationVisible } = useNavigationStore();
-  const [shouldShowOnboarding, setShouldShowOnboarding] = useState(() => {
-    return localStorage.getItem("shouldShowOnboarding") === "true";
-  });
 
-  // Сброс флага онбординга при разлогине
-  useEffect(() => {
-    if (!isAuthenticated) {
-      setShouldShowOnboarding(false);
-      localStorage.removeItem("shouldShowOnboarding");
-    }
-  }, [isAuthenticated]);
-
-  // Сохранение состояния в localStorage
-  useEffect(() => {
-    localStorage.setItem(
-      "shouldShowOnboarding",
-      shouldShowOnboarding.toString()
-    );
-  }, [shouldShowOnboarding]);
-
-  // Управление видимостью навигационных вкладок на основе маршрута
-  useEffect(() => {
-    const pathname = location.pathname;
-
-    // Маршруты, где навигационные вкладки должны быть скрыты
-    const hideNavigationTabsRoutes = [
-      "/notifications",
-      "/admin",
-      "/settings",
-      "/mission",
-      "/mission-detail",
-    ];
-
-    // Проверяем, начинается ли текущий путь с любого из маршрутов для скрытия
-    const shouldHideNavigationTabs = hideNavigationTabsRoutes.some(
-      (route) => pathname === route || pathname.startsWith(route + "/")
-    );
-
-    setTopNavigationVisible(!shouldHideNavigationTabs);
-  }, [location.pathname, setTopNavigationVisible]);
-
-  return isAuthenticated ? (
-    <Routes>
-      <Route
-        path="/onboarding"
-        element={
-          <OnboardingScreen
-            onComplete={() => {
-              setShouldShowOnboarding(false);
-              navigate("/season-hub");
-            }}
-          />
-        }
+  if (shouldShowOnboarding) {
+    return (
+      <OnboardingScreen
+        onComplete={() => {
+          onSetShouldShowOnboarding(false);
+          navigate("/season-hub");
+        }}
       />
+    );
+  }
+
+  return (
+    <Routes>
       <Route path="/season-hub" element={<AppLayout />}>
         <Route
           index
@@ -130,11 +115,8 @@ const AppContent: React.FC = () => {
                   return;
                 }
 
-                // Покупаем товар
                 const result = await purchaseItem({ storeItemId: itemId });
-
                 if (result) {
-                  // Обновляем профиль пользователя для актуальной маны
                   await fetchUserProfile();
                 }
               }}
@@ -159,71 +141,110 @@ const AppContent: React.FC = () => {
         />
       </Route>
       <Route path="/mentors" element={<AppLayout />}>
-        <Route index element={<MentorshipScreen onBack={back} />} />
-      </Route>
-      <Route path="/admin" element={<AppLayout />}>
-        <Route index element={<AdminHubScreen onBack={back} />} />
+        <Route index element={<MentorshipScreen onBack={onBack} />} />
       </Route>
       <Route path="/settings" element={<AppLayout />}>
-        <Route index element={<SettingsScreen onBack={back} />} />
+        <Route index element={<SettingsScreen onBack={onBack} />} />
       </Route>
       <Route path="/notifications" element={<AppLayout />}>
-        <Route index element={<NotificationsScreen onBack={back} />} />
+        <Route index element={<NotificationsScreen onBack={onBack} />} />
       </Route>
       <Route path="/mission/:missionId" element={<AppLayout />}>
-        <Route
-          index
-          element={
-            <MissionExecutionScreen
-              onBack={back}
-            />
-          }
-        />
+        <Route index element={<MissionExecutionScreen onBack={onBack} />} />
       </Route>
       <Route path="/mission-detail/:missionId" element={<AppLayout />}>
-        <Route
-          index
-          element={<MissionDetailScreen onBack={back} />}
-        />
+        <Route index element={<MissionDetailScreen onBack={onBack} />} />
       </Route>
-      <Route
-        path="*"
-        element={
-          <Navigate
-            to={shouldShowOnboarding ? "/onboarding" : "/season-hub"}
-            replace
-          />
-        }
-      />
-    </Routes>
-  ) : (
-    <Routes>
-      <Route
-        path="/auth"
-        element={
-          <LandingScreen
-            onLoginSuccess={() => navigate("/season-hub")}
-            onRegisterSuccess={() => {
-              setShouldShowOnboarding(true);
-              navigate("/onboarding");
-            }}
-          />
-        }
-      />
-      <Route
-        path="/onboarding"
-        element={
-          <OnboardingScreen
-            onComplete={() => {
-              setShouldShowOnboarding(false);
-              navigate("/season-hub");
-            }}
-          />
-        }
-      />
-      <Route path="*" element={<Navigate to="/auth" replace />} />
+      <Route path="*" element={<Navigate to="/season-hub" replace />} />
     </Routes>
   );
+};
+
+// Компонент приложения с проверкой авторизации
+const AppContent: React.FC = () => {
+  const { isAuthenticated, loading, user } = useAuthContext();
+  const navigate = useNavigate();
+  const { back } = useNavigation();
+  const location = useLocation();
+  const { setTopNavigationVisible } = useNavigationStore();
+  const [shouldShowOnboarding, setShouldShowOnboarding] = useState(() => {
+    return localStorage.getItem("shouldShowOnboarding") === "true";
+  });
+
+  // Определяем тип контента на основе роли и статуса аутентификации
+  const contentType = getContentType(isAuthenticated, user?.role);
+
+  // Сброс флага онбординга при разлогине
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setShouldShowOnboarding(false);
+      localStorage.removeItem("shouldShowOnboarding");
+    }
+  }, [isAuthenticated]);
+
+  // Сохранение состояния в localStorage
+  useEffect(() => {
+    localStorage.setItem(
+      "shouldShowOnboarding",
+      shouldShowOnboarding.toString()
+    );
+  }, [shouldShowOnboarding]);
+
+  // Управление видимостью навигационных вкладок на основе маршрута
+  useEffect(() => {
+    const pathname = location.pathname;
+
+    // Маршруты, где навигационные вкладки должны быть скрыты
+    const hideNavigationTabsRoutes = [
+      "/notifications",
+      "/admin",
+      "/settings",
+      "/mission",
+      "/mission-detail",
+    ];
+
+    // Проверяем, начинается ли текущий путь с любого из маршрутов для скрытия
+    const shouldHideNavigationTabs = hideNavigationTabsRoutes.some(
+      (route) => pathname === route || pathname.startsWith(route + "/")
+    );
+
+    setTopNavigationVisible(!shouldHideNavigationTabs);
+  }, [location.pathname, setTopNavigationVisible]);
+
+  // Рендерим контент в зависимости от типа
+  switch (contentType) {
+    case "landing":
+      return (
+        <Routes>
+          <Route
+            path="/auth"
+            element={
+              <LandingScreen
+                onLoginSuccess={() => navigate("/season-hub")}
+                onRegisterSuccess={() => navigate("/season-hub")}
+                onSetShouldShowOnboarding={setShouldShowOnboarding}
+              />
+            }
+          />
+          <Route path="*" element={<Navigate to="/auth" replace />} />
+        </Routes>
+      );
+
+    case "admin":
+      return <AdminContent onBack={back} />;
+
+    case "user":
+      return (
+        <UserContent
+          shouldShowOnboarding={shouldShowOnboarding}
+          onSetShouldShowOnboarding={setShouldShowOnboarding}
+          onBack={back}
+        />
+      );
+
+    default:
+      return null;
+  }
 };
 
 // Главный компонент приложения с провайдером авторизации

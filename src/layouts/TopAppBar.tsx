@@ -1,25 +1,25 @@
-import { Rocket, Shield, Bell, Settings } from "lucide-react";
+import { Rocket, Bell, Settings, LogOut } from "lucide-react";
 import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
 import { useUserStore } from "../stores/useUserStore";
 import { useRankStore } from "../stores/useRankStore";
+import { useAuthContext } from "../api/context/AuthContext";
 import { useEffect } from "react";
 
 interface TopAppBarProps {
-  onAdminOpen: () => void;
   onNotificationsOpen?: () => void;
   onSettingsOpen?: () => void;
   className?: string;
 }
 
-export function TopAppBar({ 
-  onAdminOpen,
+export function TopAppBar({
   onNotificationsOpen,
   onSettingsOpen,
-  className = ""
+  className = "",
 }: TopAppBarProps) {
   const { user } = useUserStore();
   const { ranks, fetchRanks } = useRankStore();
+  const { logout } = useAuthContext();
 
   // Загружаем ранги, если их еще нет
   useEffect(() => {
@@ -30,11 +30,13 @@ export function TopAppBar({
 
   // Получаем реальные данные пользователя
   const userMana = user?.mana || 0;
-  const currentRank = ranks.find(r => r.id === user?.rankId);
+  const currentRank = ranks.find((r) => r.id === user?.rankId);
   const userRank = currentRank?.name;
 
   return (
-    <div className={`cosmic-gradient text-white px-4 py-3 md:px-6 md:py-4 ${className}`}>
+    <div
+      className={`cosmic-gradient text-white px-4 py-3 md:px-6 md:py-4 ${className}`}
+    >
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between">
           {/* Logo and Brand */}
@@ -44,71 +46,90 @@ export function TopAppBar({
             </div>
             <div>
               <h1 className="text-lg md:text-xl font-bold">Алабуга</h1>
-              <p className="text-xs text-white/80 hidden sm:block">Коммандный центр талантов</p>
+              <p className="text-xs text-white/80 hidden sm:block">
+                Коммандный центр талантов
+              </p>
             </div>
           </div>
 
           {/* User Status & Actions */}
           <div className="flex items-center gap-2 md:gap-4">
-            {/* Mobile user status */}
-            <div className="sm:hidden">
-              <div className="flex items-center gap-2">
-                {userRank && (
-                  <Badge variant="secondary" className="bg-white/20 text-white border-white/30 text-xs">
-                    {userRank}
-                  </Badge>
-                )}
-                <span className="text-xs font-mono text-cyan-200">{userMana.toLocaleString()}</span>
+            {/* Mobile user status - только для не-админов */}
+            {!user?.isAdmin && (
+              <div className="sm:hidden">
+                <div className="flex items-center gap-2">
+                  {userRank && (
+                    <Badge
+                      variant="secondary"
+                      className="bg-white/20 text-white border-white/30 text-xs"
+                    >
+                      {userRank}
+                    </Badge>
+                  )}
+                  <span className="text-xs font-mono text-cyan-200">
+                    {userMana.toLocaleString()}
+                  </span>
+                </div>
               </div>
-            </div>
-            
-            {/* Desktop user status */}
-            <div className="text-right hidden sm:block">
-              <div className="flex items-center gap-2">
-                {userRank && (
-                  <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
-                    {userRank}
-                  </Badge>
-                )}
-                <span className="text-sm">
-                  <span className="text-white/80">Мана:</span>{" "}
-                  <span className="font-mono text-cyan-200">{userMana.toLocaleString()}</span>
-                </span>
+            )}
+
+            {/* Desktop user status - только для не-админов */}
+            {!user?.isAdmin && (
+              <div className="text-right hidden sm:block">
+                <div className="flex items-center gap-2">
+                  {userRank && (
+                    <Badge
+                      variant="secondary"
+                      className="bg-white/20 text-white border-white/30"
+                    >
+                      {userRank}
+                    </Badge>
+                  )}
+                  <span className="text-sm">
+                    <span className="text-white/80">Мана:</span>{" "}
+                    <span className="font-mono text-cyan-200">
+                      {userMana.toLocaleString()}
+                    </span>
+                  </span>
+                </div>
               </div>
-            </div>
-            
+            )}
+
             <div className="flex items-center gap-1 md:gap-2">
-              {user?.isAdmin && (
-                <Button 
-                  size="sm" 
-                  variant="ghost" 
-                  className="text-white hover:bg-white/20 p-2"
-                  onClick={onAdminOpen}
-                  title="Admin Panel"
+              {!user?.isAdmin ? (
+                <>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="text-white hover:bg-white/20 p-2 relative"
+                    onClick={onNotificationsOpen}
+                    title="Notifications"
+                  >
+                    <Bell className="w-4 h-4" />
+                    {/* Notification badge */}
+                    <div className="absolute -top-1 -right-1 w-2 h-2 bg-danger rounded-full" />
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="text-white hover:bg-white/20 p-2"
+                    onClick={onSettingsOpen}
+                    title="Settings"
+                  >
+                    <Settings className="w-4 h-4" />
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  variant="default"
+                  size="sm"
+                  onClick={logout}
+                  // className="p-2 hover:bg-destructive/90 hover:text-white transition-all duration-200"
+                  title="Выйти из системы"
                 >
-                  <Shield className="w-4 h-4" />
+                  <LogOut className="w-4 h-4" />
                 </Button>
               )}
-              <Button 
-                size="sm" 
-                variant="ghost" 
-                className="text-white hover:bg-white/20 p-2 relative"
-                onClick={onNotificationsOpen}
-                title="Notifications"
-              >
-                <Bell className="w-4 h-4" />
-                {/* Notification badge */}
-                <div className="absolute -top-1 -right-1 w-2 h-2 bg-danger rounded-full" />
-              </Button>
-              <Button 
-                size="sm" 
-                variant="ghost" 
-                className="text-white hover:bg-white/20 p-2"
-                onClick={onSettingsOpen}
-                title="Settings"
-              >
-                <Settings className="w-4 h-4" />
-              </Button>
             </div>
           </div>
         </div>

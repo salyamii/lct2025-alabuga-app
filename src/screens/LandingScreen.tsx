@@ -11,9 +11,10 @@ import { toast } from '../components/ui/sonner';
 interface LandingScreenProps {
   onLoginSuccess?: () => void;
   onRegisterSuccess?: () => void;
+  onSetShouldShowOnboarding?: (value: boolean) => void;
 }
 
-export function LandingScreen({ onLoginSuccess, onRegisterSuccess }: LandingScreenProps) {
+export function LandingScreen({ onLoginSuccess, onRegisterSuccess, onSetShouldShowOnboarding }: LandingScreenProps) {
   const { login: loginUser, registerHR, registerCandidate, loading, error } = useAuthContext();
   const [isLogin, setIsLogin] = useState(true);
   const [login, setLogin] = useState("");
@@ -70,6 +71,15 @@ export function LandingScreen({ onLoginSuccess, onRegisterSuccess }: LandingScre
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      // Устанавливаем shouldShowOnboarding перед началом авторизации
+      if (!isLogin && userRole === "candidate") {
+        // Для регистрации - показываем онбординг
+        onSetShouldShowOnboarding?.(true);
+      } else {
+        // Для логина - не показываем онбординг
+        onSetShouldShowOnboarding?.(false);
+      }
+
       if (!isLogin) {
         // Регистрация с учетом выбранной роли
         if (userRole === "hr") {

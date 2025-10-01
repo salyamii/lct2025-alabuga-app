@@ -33,7 +33,7 @@ import { MissionChainCreationDrawer } from "./MissionChainCreationDrawer";
 import { MissionChainEditDrawer } from "./MissionChainEditDrawer";
 import { UserPreviewOverlay } from "./UserPreviewOverlay";
 import { UserEditDrawer } from "./UserEditDrawer";
-import { ArrowLeft, Shield } from "lucide-react";
+import { Shield } from "lucide-react";
 import { useCallback } from "react";
 import { useOverlayStore } from "../../stores/useOverlayStore";
 import { useSeasonStore } from "../../stores/useSeasonStore";
@@ -54,11 +54,9 @@ import { Artifact } from "../../domain/artifact";
 import { StoreItem } from "../../domain/store";
 import { toast } from "sonner";
 
-interface AdminScreenProps {
-  onBack: () => void;
-}
+interface AdminScreenProps {}
 
-export function AdminHubScreen({ onBack }: AdminScreenProps) {
+export function AdminHubScreen({}: AdminScreenProps) {
   const {
     // Состояния оверлеев
     missionCreationOpen,
@@ -469,22 +467,17 @@ export function AdminHubScreen({ onBack }: AdminScreenProps) {
       {/* Header */}
       <div className="sticky top-0 z-40 bg-card border-b border-border">
         <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="sm" onClick={onBack} className="p-2">
-              <ArrowLeft className="w-4 h-4" />
-            </Button>
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-gradient-to-br from-primary to-info rounded-lg flex items-center justify-center">
-                <Shield className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <h1 className="text-lg md:text-xl font-semibold">
-                  Панель администратора
-                </h1>
-                <p className="text-sm text-muted-foreground">
-                  Управление миссиями, пользователями и настройками платформы
-                </p>
-              </div>
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-gradient-to-br from-primary to-info rounded-lg flex items-center justify-center">
+              <Shield className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h1 className="text-lg md:text-xl font-semibold">
+                Панель администратора
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                Управление миссиями, пользователями и настройками платформы
+              </p>
             </div>
           </div>
         </div>

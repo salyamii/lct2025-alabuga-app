@@ -43,10 +43,6 @@ export default function AppLayout() {
     push(`/${seg}`);
   };
 
-  const handleAdminOpen = () => {
-    push('/admin');
-  };
-
   const handleSettingsOpen = () => {
     push('/settings');
   };
@@ -60,7 +56,6 @@ export default function AppLayout() {
       {/* TopAppBar - всегда видимый на всех устройствах */}
       <div className="cosmic-gradient">
         <TopAppBar
-          onAdminOpen={handleAdminOpen}
           onNotificationsOpen={handleNotificationsOpen}
           onSettingsOpen={handleSettingsOpen}
         />
