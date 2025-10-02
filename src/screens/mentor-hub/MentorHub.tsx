@@ -123,21 +123,21 @@ interface MentorshipScreenProps {
     ];
   
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen-dvh bg-background">
         {/* Header */}
         <div className="border-b border-border bg-card/50 backdrop-blur">
           <div className="max-w-7xl mx-auto px-4 py-4">
-            <div className="flex items-center gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 min-w-0">
               <div className="w-12 h-12 bg-gradient-to-br from-primary to-info rounded-xl flex items-center justify-center shadow-lg">
                 <GraduationCap className="w-6 h-6 text-white" />
               </div>
-              <div className="flex-1">
-                <h1 className="text-xl md:text-2xl">Центр наставничества</h1>
-                <p className="text-sm text-muted-foreground">
+              <div className="flex-1 min-w-0">
+                <h1 className="text-xl md:text-2xl text-wrap">Центр наставничества</h1>
+                <p className="text-sm text-muted-foreground text-wrap">
                   Свяжитесь с наставниками и продвигайтесь по карьерной лестнице
                 </p>
               </div>
-              <Button className="bg-primary hover:bg-primary-600 text-white">
+              <Button className="bg-primary hover:bg-primary-600 text-white h-12 w-full sm:w-auto">
                 <Plus className="w-4 h-4 mr-2" />
                 Запросить наставника
               </Button>
@@ -146,12 +146,21 @@ interface MentorshipScreenProps {
         </div>
   
         {/* Main Content */}
-        <div className="max-w-7xl mx-auto px-4 py-6">
+        <div className="max-w-7xl mx-auto px-4 py-6 min-w-0">
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="my-pairs">Мое наставничество</TabsTrigger>
-              <TabsTrigger value="mentors">Найти наставников</TabsTrigger>
-              <TabsTrigger value="programs">Программы</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-3 max-w-md">
+              <TabsTrigger value="my-pairs">
+                <span className="hidden sm:inline">Мое наставничество</span>
+                <span className="sm:hidden">Мое</span>
+              </TabsTrigger>
+              <TabsTrigger value="mentors">
+                <span className="hidden sm:inline">Найти наставников</span>
+                <span className="sm:hidden">Наставники</span>
+              </TabsTrigger>
+              <TabsTrigger value="programs">
+                <span className="hidden sm:inline">Программы</span>
+                <span className="sm:hidden">Программы</span>
+              </TabsTrigger>
             </TabsList>
   
             {/* My Mentorship Pairs */}
@@ -199,9 +208,9 @@ interface MentorshipScreenProps {
   
                 {/* Mentorship Pairs */}
                 <div className="lg:col-span-3 space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold">Текущие пары наставничества</h3>
-                    <Button variant="outline" size="sm">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 min-w-0">
+                    <h3 className="text-lg font-semibold text-wrap">Текущие пары наставничества</h3>
+                    <Button variant="outline" size="sm" className="h-12 w-full sm:w-auto">
                       <Filter className="w-4 h-4 mr-2" />
                       Фильтр
                     </Button>
@@ -216,16 +225,16 @@ interface MentorshipScreenProps {
                       <CardContent className="p-6">
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                           {/* Pair Info */}
-                          <div className="lg:col-span-2">
-                            <div className="flex items-center gap-6 mb-4">
+                          <div className="lg:col-span-2 min-w-0">
+                            <div className="flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-6 mb-4 min-w-0">
                               {/* Mentor */}
-                              <div className="flex items-center gap-3">
+                              <div className="flex items-center gap-3 min-w-0">
                                 <Avatar className="w-10 h-10">
                                   <AvatarFallback>{pair.mentor.avatar}</AvatarFallback>
                                 </Avatar>
-                                <div>
-                                  <p className="font-medium text-sm">{pair.mentor.name}</p>
-                                  <p className="text-xs text-muted-foreground">{pair.mentor.rank}</p>
+                                <div className="min-w-0">
+                                  <p className="font-medium text-sm text-wrap line-clamp-2">{pair.mentor.name}</p>
+                                  <p className="text-xs text-muted-foreground text-wrap">{pair.mentor.rank}</p>
                                 </div>
                               </div>
                               
@@ -236,21 +245,21 @@ interface MentorshipScreenProps {
                               </div>
                               
                               {/* Mentee */}
-                              <div className="flex items-center gap-3">
+                              <div className="flex items-center gap-3 min-w-0">
                                 <Avatar className="w-10 h-10">
                                   <AvatarFallback>{pair.mentee.avatar}</AvatarFallback>
                                 </Avatar>
-                                <div>
-                                  <p className="font-medium text-sm">{pair.mentee.name}</p>
-                                  <p className="text-xs text-muted-foreground">{pair.mentee.rank}</p>
+                                <div className="min-w-0">
+                                  <p className="font-medium text-sm text-wrap line-clamp-2">{pair.mentee.name}</p>
+                                  <p className="text-xs text-muted-foreground text-wrap">{pair.mentee.rank}</p>
                                 </div>
                               </div>
                             </div>
                             
                             <div className="space-y-3">
                               <div>
-                                <div className="flex items-center justify-between mb-2">
-                                  <h4 className="font-semibold text-base">{pair.program}</h4>
+                                <div className="flex items-center justify-between mb-2 min-w-0">
+                                  <h4 className="font-semibold text-base text-wrap line-clamp-2">{pair.program}</h4>
                                   <Badge variant={pair.status === "completed" ? "default" : "secondary"}>
                                     {pair.status}
                                   </Badge>
@@ -275,11 +284,11 @@ interface MentorshipScreenProps {
                             </div>
                             
                             <div className="flex gap-2 mt-4">
-                              <Button size="sm" className="flex-1">
+                              <Button size="sm" className="flex-1 h-12">
                                 <MessageSquare className="w-4 h-4 mr-2" />
                                 Чат
                               </Button>
-                              <Button size="sm" variant="outline" className="flex-1">
+                              <Button size="sm" variant="outline" className="flex-1 h-12">
                                 <Calendar className="w-4 h-4 mr-2" />
                                 Запланировать
                               </Button>
