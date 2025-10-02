@@ -1,16 +1,16 @@
 import { GitBranch } from "lucide-react"
 import { MissionChainCard } from "./MissionChainCard"
-import { MissionChain, DetailedUser } from "../../domain"
+import { MissionChain } from "../../domain"
 import { useRankStore } from "../../stores/useRankStore"
 import { useMemo, useCallback } from "react"
 
 interface SeasonHubMissionChainsProps {
     missionChains: MissionChain[];
-    user: DetailedUser | null;
+    userMissions: any[] | null;
     onMissionChainOpen: (missionChainId: number) => void
 }
 
-export function SeasonHubMissionChains({ missionChains, user, onMissionChainOpen }: SeasonHubMissionChainsProps) {
+export function SeasonHubMissionChains({ missionChains, userMissions, onMissionChainOpen }: SeasonHubMissionChainsProps) {
     const { ranks } = useRankStore();
 
     // Функция для определения требуемого ранга цепочки миссий
@@ -71,11 +71,13 @@ export function SeasonHubMissionChains({ missionChains, user, onMissionChainOpen
 
     // Фильтруем цепочки по рангу пользователя
     const filteredChains = useMemo(() => {
-        if (!user || !ranks || ranks.length === 0) {
+        if (!userMissions || !ranks || ranks.length === 0) {
             return missionChains.filter(chain => chain.missions && chain.missions.length > 0);
         }
 
-        const availableRanks = getAvailableRanksForUser(user.rankId);
+        // Получаем ранг пользователя из первой миссии (предполагаем, что все миссии пользователя имеют одинаковый ранг)
+        const userRankId = userMissions.length > 0 ? userMissions[0].rankRequirement : 1;
+        const availableRanks = getAvailableRanksForUser(userRankId);
         
         return missionChains.filter(chain => {
             // Проверяем, что в цепочке есть миссии
@@ -94,7 +96,7 @@ export function SeasonHubMissionChains({ missionChains, user, onMissionChainOpen
             // Проверяем, доступна ли цепочка для пользователя
             return availableRanks.includes(chainRequiredRank);
         });
-    }, [missionChains, user, ranks, getAvailableRanksForUser, getChainRequiredRank]);
+    }, [missionChains, userMissions, ranks, getAvailableRanksForUser, getChainRequiredRank]);
 
     return (
         <div className="space-y-4 mt-8">
@@ -111,7 +113,7 @@ export function SeasonHubMissionChains({ missionChains, user, onMissionChainOpen
               <MissionChainCard
                 key={chain.id}
                 missionChain={chain}
-                user={user}
+                userMissions={userMissions}
                 onOpenChain={onMissionChainOpen}
               />
             ))}

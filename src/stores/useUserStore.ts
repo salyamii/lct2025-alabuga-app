@@ -94,19 +94,19 @@ export const useUserStore = create<UserState & UserActions>(
     set: (partial: Partial<UserState & UserActions>) => void,
     get: () => UserState & UserActions
   ) => ({
-  user: null,
-  allUsers: [],
-  isLoading: false,
-  error: null,
+    user: null,
+    allUsers: [],
+    isLoading: false,
+    error: null,
 
     // ===== ПОЛЬЗОВАТЕЛЬСКИЕ МЕТОДЫ =====
 
     // Загрузить профиль текущего пользователя
-  fetchUserProfile: async () => {
-    try {
+    fetchUserProfile: async () => {
+      try {
         console.log("📥 Загружаем профиль пользователя...");
-      set({ isLoading: true, error: null });
-      const response = await userService.getProfile();
+        set({ isLoading: true, error: null });
+        const response = await userService.getProfile();
 
         // Создаем пользователя из детального ответа
         const user = DetailedUser.fromDetailedResponse(response.data);
@@ -141,7 +141,7 @@ export const useUserStore = create<UserState & UserActions>(
           );
           set({ user, isLoading: false });
         }
-    } catch (error: any) {
+      } catch (error: any) {
         console.error("❌ Ошибка при загрузке профиля:", error);
         set({
           error: error.message || "Не удалось получить профиль пользователя",
@@ -150,92 +150,91 @@ export const useUserStore = create<UserState & UserActions>(
       }
     },
 
+    // Загрузить миссию пользователя с сервера
+    fetchUserMission: async (missionId: number) => {
+      try {
+        const currentUser = get().user;
+        if (!currentUser) return;
 
-  // Загрузить миссию пользователя с сервера
-  fetchUserMission: async (missionId: number) => {
-    try {
-      const currentUser = get().user;
-      if (!currentUser) return;
+        const response = await userService.getUserMission(missionId);
+        const userMissionData = response.data;
+        const newUserMission = UserMission.fromResponse(userMissionData);
 
-      const response = await userService.getUserMission(missionId);
-      const userMissionData = response.data;
-      const newUserMission = UserMission.fromResponse(userMissionData);
-
-      // Обновляем или добавляем миссию в user.missions
+        // Обновляем или добавляем миссию в user.missions
         const existingIndex = currentUser.missions.findIndex(
           (m) => m.id === missionId
         );
-      let updatedMissions = [...currentUser.missions];
+        let updatedMissions = [...currentUser.missions];
 
-      if (existingIndex >= 0) {
-        updatedMissions[existingIndex] = newUserMission;
-      } else {
-        updatedMissions.push(newUserMission);
-      }
+        if (existingIndex >= 0) {
+          updatedMissions[existingIndex] = newUserMission;
+        } else {
+          updatedMissions.push(newUserMission);
+        }
 
         const updatedUser = new DetailedUser(
-        currentUser.login,
-        currentUser.firstName,
-        currentUser.lastName,
-        currentUser.role,
-        currentUser.rankId,
-        currentUser.xp,
-        currentUser.mana,
-        updatedMissions,
-        currentUser.artifacts,
-        currentUser.competencies
-      );
+          currentUser.login,
+          currentUser.firstName,
+          currentUser.lastName,
+          currentUser.role,
+          currentUser.rankId,
+          currentUser.xp,
+          currentUser.mana,
+          updatedMissions,
+          currentUser.artifacts,
+          currentUser.competencies
+        );
 
-      set({ user: updatedUser });
-    } catch (error: any) {
+        set({ user: updatedUser });
+      } catch (error: any) {
         set({
           error: error.message || "Не удалось загрузить миссию пользователя",
         });
-    }
-  },
+      }
+    },
 
-  // Загрузить все миссии пользователя по списку ID
-  fetchAllUserMissions: async (missionIds: number[]) => {
-    try {
-      const currentUser = get().user;
-      if (!currentUser) return;
+    // Загрузить все миссии пользователя по списку ID
+    fetchAllUserMissions: async (missionIds: number[]) => {
+      try {
+        const currentUser = get().user;
+        if (!currentUser) return;
 
-      // Загружаем все миссии параллельно
+        // Загружаем все миссии параллельно
         const missionPromises = missionIds.map((id) =>
           userService.getUserMission(id)
         );
-      const responses = await Promise.allSettled(missionPromises);
+        const responses = await Promise.allSettled(missionPromises);
 
-      // Собираем успешно загруженные миссии
-      const userMissions: UserMission[] = [];
-      responses.forEach((result, index) => {
+        // Собираем успешно загруженные миссии
+        const userMissions: UserMission[] = [];
+        responses.forEach((result, index) => {
           if (result.status === "fulfilled") {
-          const userMission = UserMission.fromResponse(result.value.data);
-          userMissions.push(userMission);
-        } else {
+            const userMission = UserMission.fromResponse(result.value.data);
+            userMissions.push(userMission);
+          } else {
             console.error(
               `Не удалось загрузить миссию ${missionIds[index]}:`,
               result.reason
             );
-        }
-      });
+          }
+        });
 
-      // Обновляем user.missions (заменяем все миссии на загруженные)
+        // Обновляем user.missions (заменяем все миссии на загруженные)
         const updatedUser = new DetailedUser(
-        currentUser.login,
-        currentUser.firstName,
-        currentUser.lastName,
-        currentUser.role,
-        currentUser.rankId,
-        currentUser.xp,
-        currentUser.mana,
-        userMissions,
-        currentUser.artifacts,
-        currentUser.competencies
-      );
+          currentUser.login,
+          currentUser.firstName,
+          currentUser.lastName,
+          currentUser.role,
+          currentUser.rankId,
+          currentUser.xp,
+          currentUser.mana,
+          userMissions,
+          currentUser.artifacts,
+          currentUser.competencies
+        );
 
-      set({ user: updatedUser });
-    } catch (error: any) {
+        set({ user: updatedUser });
+      } catch (error: any) {
         set({
           error: error.message || "Не удалось загрузить миссии пользователя",
         });
@@ -334,73 +333,73 @@ export const useUserStore = create<UserState & UserActions>(
             `Не удалось обновить данные пользователя ${userLogin}`,
         });
         throw error;
-    }
-  },
+      }
+    },
 
-  // Загрузить миссии пользователя по логину
-  fetchUserMissionsByLogin: async (userLogin: string) => {
-    try {
+    // Загрузить миссии пользователя по логину
+    fetchUserMissionsByLogin: async (userLogin: string) => {
+      try {
         const currentUser = get().user;
         if (!currentUser || !currentUser.isAdmin) {
           return [];
         }
-      const response = await userService.getUserMissionsByLogin(userLogin);
+        const response = await userService.getUserMissionsByLogin(userLogin);
         const userMissions =
           response.data.missions?.map((missionData) =>
             UserMission.fromResponse(missionData)
           ) || [];
-      return userMissions;
-    } catch (error: any) {
+        return userMissions;
+      } catch (error: any) {
         set({
           error:
             error.message ||
             `Не удалось получить миссии пользователя ${userLogin}`,
         });
-      return [];
-    }
-  },
-
-  // Одобрить миссию пользователя (только для HR)
-  approveUserMission: async (missionId: number, userLogin: string) => {
-    try {
-      const currentUser = get().user;
-        if (!currentUser || !currentUser.isAdmin) {
-        return;
+        return [];
       }
+    },
 
-      await userService.approveUserMission(missionId, userLogin);
-    } catch (error: any) {
-        set({ error: error.message || "Не удалось одобрить миссию" });
-    }
-  },
-
-  // Добавить артефакт пользователю
-  addArtifactToUser: async (userLogin: string, artifactId: number) => {
-    try {
+    // Одобрить миссию пользователя (только для HR)
+    approveUserMission: async (missionId: number, userLogin: string) => {
+      try {
         const currentUser = get().user;
         if (!currentUser || !currentUser.isAdmin) {
           return;
         }
-      await userService.addArtifactToUser(userLogin, artifactId);
+
+        await userService.approveUserMission(missionId, userLogin);
+      } catch (error: any) {
+        set({ error: error.message || "Не удалось одобрить миссию" });
+      }
+    },
+
+    // Добавить артефакт пользователю
+    addArtifactToUser: async (userLogin: string, artifactId: number) => {
+      try {
+        const currentUser = get().user;
+        if (!currentUser || !currentUser.isAdmin) {
+          return;
+        }
+        await userService.addArtifactToUser(userLogin, artifactId);
       } catch (error: any) {
         set({ error: error.message || "Не удалось добавить артефакт" });
-    }
-  },
+      }
+    },
 
-  // Удалить артефакт у пользователя
-  removeArtifactFromUser: async (userLogin: string, artifactId: number) => {
-    try {
+    // Удалить артефакт у пользователя
+    removeArtifactFromUser: async (userLogin: string, artifactId: number) => {
+      try {
         const currentUser = get().user;
         if (!currentUser || !currentUser.isAdmin) {
           return;
         }
-      await userService.removeArtifactFromUser(userLogin, artifactId);
+        await userService.removeArtifactFromUser(userLogin, artifactId);
       } catch (error: any) {
         set({ error: error.message || "Не удалось удалить артефакт" });
-    }
-  },
+      }
+    },
 
-  // Добавить компетенцию пользователю
+    // Добавить компетенцию пользователю
     addCompetencyToUser: async (
       userLogin: string,
       competencyId: number,
@@ -411,20 +410,20 @@ export const useUserStore = create<UserState & UserActions>(
         if (!currentUser || !currentUser.isAdmin) {
           return;
         }
-      await userService.addCompetencyToUser(userLogin, competencyId, level);
+        await userService.addCompetencyToUser(userLogin, competencyId, level);
       } catch (error: any) {
         set({ error: error.message || "Не удалось добавить компетенцию" });
-    }
-  },
+      }
+    },
 
-  // Обновить уровень компетенции пользователя
+    // Обновить уровень компетенции пользователя
     updateUserCompetencyLevel: async (
       userLogin: string,
       competencyId: number,
       level: number
     ) => {
       try {
-      const currentUser = get().user;
+        const currentUser = get().user;
         if (!currentUser || !currentUser.isAdmin) {
           return;
         }
@@ -437,26 +436,26 @@ export const useUserStore = create<UserState & UserActions>(
         set({
           error: error.message || "Не удалось обновить уровень компетенции",
         });
-    }
-  },
+      }
+    },
 
-  // Удалить компетенцию у пользователя
+    // Удалить компетенцию у пользователя
     removeCompetencyFromUser: async (
       userLogin: string,
       competencyId: number
     ) => {
-    try {
+      try {
         const currentUser = get().user;
         if (!currentUser || !currentUser.isAdmin) {
           return;
         }
-      await userService.removeCompetencyFromUser(userLogin, competencyId);
+        await userService.removeCompetencyFromUser(userLogin, competencyId);
       } catch (error: any) {
         set({ error: error.message || "Не удалось удалить компетенцию" });
-    }
-  },
+      }
+    },
 
-  // Добавить навык пользователю в компетенции
+    // Добавить навык пользователю в компетенции
     addSkillToUser: async (
       userLogin: string,
       competencyId: number,
@@ -464,7 +463,7 @@ export const useUserStore = create<UserState & UserActions>(
       level: number = 0
     ) => {
       try {
-      const currentUser = get().user;
+        const currentUser = get().user;
         if (!currentUser || !currentUser.isAdmin) {
           return;
         }
@@ -476,10 +475,10 @@ export const useUserStore = create<UserState & UserActions>(
         );
       } catch (error: any) {
         set({ error: error.message || "Не удалось добавить навык" });
-    }
-  },
+      }
+    },
 
-  // Обновить уровень навыка пользователя в компетенции
+    // Обновить уровень навыка пользователя в компетенции
     updateUserSkillLevel: async (
       userLogin: string,
       competencyId: number,
@@ -487,7 +486,7 @@ export const useUserStore = create<UserState & UserActions>(
       level: number
     ) => {
       try {
-      const currentUser = get().user;
+        const currentUser = get().user;
         if (!currentUser || !currentUser.isAdmin) {
           return;
         }
@@ -499,19 +498,19 @@ export const useUserStore = create<UserState & UserActions>(
         );
       } catch (error: any) {
         set({ error: error.message || "Не удалось обновить уровень навыка" });
-    }
-  },
+      }
+    },
 
-  // Удалить навык у пользователя в компетенции
+    // Удалить навык у пользователя в компетенции
     removeSkillFromUser: async (
       userLogin: string,
       competencyId: number,
       skillId: number
     ) => {
-    try {
-      const currentUser = get().user;
+      try {
+        const currentUser = get().user;
         if (!currentUser || !currentUser.isAdmin) {
-      return;
+          return;
         }
         await userService.removeSkillFromUser(userLogin, competencyId, skillId);
       } catch (error: any) {

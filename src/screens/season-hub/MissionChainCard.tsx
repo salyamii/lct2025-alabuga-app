@@ -8,25 +8,33 @@ import {
   Zap,
   Award
 } from "lucide-react";
-import { MissionChain, DetailedUser } from "../../domain";
+import { MissionChain } from "../../domain";
 
 interface MissionChainCardProps {
   missionChain: MissionChain;
-  user: DetailedUser | null;
+  userMissions: any[] | null;
   onOpenChain: (missionChainId: number) => void;
 }
 
-export function MissionChainCard({ missionChain, user, onOpenChain }: MissionChainCardProps) {
+export function MissionChainCard({ missionChain, userMissions, onOpenChain }: MissionChainCardProps) {
   // Вычисляем количество завершенных миссий в цепочке
   const completedMissionsCount = missionChain.missions.filter(mission => {
-    const userMission = user?.getMissionById(mission.id);
-    return userMission?.isCompleted || false;
+    const userMission = userMissions?.find(um => um.id === mission.id);
+    return userMission?.isCompleted && userMission?.isApproved || false;
   }).length;
 
   const totalMissionsCount = missionChain.missions.length;
   const progressPercentage = totalMissionsCount > 0 
     ? Math.round((completedMissionsCount / totalMissionsCount) * 100) 
     : 0;
+
+  // Собираем все артефакты-награды из миссий цепочки
+  const rewardArtifacts = missionChain.missions.reduce((artifacts, mission) => {
+    if (mission.rewardArtifacts && mission.rewardArtifacts.length > 0) {
+      return [...artifacts, ...mission.rewardArtifacts];
+    }
+    return artifacts;
+  }, [] as any[]);
   
   const getRuleChipClass = (ruleType: string) => {
     switch (ruleType) {
@@ -75,10 +83,10 @@ export function MissionChainCard({ missionChain, user, onOpenChain }: MissionCha
                 <Zap className="w-3 h-3 mr-1" />
                 {missionChain.rewardMana} Мана
               </Badge>
-            {(
+            {rewardArtifacts.length > 0 && (
               <Badge variant="outline" className="text-xs">
                 <Award className="w-3 h-3 mr-1" />
-                2 Артефакты
+                {rewardArtifacts.length} Артефакт{rewardArtifacts.length === 1 ? '' : rewardArtifacts.length < 5 ? 'а' : 'ов'}
               </Badge>
             )}
           </div>

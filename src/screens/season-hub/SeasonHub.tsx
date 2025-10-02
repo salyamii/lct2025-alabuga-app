@@ -197,7 +197,7 @@ export function SeasonHub({
             {missionChains.length > 0 && (
               <SeasonHubMissionChains
                 missionChains={missionChains}
-                user={user}
+                userMissions={user?.missions || null}
                 onMissionChainOpen={handleMissionChainOpen}
               />
             )}
