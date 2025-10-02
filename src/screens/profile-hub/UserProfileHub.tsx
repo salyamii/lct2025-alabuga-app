@@ -3,21 +3,37 @@ import { Card, CardContent } from "../../components/ui/card";
 import { Sparkles, Crown, Settings, Globe, Zap, Target, Rocket, Gem, Star, Moon, Users, Orbit, Compass, Trophy, Sun, HelpCircle } from "lucide-react";
 import { useUserStore } from "../../stores/useUserStore";
 import { useRankStore } from "../../stores/useRankStore";
+import { useArtifactStore } from "../../stores/useArtifactStore";
 import { useState, useEffect } from "react";
 import mediaService from "../../api/services/mediaService";
 
 export function UserProfileHub({ onMentorshipOpen, onSettingsOpen, onGuildProgressOpen, onArtifactsOpen }: { onMentorshipOpen: () => void, onSettingsOpen: () => void, onGuildProgressOpen: () => void, onArtifactsOpen: () => void }) {
-    const { user } = useUserStore();
+    const { user, fetchUserProfile } = useUserStore();
     const { ranks, fetchRanks } = useRankStore();
+    const { fetchArtifacts } = useArtifactStore();
     const [artifactImages, setArtifactImages] = useState<Record<number, string>>({});
     const [rankImage, setRankImage] = useState<string>("");
 
-    // Загружаем ранги если их нет
+    // Загружаем данные при монтировании
     useEffect(() => {
-        if (ranks.length === 0) {
-            fetchRanks();
-        }
-    }, [ranks.length, fetchRanks]);
+        const loadData = async () => {
+            try {
+                console.log('🔄 UserProfileHub: загружаем данные...');
+                await Promise.all([
+                    fetchUserProfile(),
+                    fetchRanks(),
+                    fetchArtifacts(),
+                ]);
+                console.log('✅ UserProfileHub: данные загружены');
+            } catch (error) {
+                console.error('❌ UserProfileHub: ошибка загрузки данных:', error);
+            }
+        };
+
+        loadData();
+    }, []); // Пустой массив - выполняется только при монтировании
+
+    // Ранги уже загружаются в основном useEffect выше
 
     // Загружаем изображение ранга пользователя
     useEffect(() => {

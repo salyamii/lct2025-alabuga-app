@@ -37,6 +37,7 @@ import { SeasonHubRightRail } from "./SeasonHubRightRail";
 import { SeasonHubMissionChains } from "./SeasonHubMissionChains";
 import { SeasonHubMissions, SeasonHubMissionsProps } from "./SeasonHubMissions";
 import { useMissionStore } from "../../stores/useMissionStore";
+import { useEffect, useRef, useCallback } from "react";
 
 interface SeasonHubProps {
   onMissionLaunch: (missionId: number) => void;
@@ -55,16 +56,62 @@ export function SeasonHub({
   onMentorRatingOpen,
   onMissionChainOpen: onMissionChainOpen,
 }: SeasonHubProps) {
-  const { seasons, isLoading } = useSeasonStore();
-  const { missionChains } = useMissionChainStore();
-  const { missions } = useMissionStore();
-  const { user } = useUserStore();
+  const { seasons, isLoading, fetchSeasons } = useSeasonStore();
+  const { missionChains, fetchMissionChains } = useMissionChainStore();
+  const { missions, fetchMissions } = useMissionStore();
+  const { user, fetchUserProfile } = useUserStore();
   const {
     missionChainViewOpen,
     selectedMissionChainId,
     openMissionChainView,
     closeMissionChainView,
   } = useOverlayStore();
+
+  // Реф для интервала поллинга
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const isPollingRef = useRef(false);
+
+  // Поллинг при монтировании и каждые 30 секунд
+  useEffect(() => {
+    // Функция для обновления данных (внутри useEffect для стабильности)
+    const refreshData = async () => {
+      if (isPollingRef.current) {
+        return; // Предотвращаем множественные одновременные запросы
+      }
+
+      try {
+        isPollingRef.current = true;
+        console.log('🔄 SeasonHub: обновляем данные...');
+
+        // Обновляем данные параллельно
+        await Promise.all([
+          fetchSeasons(),
+          fetchMissions(),
+          fetchMissionChains(),
+          fetchUserProfile(),
+        ]);
+
+        console.log('✅ SeasonHub: данные обновлены');
+      } catch (error) {
+        console.error('❌ SeasonHub: ошибка обновления данных:', error);
+      } finally {
+        isPollingRef.current = false;
+      }
+    };
+
+    // Запускаем обновление сразу при монтировании
+    refreshData();
+
+    // Настраиваем поллинг каждые 30 секунд
+    intervalRef.current = setInterval(refreshData, 30000);
+
+    // Очистка при размонтировании
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, []); // Пустой массив зависимостей - выполняется только при монтировании
 
   // Сортируем сезоны по дате начала
   const sortedSeasons = [...seasons].sort(
@@ -106,7 +153,7 @@ export function SeasonHub({
 
   // Вычисляем реальные данные из пользователя для активного сезона
   const seasonCompletedCount = seasonUserMissions.filter(
-    (m) => m.isCompleted
+    (m) => m.isCompleted && m.isApproved
   ).length;
   const seasonTotalCount = seasonMissions.length;
   const seasonProgress =
@@ -197,6 +244,7 @@ export function SeasonHub({
             {missionChains.length > 0 && (
               <SeasonHubMissionChains
                 missionChains={missionChains}
+                userRankId={user?.rankId || 0}
                 userMissions={user?.missions || null}
                 onMissionChainOpen={handleMissionChainOpen}
               />

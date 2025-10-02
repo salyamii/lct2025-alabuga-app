@@ -11,9 +11,27 @@ import mediaService from "../../api/services/mediaService";
 
 export function ArtifactsHub() {
 
-    const { artifacts } = useArtifactStore();
-    const { user } = useUserStore();
+    const { artifacts, fetchArtifacts } = useArtifactStore();
+    const { user, fetchUserProfile } = useUserStore();
     const [artifactImages, setArtifactImages] = useState<Record<number, string>>({});
+
+    // Загружаем данные при монтировании
+    useEffect(() => {
+        const loadData = async () => {
+            try {
+                console.log('🔄 ArtifactsHub: загружаем данные...');
+                await Promise.all([
+                    fetchArtifacts(),
+                    fetchUserProfile(),
+                ]);
+                console.log('✅ ArtifactsHub: данные загружены');
+            } catch (error) {
+                console.error('❌ ArtifactsHub: ошибка загрузки данных:', error);
+            }
+        };
+
+        loadData();
+    }, []); // Пустой массив - выполняется только при монтировании
 
     // Логирование для отладки
     useEffect(() => {
@@ -323,34 +341,10 @@ export function ArtifactsHub() {
                     </p>
                   </div>
                   
-                  {hasArtifact ? (
+                  {hasArtifact && (
                     <div className="flex items-center gap-2 text-sm text-success">
                       <Calendar className="w-4 h-4" />
                       <span>Получено 2023-0{Math.floor(Math.random() * 9) + 1}-1{Math.floor(Math.random() * 9) + 1}</span>
-                    </div>
-                  ) : (
-                    <div className="space-y-2">
-                      {(() => {
-                        // Генерируем случайный прогресс от 0 до 50 для отображения
-                        const randomProgress = Math.floor(Math.random() * 51);
-                        return (
-                          <div className="space-y-1">
-                            <div className="flex justify-between text-xs text-muted-foreground">
-                              <span className="flex items-center gap-1">
-                                <Sparkles className="w-3 h-3" />
-                                Космический прогресс
-                              </span>
-                              <span>{randomProgress}/50</span>
-                            </div>
-                            <div className="w-full bg-muted rounded-full h-2">
-                              <div 
-                                className="bg-gradient-to-r from-primary to-info h-2 rounded-full transition-all"
-                                style={{ width: `${(randomProgress / 50) * 100}%` }}
-                              />
-                            </div>
-                          </div>
-                        );
-                      })()}
                     </div>
                   )}
                 </CardContent>

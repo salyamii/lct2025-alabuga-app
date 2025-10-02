@@ -3,7 +3,7 @@ import { Badge } from "../../components/ui/badge";
 import { Button } from "../../components/ui/button";
 import { Progress } from "../../components/ui/progress";
 import { Card, CardContent } from "../../components/ui/card";
-import { CheckCircle, Play, Lock, ArrowDown, Star, Zap } from "lucide-react";
+import { CheckCircle, Play, Lock, ArrowDown, Star, Zap, Clock } from "lucide-react";
 import { useMissionChainStore } from "../../stores/useMissionChainStore";
 import { useUserStore } from "../../stores/useUserStore";
 import { useMemo } from "react";
@@ -41,10 +41,10 @@ interface MissionChainOverlayProps {
     // Получаем миссии в правильном порядке
     const orderedMissions = chain.getMissionsInOrder();
 
-    // Вычисляем прогресс на основе данных пользователя
+    // Вычисляем прогресс на основе данных пользователя (только завершенные и одобренные)
     const completedMissionsInChain = orderedMissions.filter(mission => {
       const userMission = user?.getMissionById(mission.id);
-      return userMission?.isCompleted || false;
+      return userMission?.isCompleted && userMission?.isApproved;
     }).length;
     
     const progressPercentage = orderedMissions.length > 0 
@@ -52,25 +52,15 @@ interface MissionChainOverlayProps {
       : 0;
 
     // Определяем статус миссии для пользователя
-    const getMissionStatus = (mission: any, index: number): 'completed' | 'in_progress' | 'locked' | 'todo' => {
-      // Проверяем, завершена ли миссия
+    const getMissionStatus = (mission: any, index: number): 'completed' | 'in_progress' | 'pending_review' | 'locked' | 'todo' => {
       const userMission = user?.getMissionById(mission.id);
-      if (userMission?.isCompleted) {
-        return 'completed';
-      }
-
-      // Проверяем, выполняется ли миссия
-      if (userMission && userMission.completedTasksCount > 0 && !userMission.isCompleted) {
-        return 'in_progress';
-      }
       
-      // Проверяем зависимости
+      // Проверяем зависимости - если есть незавершенные зависимости, миссия заблокирована
       const dependencies = chain.getPrerequisiteMissions(mission.id);
       if (dependencies.length > 0) {
-        // Проверяем, все ли зависимости выполнены
         const allDependenciesCompleted = dependencies.every(dep => {
           const depUserMission = user?.getMissionById(dep.id);
-          return depUserMission?.isCompleted || false;
+          return depUserMission?.isCompleted && depUserMission?.isApproved;
         });
         
         if (!allDependenciesCompleted) {
@@ -78,6 +68,27 @@ interface MissionChainOverlayProps {
         }
       }
 
+      // Если нет данных о миссии пользователя
+      if (!userMission) {
+        return 'todo';
+      }
+
+      // Завершена (isCompleted && isApproved)
+      if (userMission.isCompleted && userMission.isApproved) {
+        return 'completed';
+      }
+
+      // На проверке (isCompleted, но не isApproved)
+      if (userMission.isCompleted && !userMission.isApproved) {
+        return 'pending_review';
+      }
+
+      // Выполняется (есть выполненные задачи, но миссия не завершена)
+      if (userMission.completedTasksCount > 0 && !userMission.isCompleted) {
+        return 'in_progress';
+      }
+
+      // Доступна к выполнению
       return 'todo';
     };
 
@@ -105,6 +116,7 @@ interface MissionChainOverlayProps {
       switch (status) {
         case "completed": return <CheckCircle className="w-4 h-4 text-success" />;
         case "in_progress": return <Play className="w-4 h-4 text-info" />;
+        case "pending_review": return <Clock className="w-4 h-4 text-orange-500" />;
         case "locked": return <Lock className="w-4 h-4 text-muted-foreground" />;
         default: return <div className="w-4 h-4 border-2 border-border rounded-full" />;
       }
@@ -113,7 +125,8 @@ interface MissionChainOverlayProps {
     const getStatusLabel = (status: string) => {
       switch (status) {
         case "completed": return "Завершено";
-        case "in_progress": return "В процессе";
+        case "in_progress": return "Выполняется";
+        case "pending_review": return "На проверке";
         case "locked": return "Заблокировано";
         default: return "Доступно";
       }
@@ -123,6 +136,7 @@ interface MissionChainOverlayProps {
       switch (status) {
         case "completed": return "bg-success/10 text-success border-success/20";
         case "in_progress": return "bg-info/10 text-info border-info/20";
+        case "pending_review": return "bg-orange-50 text-orange-600 border-orange-200";
         case "locked": return "bg-muted text-muted-foreground border-muted";
         default: return "bg-primary/10 text-primary border-primary/20";
       }

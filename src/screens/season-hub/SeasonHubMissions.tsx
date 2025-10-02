@@ -1,10 +1,13 @@
-import { Satellite, CheckCircle, Clock } from "lucide-react";
+import { Target, CheckCircle, Clock, ChevronDown, ChevronRight } from "lucide-react";
 import { Badge } from "../../components/ui/badge";
+import { Button } from "../../components/ui/button";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../../components/ui/collapsible";
 import { MissionCard } from "./MissionCard";
 import { Season } from "../../domain/season";
 import { Mission, UserMission } from "../../domain";
 import { useRankStore } from "../../stores/useRankStore";
 import { useMissionChainStore } from "../../stores/useMissionChainStore";
+import { useState } from "react";
 
 export interface SeasonHubMissionsProps {
     currentSeason: Season | null;
@@ -18,6 +21,11 @@ export interface SeasonHubMissionsProps {
 export function SeasonHubMissions({ currentSeason, missions, userRankId, userMissions, onMissionLaunch, onMissionDetails }: SeasonHubMissionsProps) {
     const { ranks } = useRankStore();
     const { missionChains } = useMissionChainStore();
+    
+    // Состояние для управления раскрытием блоков
+    const [isAvailableOpen, setIsAvailableOpen] = useState(false);
+    const [isPendingReviewOpen, setIsPendingReviewOpen] = useState(false);
+    const [isCompletedOpen, setIsCompletedOpen] = useState(false);
 
     // Создаем мапу миссий пользователя для быстрого поиска
     const userMissionsMap = new Map(
@@ -29,133 +37,218 @@ export function SeasonHubMissions({ currentSeason, missions, userRankId, userMis
         missionChains.flatMap(chain => chain.missions.map(mission => mission.id))
     );
 
-    // Фильтруем миссии: исключаем те, что в цепочках, и показываем только доступные по рангу
+    // Получаем ранги, отсортированные по requiredXp
+    const sortedRanks = [...ranks].sort((a, b) => a.requiredXp - b.requiredXp);
+    const userRankIndex = sortedRanks.findIndex(r => r.id === userRankId);
+    
+    // Определяем доступные ранги для отображения в блоке "Доступные миссии"
+    const getAvailableRanks = () => {
+        if (userRankIndex === 0) {
+            // Первый ранг (самый низкий) - видит только свой ранг
+            return [userRankId];
+        } else if (userRankIndex === 1) {
+            // Второй ранг - видит только свой ранг
+            return [userRankId];
+        } else {
+            // Третий ранг и выше - видит ранги от третьего до своего (включительно)
+            const availableRanks = [];
+            for (let i = 2; i <= userRankIndex; i++) { // От третьего ранга до своего
+                availableRanks.push(sortedRanks[i].id);
+            }
+            return availableRanks;
+        }
+    };
+
+    const availableRanks = getAvailableRanks();
+
+    // Фильтруем миссии для блока "Доступные миссии"
     const availableMissions = missions.filter(mission => {
         // Исключаем миссии из цепочек
         if (missionsInChains.has(mission.id)) {
             return false;
         }
 
-        // Проверяем доступность по рангу
-        const userRank = ranks.find(r => r.id === userRankId);
-        if (!userRank) return false;
-
-        // Пользователь видит миссии своего ранга и всех предыдущих рангов
-        return mission.rankRequirement <= userRankId;
+        // Проверяем доступность по рангу согласно новой логике
+        return availableRanks.includes(mission.rankRequirement);
     });
 
-    // Классифицируем доступные миссии по статусу
-    const missionsByStatus = availableMissions.reduce((acc, mission) => {
-        const userMission = userMissionsMap.get(mission.id);
-        
-        if (userMission) {
-            if (userMission.isCompleted && userMission.isApproved) {
-                acc.completed.push({ mission, userMission });
-            } else if (userMission.isCompleted && !userMission.isApproved) {
-                acc.pendingReview.push({ mission, userMission });
-            } else {
-                acc.available.push({ mission, userMission });
-            }
-        } else {
-            acc.available.push({ mission, userMission: null });
-        }
-        
-        return acc;
-    }, {
+    // Классифицируем миссии по статусу
+    const missionsByStatus = {
+        // Доступные миссии - только по новой логике рангов
         available: [] as Array<{ mission: Mission; userMission: UserMission | null }>,
+        // На проверке и завершенные - все миссии пользователя из активного сезона
         pendingReview: [] as Array<{ mission: Mission; userMission: UserMission }>,
         completed: [] as Array<{ mission: Mission; userMission: UserMission }>
+    };
+
+    // Обрабатываем доступные миссии
+    availableMissions.forEach(mission => {
+        const userMission = userMissionsMap.get(mission.id);
+        missionsByStatus.available.push({ mission, userMission: userMission || null });
+    });
+
+    // Обрабатываем все миссии пользователя для блоков "На проверке" и "Завершенные"
+    userMissions.forEach(userMission => {
+        // Находим соответствующую миссию в списке миссий сезона
+        const mission = missions.find(m => m.id === userMission.id);
+        if (!mission) return; // Пропускаем, если миссия не из текущего сезона
+
+        if (userMission.isCompleted && userMission.isApproved) {
+            missionsByStatus.completed.push({ mission, userMission });
+        } else if (userMission.isCompleted && !userMission.isApproved) {
+            missionsByStatus.pendingReview.push({ mission, userMission });
+        }
     });
 
     return ( currentSeason &&(
         <>
         {/* Available Missions */}
-        {missionsByStatus.available.length > 0 && (
-            <div className="space-y-4">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                    <div className="flex items-center gap-2">
-                        <Satellite className="w-5 h-5 text-primary" />
-                        <h3 className="text-lg md:text-xl font-semibold">Доступные миссии</h3>
-                    </div>
-                    <Badge variant="outline" className="text-sm w-fit">
-                        {missionsByStatus.available.length} {missionsByStatus.available.length === 1 ? 'миссия' : 'миссий'}
-                    </Badge>
-                </div>
-                
+        {(
+            <Collapsible open={isAvailableOpen} onOpenChange={setIsAvailableOpen}>
                 <div className="space-y-4">
-                {missionsByStatus.available.map(({ mission, userMission }) => (
-                    <MissionCard
-                        key={mission.id}
-                        mission={mission}
-                        userMission={userMission}
-                        seasonName={currentSeason.name}
-                        isCompleted={false}
-                        onLaunch={onMissionLaunch}
-                        onViewDetails={onMissionDetails}
-                    />
-                ))}
+                    <CollapsibleTrigger asChild>
+                        <Button variant="ghost" className="w-full p-0 h-auto hover:bg-muted/50">
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 w-full">
+                                <div className="flex items-center gap-2">
+                                    <Target className="w-5 h-5 text-muted-foreground" />
+                                    <h3 className="text-lg md:text-xl font-semibold">Доступные миссии</h3>
+                                    {isAvailableOpen ? (
+                                        <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                                    ) : (
+                                        <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                                    )}
+                                </div>
+                                <Badge variant="outline" className="text-sm w-fit">
+                                    {missionsByStatus.available.length} {missionsByStatus.available.length === 1 ? 'миссия' : 'миссий'}
+                                </Badge>
+                            </div>
+                        </Button>
+                    </CollapsibleTrigger>
+                    
+                    <CollapsibleContent>
+                        <div className="space-y-4">
+                        {missionsByStatus.available.length > 0 ? (
+                            missionsByStatus.available.map(({ mission, userMission }) => (
+                                <MissionCard
+                                    key={mission.id}
+                                    mission={mission}
+                                    userMission={userMission}
+                                    seasonName={currentSeason.name}
+                                    isCompleted={false}
+                                    onLaunch={onMissionLaunch}
+                                    onViewDetails={onMissionDetails}
+                                />
+                            ))
+                        ) : (
+                            <div className="text-center py-8 text-muted-foreground">
+                                <Target className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                                <p className="text-sm">Нет доступных миссий</p>
+                            </div>
+                        )}
+                        </div>
+                    </CollapsibleContent>
                 </div>
-            </div>
+            </Collapsible>
         )}
 
         {/* Pending Review Missions */}
-        {missionsByStatus.pendingReview.length > 0 && (
-            <div className="space-y-4">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                    <div className="flex items-center gap-2">
-                        <Clock className="w-5 h-5 text-orange-500" />
-                        <h3 className="text-lg md:text-xl font-semibold text-orange-600">На проверке</h3>
-                    </div>
-                    <Badge variant="outline" className="text-sm w-fit bg-orange-50 text-orange-600 border-orange-200">
-                        {missionsByStatus.pendingReview.length} {missionsByStatus.pendingReview.length === 1 ? 'миссия' : 'миссий'}
-                    </Badge>
-                </div>
-                
+        {(
+            <Collapsible open={isPendingReviewOpen} onOpenChange={setIsPendingReviewOpen}>
                 <div className="space-y-4">
-                {missionsByStatus.pendingReview.map(({ mission, userMission }) => (
-                    <MissionCard
-                        key={mission.id}
-                        mission={mission}
-                        userMission={userMission}
-                        seasonName={currentSeason.name}
-                        isCompleted={true}
-                        isApproved={false}
-                        onLaunch={onMissionLaunch}
-                        onViewDetails={onMissionDetails}
-                    />
-                ))}
+                    <CollapsibleTrigger asChild>
+                        <Button variant="ghost" className="w-full p-0 h-auto hover:bg-muted/50">
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 w-full">
+                                <div className="flex items-center gap-2">
+                                    <Clock className="w-5 h-5 text-orange-500" />
+                                    <h3 className="text-lg md:text-xl font-semibold text-orange-600">На проверке</h3>
+                                    {isPendingReviewOpen ? (
+                                        <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                                    ) : (
+                                        <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                                    )}
+                                </div>
+                                <Badge variant="outline" className="text-sm w-fit bg-orange-50 text-orange-600 border-orange-200">
+                                    {missionsByStatus.pendingReview.length} {missionsByStatus.pendingReview.length === 1 ? 'миссия' : 'миссий'}
+                                </Badge>
+                            </div>
+                        </Button>
+                    </CollapsibleTrigger>
+                    
+                    <CollapsibleContent>
+                        <div className="space-y-4">
+                        {missionsByStatus.pendingReview.length > 0 ? (
+                            missionsByStatus.pendingReview.map(({ mission, userMission }) => (
+                                <MissionCard
+                                    key={mission.id}
+                                    mission={mission}
+                                    userMission={userMission}
+                                    seasonName={currentSeason.name}
+                                    isCompleted={true}
+                                    isApproved={false}
+                                    onLaunch={onMissionLaunch}
+                                    onViewDetails={onMissionDetails}
+                                />
+                            ))
+                        ) : (
+                            <div className="text-center py-8 text-muted-foreground">
+                                <Clock className="w-12 h-12 mx-auto mb-3 opacity-50 text-orange-500" />
+                                <p className="text-sm">Нет миссий на проверке</p>
+                            </div>
+                        )}
+                        </div>
+                    </CollapsibleContent>
                 </div>
-            </div>
+            </Collapsible>
         )}
 
         {/* Completed Missions */}
-        {missionsByStatus.completed.length > 0 && (
-            <div className="space-y-4">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                    <div className="flex items-center gap-2">
-                        <CheckCircle className="w-5 h-5 text-green-500" />
-                        <h3 className="text-lg md:text-xl font-semibold text-green-600">Завершенные миссии</h3>
-                    </div>
-                    <Badge variant="outline" className="text-sm w-fit bg-green-50 text-green-600 border-green-200">
-                        {missionsByStatus.completed.length} {missionsByStatus.completed.length === 1 ? 'миссия' : 'миссий'}
-                    </Badge>
-                </div>
-                
+        {(
+            <Collapsible open={isCompletedOpen} onOpenChange={setIsCompletedOpen}>
                 <div className="space-y-4">
-                {missionsByStatus.completed.map(({ mission, userMission }) => (
-                    <MissionCard
-                        key={mission.id}
-                        mission={mission}
-                        userMission={userMission}
-                        seasonName={currentSeason.name}
-                        isCompleted={true}
-                        isApproved={true}
-                        onLaunch={onMissionLaunch}
-                        onViewDetails={onMissionDetails}
-                    />
-                ))}
+                    <CollapsibleTrigger asChild>
+                        <Button variant="ghost" className="w-full p-0 h-auto hover:bg-muted/50">
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 w-full">
+                                <div className="flex items-center gap-2">
+                                    <CheckCircle className="w-5 h-5 text-green-500" />
+                                    <h3 className="text-lg md:text-xl font-semibold text-green-600">Завершенные миссии</h3>
+                                    {isCompletedOpen ? (
+                                        <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                                    ) : (
+                                        <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                                    )}
+                                </div>
+                                <Badge variant="outline" className="text-sm w-fit bg-green-50 text-green-600 border-green-200">
+                                    {missionsByStatus.completed.length} {missionsByStatus.completed.length === 1 ? 'миссия' : 'миссий'}
+                                </Badge>
+                            </div>
+                        </Button>
+                    </CollapsibleTrigger>
+                    
+                    <CollapsibleContent>
+                        <div className="space-y-4">
+                        {missionsByStatus.completed.length > 0 ? (
+                            missionsByStatus.completed.map(({ mission, userMission }) => (
+                                <MissionCard
+                                    key={mission.id}
+                                    mission={mission}
+                                    userMission={userMission}
+                                    seasonName={currentSeason.name}
+                                    isCompleted={true}
+                                    isApproved={true}
+                                    onLaunch={onMissionLaunch}
+                                    onViewDetails={onMissionDetails}
+                                />
+                            ))
+                        ) : (
+                            <div className="text-center py-8 text-muted-foreground">
+                                <CheckCircle className="w-12 h-12 mx-auto mb-3 opacity-50 text-green-500" />
+                                <p className="text-sm">Нет завершенных миссий</p>
+                            </div>
+                        )}
+                        </div>
+                    </CollapsibleContent>
                 </div>
-            </div>
+            </Collapsible>
         )}
 
         </>)

@@ -50,8 +50,8 @@ export function SeasonHubRightRail({ userXp, userMana, userRankId, onShipLogOpen
     const nextRankXP = nextRank?.requiredXp || currentRankXP;
     const previousRankXP = previousRank?.requiredXp || 0;
     
-    const xpInCurrentRank = userXp - previousRankXP;
-    const xpNeededForRank = nextRankXP - previousRankXP;
+    const xpInCurrentRank = userXp - currentRankXP;
+    const xpNeededForRank = nextRankXP - currentRankXP;
     const xpProgress = xpNeededForRank > 0 ? Math.round((xpInCurrentRank / xpNeededForRank) * 100) : 100;
     const xpToNextRank = Math.max(0, nextRankXP - userXp);
 

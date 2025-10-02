@@ -1,4 +1,4 @@
-import { GitBranch } from "lucide-react"
+import { GitBranch, HelpCircle } from "lucide-react"
 import { MissionChainCard } from "./MissionChainCard"
 import { MissionChain } from "../../domain"
 import { useRankStore } from "../../stores/useRankStore"
@@ -6,11 +6,12 @@ import { useMemo, useCallback } from "react"
 
 interface SeasonHubMissionChainsProps {
     missionChains: MissionChain[];
+    userRankId: number;
     userMissions: any[] | null;
     onMissionChainOpen: (missionChainId: number) => void
 }
 
-export function SeasonHubMissionChains({ missionChains, userMissions, onMissionChainOpen }: SeasonHubMissionChainsProps) {
+export function SeasonHubMissionChains({ missionChains, userRankId, userMissions, onMissionChainOpen }: SeasonHubMissionChainsProps) {
     const { ranks } = useRankStore();
 
     // Функция для определения требуемого ранга цепочки миссий
@@ -32,7 +33,7 @@ export function SeasonHubMissionChains({ missionChains, userMissions, onMissionC
         return null;
     }, []);
 
-    // Функция для определения доступных рангов для пользователя
+    // Функция для определения доступных рангов для пользователя (та же логика, что и для миссий)
     const getAvailableRanksForUser = useCallback((userRankId: number): number[] => {
         if (!ranks || ranks.length === 0) {
             return [userRankId];
@@ -48,16 +49,15 @@ export function SeasonHubMissionChains({ missionChains, userMissions, onMissionC
             return [userRankId];
         }
 
-        // Логика доступности рангов:
+        // Логика доступности рангов (как в SeasonHubMissions):
         // - Ранг 1 (индекс 0): видит только свои цепочки
         // - Ранг 2 (индекс 1): видит только свои цепочки  
-        // - Ранг 3 (индекс 2): видит только свои цепочки
-        // - Ранг 4+ (индекс 3+): видит все цепочки от 3 ранга до своего ранга включительно
-        if (userRankIndex <= 2) {
-            // Ранги 1, 2, 3 видят только свои цепочки
+        // - Ранг 3+ (индекс 2+): видит цепочки от 3 ранга до своего ранга включительно
+        if (userRankIndex <= 1) {
+            // Ранги 1, 2 видят только свои цепочки
             return [userRankId];
         } else {
-            // Ранги 4+ видят все цепочки от 3 ранга до своего ранга включительно
+            // Ранги 3+ видят цепочки от 3 ранга до своего ранга включительно
             const availableRanks: number[] = [];
             
             // Добавляем все ранги от 3 ранга (индекс 2) до текущего ранга пользователя включительно
@@ -69,19 +69,36 @@ export function SeasonHubMissionChains({ missionChains, userMissions, onMissionC
         }
     }, [ranks]);
 
-    // Фильтруем цепочки по рангу пользователя
+    // Проверяем, завершена ли цепочка
+    const isChainCompleted = useCallback((chain: MissionChain): boolean => {
+        if (!userMissions || !chain.missions || chain.missions.length === 0) {
+            return false;
+        }
+
+        // Цепочка завершена, если все миссии завершены и одобрены
+        return chain.missions.every(mission => {
+            const userMission = userMissions.find(um => um.id === mission.id);
+            return userMission?.isCompleted && userMission?.isApproved;
+        });
+    }, [userMissions]);
+
+    // Фильтруем цепочки по рангу пользователя и исключаем завершенные
     const filteredChains = useMemo(() => {
-        if (!userMissions || !ranks || ranks.length === 0) {
+        if (!ranks || ranks.length === 0) {
             return missionChains.filter(chain => chain.missions && chain.missions.length > 0);
         }
 
-        // Получаем ранг пользователя из первой миссии (предполагаем, что все миссии пользователя имеют одинаковый ранг)
-        const userRankId = userMissions.length > 0 ? userMissions[0].rankRequirement : 1;
+        // Используем переданный ранг пользователя
         const availableRanks = getAvailableRanksForUser(userRankId);
         
         return missionChains.filter(chain => {
             // Проверяем, что в цепочке есть миссии
             if (!chain.missions || chain.missions.length === 0) {
+                return false;
+            }
+
+            // Исключаем завершенные цепочки
+            if (isChainCompleted(chain)) {
                 return false;
             }
 
@@ -96,7 +113,7 @@ export function SeasonHubMissionChains({ missionChains, userMissions, onMissionC
             // Проверяем, доступна ли цепочка для пользователя
             return availableRanks.includes(chainRequiredRank);
         });
-    }, [missionChains, userMissions, ranks, getAvailableRanksForUser, getChainRequiredRank]);
+    }, [missionChains, userRankId, userMissions, ranks, getAvailableRanksForUser, getChainRequiredRank, isChainCompleted]);
 
     return (
         <div className="space-y-4 mt-8">
@@ -108,16 +125,30 @@ export function SeasonHubMissionChains({ missionChains, userMissions, onMissionC
             Связанные цепочки заданий. Завершите все или только необходимые.
           </p>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {filteredChains.map((chain) => (
-              <MissionChainCard
-                key={chain.id}
-                missionChain={chain}
-                userMissions={userMissions}
-                onOpenChain={onMissionChainOpen}
-              />
-            ))}
-          </div>
+          {filteredChains.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {filteredChains.map((chain) => (
+                <MissionChainCard
+                  key={chain.id}
+                  missionChain={chain}
+                  userMissions={userMissions}
+                  onOpenChain={onMissionChainOpen}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="card-enhanced rounded-xl p-6 flex flex-col items-center justify-center text-center space-y-3 min-h-[200px]">
+                <HelpCircle className="w-12 h-12 text-muted-foreground/50" />
+                <div className="space-y-1">
+                  <h4 className="font-medium text-muted-foreground">Нет доступных цепочек</h4>
+                  <p className="text-sm text-muted-foreground/70">
+                    Здесь будут цепочки, доступные вашему рангу
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
     )
 }
