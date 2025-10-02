@@ -10,9 +10,10 @@ interface SeasonHubRightRailProps {
   userXp: number;
   userMana: number;
   userRankId: number;
+  onShipLogOpen: () => void;
 }
 
-export function SeasonHubRightRail({ userXp, userMana, userRankId }: SeasonHubRightRailProps) {
+export function SeasonHubRightRail({ userXp, userMana, userRankId, onShipLogOpen }: SeasonHubRightRailProps) {
     const { ranks, fetchRanks } = useRankStore();
 
     // Загружаем ранги при монтировании компонента
@@ -25,10 +26,6 @@ export function SeasonHubRightRail({ userXp, userMana, userRankId }: SeasonHubRi
     // Обработчики событий
     const onSquadronDetails = () => {
         console.log('Открыть детали сквада');
-    };
-
-    const onShipLogOpen = () => {
-        console.log('Открыть полный журнал');
     };
 
     const onMentorRatingOpen = () => {

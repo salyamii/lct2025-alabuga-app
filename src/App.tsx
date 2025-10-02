@@ -17,6 +17,7 @@ import { ProgressHub } from "./screens/progress-hub/ProgressHub";
 import { SettingsScreen } from "./screens/settings/SettingsScreen";
 import { useNavigationStore } from "./stores/useNavigationStore";
 import { NotificationsScreen } from "./screens/notifications/NotificationScreen";
+import { ShipLogScreen } from "./screens/ShipLogScreen";
 import {
   MissionExecutionScreen,
   MissionDetailScreen,
@@ -51,6 +52,19 @@ const AdminContent: React.FC<{ onBack: () => void }> = ({ onBack }) => (
   </Routes>
 );
 
+// Компонент-обертка для ShipLogScreen
+const ShipLogWrapper: React.FC<{ onBack: () => void }> = ({ onBack }) => {
+  const { user } = useUserStore();
+  
+  return (
+    <ShipLogScreen 
+      onBack={onBack} 
+      totalMissions={user?.totalMissionsCount || 0}
+      completedMissions={user?.missions?.filter((m: any) => m.isCompleted).length || 0}
+    />
+  );
+};
+
 // Компонент для пользовательского контента
 const UserContent: React.FC<{
   shouldShowOnboarding: boolean;
@@ -82,7 +96,7 @@ const UserContent: React.FC<{
                 navigate(`/mission-detail/${missionId}`)
               }
               onSquadronDetails={() => {}}
-              onShipLogOpen={() => {}}
+              onShipLogOpen={() => navigate("/ship-log")}
               onMentorRatingOpen={() => {}}
               onMissionChainOpen={() => {}}
             />
@@ -154,6 +168,9 @@ const UserContent: React.FC<{
       </Route>
       <Route path="/mission-detail/:missionId" element={<AppLayout />}>
         <Route index element={<MissionDetailScreen onBack={onBack} />} />
+      </Route>
+      <Route path="/ship-log" element={<AppLayout />}>
+        <Route index element={<ShipLogWrapper onBack={onBack} />} />
       </Route>
       <Route path="*" element={<Navigate to="/season-hub" replace />} />
     </Routes>

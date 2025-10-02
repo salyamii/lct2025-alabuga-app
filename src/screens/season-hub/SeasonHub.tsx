@@ -244,6 +244,7 @@ export function SeasonHub({
             userXp={user?.xp || 0}
             userMana={user?.mana || 0}
             userRankId={user?.rankId || 0}
+            onShipLogOpen={onShipLogOpen}
           />
         </div>
       </div>
