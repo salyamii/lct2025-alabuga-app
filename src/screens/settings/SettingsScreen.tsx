@@ -40,11 +40,11 @@ interface SettingsScreenProps {
     };
   
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen-dvh bg-background">
         {/* Header */}
         <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm border-b border-border">
           <div className="max-w-4xl mx-auto px-4 py-4">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 min-w-0">
               <Button 
                 variant="ghost" 
                 size="sm" 
@@ -53,7 +53,7 @@ interface SettingsScreenProps {
               >
                 <ArrowLeft className="w-4 h-4" />
               </Button>
-              <div>
+              <div className="min-w-0">
                 <h1 className="text-xl md:text-2xl font-bold">Настройки полета</h1>
                 <p className="text-sm text-muted-foreground hidden md:block">
                   Настройте свой опыт и предпочтения
@@ -64,7 +64,7 @@ interface SettingsScreenProps {
         </div>
   
         {/* Content */}
-        <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
+        <div className="max-w-4xl mx-auto px-4 py-6 space-y-6 min-w-0">
           {/* Profile Settings */}
           <Card className="orbital-border">
             <CardHeader>
@@ -86,7 +86,7 @@ interface SettingsScreenProps {
                 <div className="space-y-2">
                   <Label htmlFor="squadron">Эскадрилья</Label>
                   <Select defaultValue="alpha">
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -99,7 +99,7 @@ interface SettingsScreenProps {
                 <div className="space-y-2">
                   <Label htmlFor="timezone">Часовой пояс</Label>
                   <Select defaultValue="utc+3">
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -122,13 +122,13 @@ interface SettingsScreenProps {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
+              <div className="flex items-center justify-between gap-3 min-w-0">
+                <div className="min-w-0 text-wrap">
                   <Label>Режим темы</Label>
                   <p className="text-sm text-muted-foreground">Выберите предпочитаемую тему</p>
                 </div>
                 <Select defaultValue="system">
-                  <SelectTrigger className="w-40">
+                  <SelectTrigger className="w-full sm:w-40 shrink-0">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -156,20 +156,20 @@ interface SettingsScreenProps {
               
               <Separator />
               
-              <div className="flex items-center justify-between">
-                <div>
+              <div className="flex items-center justify-between gap-3 min-w-0">
+                <div className="min-w-0 text-wrap">
                   <Label>Уменьшенная анимация</Label>
                   <p className="text-sm text-muted-foreground">Минимизировать анимации для лучшей доступности</p>
                 </div>
-                <Switch />
+                <Switch className="shrink-0" />
               </div>
               
-              <div className="flex items-center justify-between">
-                <div>
+              <div className="flex items-center justify-between gap-3 min-w-0">
+                <div className="min-w-0 text-wrap">
                   <Label>Компактный режим</Label>
                   <p className="text-sm text-muted-foreground">Плотная компоновка для большего контента</p>
                 </div>
-                <Switch />
+                <Switch className="shrink-0" />
               </div>
             </CardContent>
           </Card>
@@ -183,46 +183,46 @@ interface SettingsScreenProps {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
+              <div className="flex items-center justify-between gap-3 min-w-0">
+                <div className="min-w-0 text-wrap">
                   <Label>Обновления миссий</Label>
                   <p className="text-sm text-muted-foreground">Получать уведомления о прогрессе и завершении миссий</p>
                 </div>
-                <Switch defaultChecked />
+                <Switch defaultChecked className="shrink-0" />
               </div>
               
-              <div className="flex items-center justify-between">
-                <div>
+              <div className="flex items-center justify-between gap-3 min-w-0">
+                <div className="min-w-0 text-wrap">
                   <Label>Заработанные значки</Label>
                   <p className="text-sm text-muted-foreground">Уведомления при получении новых значков</p>
                 </div>
-                <Switch defaultChecked />
+                <Switch defaultChecked className="shrink-0" />
               </div>
               
-              <div className="flex items-center justify-between">
-                <div>
+              <div className="flex items-center justify-between gap-3 min-w-0">
+                <div className="min-w-0 text-wrap">
                   <Label>Активность эскадрильи</Label>
                   <p className="text-sm text-muted-foreground">Обновления от членов вашей эскадрильи</p>
                 </div>
-                <Switch />
+                <Switch className="shrink-0" />
               </div>
               
-              <div className="flex items-center justify-between">
-                <div>
+              <div className="flex items-center justify-between gap-3 min-w-0">
+                <div className="min-w-0 text-wrap">
                   <Label>Запросы на наставничество</Label>
                   <p className="text-sm text-muted-foreground">Уведомления о возможностях наставничества</p>
                 </div>
-                <Switch defaultChecked />
+                <Switch defaultChecked className="shrink-0" />
               </div>
               
               <Separator />
               
-              <div className="flex items-center justify-between">
-                <div>
+              <div className="flex items-center justify-between gap-3 min-w-0">
+                <div className="min-w-0 text-wrap">
                   <Label>Email уведомления</Label>
                   <p className="text-sm text-muted-foreground">Получать важные обновления по электронной почте</p>
                 </div>
-                <Switch />
+                <Switch className="shrink-0" />
               </div>
             </CardContent>
           </Card>
@@ -236,28 +236,28 @@ interface SettingsScreenProps {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
+              <div className="flex items-center justify-between gap-3 min-w-0">
+                <div className="min-w-0 text-wrap">
                   <Label>Автосинхронизация прогресса</Label>
                   <p className="text-sm text-muted-foreground">Автоматически синхронизировать прогресс между устройствами</p>
                 </div>
-                <Switch defaultChecked />
+                <Switch defaultChecked className="shrink-0" />
               </div>
               
-              <div className="flex items-center justify-between">
-                <div>
+              <div className="flex items-center justify-between gap-3 min-w-0">
+                <div className="min-w-0 text-wrap">
                   <Label>Офлайн режим</Label>
                   <p className="text-sm text-muted-foreground">Кэшировать контент для доступа без интернета</p>
                 </div>
-                <Switch />
+                <Switch className="shrink-0" />
               </div>
               
-              <div className="flex items-center justify-between">
-                <div>
+              <div className="flex items-center justify-between gap-3 min-w-0">
+                <div className="min-w-0 text-wrap">
                   <Label>Фоновая синхронизация</Label>
                   <p className="text-sm text-muted-foreground">Обновлять данные в фоновом режиме</p>
                 </div>
-                <Switch defaultChecked />
+                <Switch defaultChecked className="shrink-0" />
               </div>
             </CardContent>
           </Card>
@@ -271,28 +271,28 @@ interface SettingsScreenProps {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
+              <div className="flex items-center justify-between gap-3 min-w-0">
+                <div className="min-w-0 text-wrap">
                   <Label>Публичный профиль</Label>
                   <p className="text-sm text-muted-foreground">Разрешить другим просматривать ваши достижения</p>
                 </div>
-                <Switch defaultChecked />
+                <Switch defaultChecked className="shrink-0" />
               </div>
               
-              <div className="flex items-center justify-between">
-                <div>
+              <div className="flex items-center justify-between gap-3 min-w-0">
+                <div className="min-w-0 text-wrap">
                   <Label>Видимость активности</Label>
                   <p className="text-sm text-muted-foreground">Показывать вашу активность членам эскадрильи</p>
                 </div>
-                <Switch defaultChecked />
+                <Switch defaultChecked className="shrink-0" />
               </div>
               
-              <div className="flex items-center justify-between">
-                <div>
+              <div className="flex items-center justify-between gap-3 min-w-0">
+                <div className="min-w-0 text-wrap">
                   <Label>Аналитика данных</Label>
                   <p className="text-sm text-muted-foreground">Помочь улучшить платформу данными об использовании</p>
                 </div>
-                <Switch />
+                <Switch className="shrink-0" />
               </div>
               
               <Separator />
@@ -303,7 +303,7 @@ interface SettingsScreenProps {
                   <Button 
                     variant="outline" 
                     onClick={handleExportData}
-                    className="flex-1 sm:flex-none"
+                    className="flex-1 sm:flex-none h-12"
                   >
                     <Download className="w-4 h-4 mr-2" />
                     Экспорт моих данных
@@ -311,7 +311,7 @@ interface SettingsScreenProps {
                   <Button 
                     variant="destructive" 
                     onClick={handleDeleteAccount}
-                    className="flex-1 sm:flex-none"
+                    className="flex-1 sm:flex-none h-12"
                   >
                     <Trash2 className="w-4 h-4 mr-2" />
                     Удалить аккаунт
@@ -327,7 +327,7 @@ interface SettingsScreenProps {
                   <Button 
                     variant="outline" 
                     onClick={handleLogout}
-                    className="flex-1 sm:flex-none border-orange-200 text-orange-600 hover:bg-orange-50 hover:border-orange-300"
+                    className="flex-1 sm:flex-none h-12 border-orange-200 text-orange-600 hover:bg-orange-50 hover:border-orange-300"
                   >
                     <LogOut className="w-4 h-4 mr-2" />
                     Выйти из системы
@@ -341,14 +341,14 @@ interface SettingsScreenProps {
           <div className="flex flex-col sm:flex-row gap-4 pt-4">
             <Button 
               onClick={handleSaveSettings}
-              className="bg-primary hover:bg-primary-600 text-white flex-1 sm:flex-none"
+              className="bg-primary hover:bg-primary-600 text-white flex-1 sm:flex-none h-12"
             >
                 Сохранить настройки
             </Button>
             <Button 
               variant="outline" 
               onClick={onBack}
-              className="flex-1 sm:flex-none"
+              className="flex-1 sm:flex-none h-12"
             >
               Отмена
             </Button>

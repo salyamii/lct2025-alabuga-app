@@ -238,13 +238,13 @@ interface OnboardingScreenProps {
       }
     };
   
-    return (
-      <div className="min-h-screen bg-background">
-        <div className="max-w-6xl mx-auto px-4 py-8">
+  return (
+      <div className="min-h-screen-dvh bg-background">
+        <div className="max-w-6xl mx-auto px-4 py-8 min-w-0">
           {/* Progress Header */}
           <div className="mb-8 md:mb-12">
-            <div className="flex items-center justify-between mb-4">
-              <h1 className="text-lg md:text-xl">Брифинг Миссии</h1>
+            <div className="flex items-center justify-between mb-4 min-w-0">
+              <h1 className="text-lg md:text-xl text-wrap">Брифинг Миссии</h1>
               <Badge variant="outline" className="text-xs">
                 Шаг {currentStep + 1} из {steps.length}
               </Badge>
@@ -252,9 +252,9 @@ interface OnboardingScreenProps {
             <Progress value={(currentStep + 1) / steps.length * 100} className="h-2" />
             
             {/* Steps */}
-            <div className="mt-4 flex justify-between">
+            <div className="mt-4 flex gap-2">
               {steps.map((step, index) => (
-                <div key={index} className="flex flex-col items-center">
+                <div key={index} className="flex flex-col items-center flex-1 min-w-0">
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium ${
                     index <= currentStep 
                       ? 'bg-primary text-white' 
@@ -262,7 +262,7 @@ interface OnboardingScreenProps {
                   }`}>
                     {index < currentStep ? <CheckCircle className="w-4 h-4" /> : index + 1}
                   </div>
-                  <span className="text-xs mt-2 text-center">{step.title}</span>
+                  <span className="text-xs mt-2 text-center text-wrap">{step.title}</span>
                 </div>
               ))}
             </div>
@@ -274,31 +274,36 @@ interface OnboardingScreenProps {
           </div>
   
           {/* Navigation */}
-          <div className="flex justify-between items-center">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <Button
               variant="outline"
               onClick={handleBack}
               disabled={currentStep === 0}
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 h-12 w-full sm:w-auto"
             >
               <ArrowLeft className="w-4 h-4" />
               Назад
             </Button>
             
-            <div className="flex gap-3">
+            <div className="flex flex-col sm:flex-row gap-3 min-w-0 w-full sm:w-auto">
               <Button
                 variant="ghost"
                 onClick={onComplete}
-                className="text-muted-foreground"
+                className="text-muted-foreground h-12 w-full sm:w-auto"
               >
                 Пропустить Настройку
               </Button>
               <Button
                 onClick={handleNext}
                 disabled={!canProceed()}
-                className="bg-primary hover:bg-primary-600 text-white flex items-center gap-2"
+                className="bg-primary hover:bg-primary-600 text-white flex items-center gap-2 h-12 w-full sm:w-auto"
               >
-                {currentStep === steps.length - 1 ? 'Запустить Центр Управления Миссиями' : 'Продолжить'}
+                {currentStep === steps.length - 1 ? (
+                  <>
+                    <span className="hidden sm:inline">Запустить Центр Управления Миссиями</span>
+                    <span className="sm:hidden">Запустить</span>
+                  </>
+                ) : 'Продолжить'}
                 <ArrowRight className="w-4 h-4" />
               </Button>
             </div>

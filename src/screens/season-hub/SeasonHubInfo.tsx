@@ -23,14 +23,14 @@ export function SeasonHubInfo({ season }: SeasonHubInfoProps) {
         <Stars className="w-12 h-12" />
       </div>
       <CardContent className="p-4 md:p-6 relative">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="space-y-12">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 min-w-0">
+          <div className="space-y-12 min-w-0">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
                 <Orbit className="w-6 h-6" />
               </div>
-            <div>
-              <h2 className="text-xl md:text-2xl font-bold">{season.name}</h2>
+            <div className="min-w-0">
+              <h2 className="text-xl md:text-2xl font-bold text-wrap">{season.name}</h2>
             </div>
           </div>
             <div className="flex flex-wrap gap-2">

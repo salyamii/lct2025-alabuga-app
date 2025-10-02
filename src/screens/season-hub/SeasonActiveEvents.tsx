@@ -25,9 +25,9 @@ export function SeasonHubActiveEvents({ cosmicEvents }: SeasonHubActiveEventsPro
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 min-w-0">
         <Zap className="w-5 h-5 text-rewards-amber" />
-        <h3 className="text-lg font-semibold">Активные космические ивенты</h3>
+        <h3 className="text-lg font-semibold text-wrap">Активные космические ивенты</h3>
         <Badge variant="secondary" className="animate-pulse">Активен</Badge>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -40,8 +40,8 @@ export function SeasonHubActiveEvents({ cosmicEvents }: SeasonHubActiveEventsPro
                   <event.icon className="w-5 h-5 text-white" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h4 className="font-semibold text-sm">{event.title}</h4>
-                  <p className="text-xs text-muted-foreground mt-1">{event.description}</p>
+                  <h4 className="font-semibold text-sm text-wrap">{event.title}</h4>
+                  <p className="text-xs text-muted-foreground mt-1 text-wrap">{event.description}</p>
                   <div className="flex items-center gap-3 mt-2">
                     <Badge variant="outline" className="text-xs">
                       <Clock className="w-3 h-3 mr-1" />

@@ -60,7 +60,8 @@ interface MissionChainOverlayProps {
       if (dependencies.length > 0) {
         const allDependenciesCompleted = dependencies.every(dep => {
           const depUserMission = user?.getMissionById(dep.id);
-          return depUserMission?.isCompleted && depUserMission?.isApproved;
+          // Разрешаем переход при isCompleted, не требуем isApproved
+          return Boolean(depUserMission?.isCompleted);
         });
         
         if (!allDependenciesCompleted) {
@@ -110,7 +111,8 @@ interface MissionChainOverlayProps {
       };
     });
   
-    const nextAvailableMission = missionsWithStatus.find(m => m.status === "todo" || m.status === "in_progress");
+    // Следующая доступная к старту миссия (учитывая обновлённые правила блокировок)
+    const nextAvailableMission = missionsWithStatus.find(m => m.status === 'todo' || m.status === 'in_progress');
   
     const getStatusIcon = (status: string) => {
       switch (status) {
@@ -168,16 +170,16 @@ interface MissionChainOverlayProps {
   
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="w-[90vw] max-w-[860px] h-[90vh] max-h-[800px] p-0 overflow-hidden">
+        <DialogContent className="mx-auto w-[90vw] max-w-7xl max-h-90dvh p-0 overflow-hidden flex flex-col overflow-y-auto">
           {/* Header */}
-          <DialogHeader className="border-b border-border bg-gradient-to-r from-card to-info/5 p-6 pb-4 rounded-t-lg">
-            <div className="flex items-start justify-between">
-              <div className="space-y-3 flex-1">
-                <div className="flex items-center gap-3">
-                  <DialogTitle className="text-xl font-semibold">{chain.name}</DialogTitle>
+          <DialogHeader className="border-b border-border bg-gradient-to-r from-card to-info/5 p-4 sm:p-6 pb-3 sm:pb-4 rounded-t-lg shrink-0">
+            <div className="flex items-start justify-between min-w-0">
+              <div className="space-y-3 flex-1 min-w-0">
+                <div className="flex items-center gap-3 min-w-0">
+                  <DialogTitle className="text-xl font-semibold text-wrap line-clamp-2">{chain.name}</DialogTitle>
                 </div>
                 
-                <p className="text-sm text-muted-foreground max-w-2xl">
+                <p className="text-sm text-muted-foreground text-wrap text-left line-clamp-6">
                   {chain.description}
                 </p>
                 
@@ -210,7 +212,7 @@ interface MissionChainOverlayProps {
           </DialogHeader>
   
           {/* Body - Дорожная карта миссий */}
-          <div className="flex-1 overflow-y-auto p-6">
+          <div className="flex-1 overflow-y-auto p-4 sm:p-6 min-h-40vh">
             <div className="space-y-4">
               <h3 className="font-semibold text-base">Дорожная карта миссий</h3>
               
@@ -233,10 +235,10 @@ interface MissionChainOverlayProps {
                           
                           {/* Mission Content */}
                           <div className="flex-1 min-w-0">
-                            <div className="flex items-start justify-between gap-3">
+                            <div className="flex items-start gap-3">
                               <div className="space-y-2 flex-1 min-w-0">
-                                <div className="flex items-center gap-2">
-                                  <h4 className="font-medium text-sm leading-tight">{mission.title}</h4>
+                                <div className="flex items-center gap-2 min-w-0">
+                                  <h4 className="font-medium text-sm leading-tight text-wrap">{mission.title}</h4>
                                   {mission.isMandatory && (
                                     <Badge variant="outline" className="text-xs bg-danger/10 text-danger border-danger/20">
                                       Обязательно
@@ -244,28 +246,32 @@ interface MissionChainOverlayProps {
                                   )}
                                 </div>
                                 
-                                <p className="text-xs text-muted-foreground leading-relaxed">
+                                <p className="text-xs text-muted-foreground leading-relaxed text-wrap line-clamp-4">
                                   {mission.description}
                                 </p>
                                 
-                                <div className="flex items-center gap-2 flex-wrap">
+                                <div className="flex items-center gap-2 flex-wrap min-w-0">
                                   {mission.tags.map((tag) => (
-                                    <Badge key={tag} variant="secondary" className="text-xs">
-                                      {tag}
-                                    </Badge>
+                                    <div key={tag} className="min-w-0">
+                                      <Badge variant="secondary" className="text-xs w-full">
+                                        <span className="block truncate max-w-full">{tag}</span>
+                                      </Badge>
+                                    </div>
                                   ))}
                                   
                                   {mission.dependsOn.length > 0 && mission.status === "locked" && (
                                     <div className="flex flex-col gap-1 w-full">
-                                      <Badge variant="outline" className="text-xs text-warning border-warning/20 w-fit">
-                                        <Lock className="w-3 h-3 mr-1" />
-                                        Требуется завершить:
-                                      </Badge>
-                                      <div className="flex flex-wrap gap-1">
+                                      <div className="flex items-center gap-1 text-xs font-semibold">
+                                        <Lock className="w-3 h-3" />
+                                        <span>Требуется выполнить:</span>
+                                      </div>
+                                      <div className="flex flex-wrap gap-1 min-w-0">
                                         {mission.dependencyTitles.map((depTitle: string, idx: number) => (
-                                          <Badge key={idx} variant="outline" className="text-xs bg-muted">
-                                            {depTitle}
-                                          </Badge>
+                                          <div key={idx} className="min-w-0">
+                                            <Badge variant="outline" className="text-xs bg-muted w-full">
+                                              <span className="block truncate max-w-full">{depTitle}</span>
+                                            </Badge>
+                                          </div>
                                         ))}
                                       </div>
                                     </div>
@@ -273,13 +279,6 @@ interface MissionChainOverlayProps {
                                 </div>
                               </div>
                               
-                              {/* Status Badge */}
-                              <Badge 
-                                variant="outline" 
-                                className={`text-xs shrink-0 ${getStatusBadgeClass(mission.status)}`}
-                              >
-                                {getStatusLabel(mission.status)}
-                              </Badge>
                             </div>
                           </div>
                         </div>
@@ -299,17 +298,22 @@ interface MissionChainOverlayProps {
           </div>
   
           {/* Футер */}
-          <div className="border-t border-border bg-background p-6">
-            <div className="flex items-center justify-between">
-              <div className="text-sm text-muted-foreground">
+          <div className="border-t border-border bg-background p-4 sm:p-6 shrink-0">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="text-sm text-muted-foreground min-w-0">
                 {nextAvailableMission ? (
-                  <>Следующая: {nextAvailableMission.title}</>
+                  <>
+                    Следующая:
+                    <span className="block text-wrap">
+                      {nextAvailableMission.title}
+                    </span>
+                  </>
                 ) : (
                   "Все миссии завершены!"
                 )}
               </div>
               
-              <div className="flex items-center gap-3">
+              <div className="flex gap-3 justify-end w-full sm:w-auto">
                 <Button 
                   variant="ghost" 
                   onClick={() => onOpenChange(false)}
@@ -323,7 +327,8 @@ interface MissionChainOverlayProps {
                     className="bg-primary hover:bg-primary-600 text-white text-sm"
                   >
                     <Play className="w-4 h-4 mr-2" />
-                    Начать миссию
+                    <span className="hidden sm:inline">Начать миссию</span>
+                    <span className="sm:hidden">Начать</span>
                   </Button>
                 )}
               </div>

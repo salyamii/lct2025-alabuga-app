@@ -95,7 +95,7 @@ export function StoreHub({ onPurchase }: StoreHubProps) {
               return (
                 <Card key={item.id} className="store-card">
                   <CardContent className="p-4 md:p-6 space-y-4">
-                    <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-start justify-between gap-3 min-w-0">
                       <div className="flex items-start gap-3 flex-1 min-w-0">
                         <div className="w-10 h-10 bg-gradient-to-br from-primary to-info rounded-lg flex items-center justify-center shrink-0 overflow-hidden">
                           {itemImages[item.id] ? (
@@ -109,7 +109,7 @@ export function StoreHub({ onPurchase }: StoreHubProps) {
                           )}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <h3 className="font-semibold text-base leading-tight">{item.title}</h3>
+                          <h3 className="font-semibold text-base leading-tight text-wrap line-clamp-2">{item.title}</h3>
                         </div>
                       </div>
                       {isLowStock && isAvailable && (
@@ -131,7 +131,7 @@ export function StoreHub({ onPurchase }: StoreHubProps) {
                       }`} />
                     </div>
                     
-                    <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center justify-between gap-3 min-w-0">
                       <div className="flex items-center gap-2">
                         <Sparkles className="w-4 h-4 text-rewards-amber stellar-pulse" />
                         <span className={`font-mono font-semibold text-sm md:text-base ${
@@ -144,7 +144,7 @@ export function StoreHub({ onPurchase }: StoreHubProps) {
                         size="sm" 
                         disabled={!isAvailable || !canAfford}
                         onClick={() => onPurchase?.(item.id)}
-                        className="bg-primary hover:bg-primary-600 text-white"
+                        className="bg-primary hover:bg-primary-600 text-white h-12 md:h-9 px-4 md:px-3"
                       >
                         <ShoppingCart className="w-4 h-4 mr-2" />
                         <span className="hidden sm:inline">

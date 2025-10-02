@@ -62,10 +62,10 @@ export function MissionCard({ mission, userMission, seasonName, isCompleted = fa
       )}
 
       <CardHeader className="pb-4 relative">
-            <div className="flex items-start justify-between gap-3">
+            <div className="flex items-start justify-between gap-3 min-w-0">
           <div className="space-y-3 flex-1 min-w-0">
             <div className="flex items-start gap-2 flex-wrap">
-              <CardTitle className="text-base md:text-lg leading-tight text-foreground">
+              <CardTitle className="text-base md:text-lg leading-tight text-foreground text-wrap line-clamp-2">
                 {mission.title}
               </CardTitle>
               <div className="flex items-center gap-1 shrink-0">
@@ -122,7 +122,7 @@ export function MissionCard({ mission, userMission, seasonName, isCompleted = fa
       </CardHeader>
       
       <CardContent className="space-y-4 relative">
-        <p className="text-muted-foreground text-sm leading-relaxed">{mission.description}</p>
+        <p className="text-muted-foreground text-sm leading-relaxed text-wrap">{mission.description}</p>
         
         {/* Special notices for group missions */}
         {isGroupMission && (
@@ -187,7 +187,7 @@ export function MissionCard({ mission, userMission, seasonName, isCompleted = fa
         </div>
 
         {/* Actions */}
-        <div className="flex items-center justify-between pt-2 gap-3">
+        <div className="flex items-center justify-between pt-2 gap-3 min-w-0">
           <Button 
             variant="outline" 
             size="sm"
@@ -200,7 +200,7 @@ export function MissionCard({ mission, userMission, seasonName, isCompleted = fa
             <Button 
               onClick={() => onLaunch(mission.id)}
               size="sm"
-              className={`shrink-0 mission-launch-btn ${
+            className={`shrink-0 mission-launch-btn h-12 md:h-9 ${
                 isGroupMission 
                   ? 'bg-info hover:bg-info/80 text-white' 
                   : 'bg-primary hover:bg-primary-600 text-white'

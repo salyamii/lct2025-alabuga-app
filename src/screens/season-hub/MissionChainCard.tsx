@@ -49,10 +49,10 @@ export function MissionChainCard({ missionChain, userMissions, onOpenChain }: Mi
     <Card className="card-enhanced">
       <CardContent className="p-4 space-y-3">
         {/* Header */}
-        <div className="flex items-start justify-between gap-3">
+        <div className="flex items-start justify-between gap-3 min-w-0">
           <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-base leading-tight">{missionChain.name}</h3>
-            <div className="flex items-center gap-2 mt-1">
+            <h3 className="font-semibold text-base leading-tight text-wrap line-clamp-2">{missionChain.name}</h3>
+            <div className="flex items-center gap-2 mt-1 flex-wrap">
               <Badge 
                 variant="outline" 
                 className={`text-xs ${getRuleChipClass("ALL")}`}
@@ -74,7 +74,7 @@ export function MissionChainCard({ missionChain, userMissions, onOpenChain }: Mi
 
         {/* Rewards */}
         {missionChain.rewardXp && missionChain.rewardMana && (
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-2 flex-wrap min-w-0">
               <Badge variant="outline" className="text-xs">
                 <Star className="w-3 h-3 mr-1" />
               {missionChain.rewardXp} XP

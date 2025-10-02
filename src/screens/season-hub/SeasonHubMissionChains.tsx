@@ -117,11 +117,11 @@ export function SeasonHubMissionChains({ missionChains, userRankId, userMissions
 
     return (
         <div className="space-y-4 mt-8">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 min-w-0">
             <GitBranch className="w-5 h-5 text-info" />
-            <h3 className="text-lg font-semibold">Цепочки заданий этого сезона</h3>
+            <h3 className="text-lg font-semibold text-wrap">Цепочки заданий этого сезона</h3>
           </div>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-muted-foreground text-wrap">
             Связанные цепочки заданий. Завершите все или только необходимые.
           </p>
           
@@ -142,7 +142,7 @@ export function SeasonHubMissionChains({ missionChains, userRankId, userMissions
                 <HelpCircle className="w-12 h-12 text-muted-foreground/50" />
                 <div className="space-y-1">
                   <h4 className="font-medium text-muted-foreground">Нет доступных цепочек</h4>
-                  <p className="text-sm text-muted-foreground/70">
+                  <p className="text-sm text-muted-foreground/70 text-wrap">
                     Здесь будут цепочки, доступные вашему рангу
                   </p>
                 </div>

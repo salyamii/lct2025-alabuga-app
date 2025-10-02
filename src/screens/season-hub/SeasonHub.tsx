@@ -222,7 +222,7 @@ export function SeasonHub({
   };
 
   return (
-    <div className="min-h-screen bg-background relative">
+    <div className="min-h-screen-dvh bg-background relative">
       {/* Cosmic Background Elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-10 right-10 w-64 h-64 bg-gradient-to-br from-soft-cyan/5 to-info/5 rounded-full blur-3xl"></div>
@@ -230,10 +230,10 @@ export function SeasonHub({
         <div className="absolute top-1/3 left-1/3 w-32 h-32 bg-gradient-to-br from-rewards-amber/10 to-transparent rounded-full blur-xl"></div>
       </div>
 
-      <div className="max-w-7xl mx-auto p-4 md:p-6 relative">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+      <div className="max-w-7xl mx-auto p-4 md:p-6 relative min-w-0">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 min-w-0">
           {/* Main Content */}
-          <div className="lg:col-span-2 space-y-4 md:space-y-6">
+          <div className="lg:col-span-2 space-y-4 md:space-y-6 min-w-0">
             {/* Season Hero - Enhanced Cosmic Design */}
             {displayedSeason && <SeasonHubInfo season={displayedSeason} />}
 

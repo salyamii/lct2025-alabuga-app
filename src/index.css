@@ -427,9 +427,9 @@
     }
   }
 
-  body {
+body {
     color: var(--foreground);
-    min-height: 100vh;
+    min-height: 100dvh;
     font-family: Inter, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   }
 
@@ -5203,6 +5203,21 @@
 html {
   font-size: var(--font-size);
 }
+
+/* Mobile-first глобальные ограничения */
+html, body { min-width: 320px; overflow-x: hidden; }
+
+/* dvh & line-clamp утилиты (добавка) */
+.h-screen-dvh { height: 100dvh; }
+.min-h-screen-dvh { min-height: 100dvh; }
+.max-h-90dvh { max-height: 90dvh; }
+.line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.line-clamp-4 { display: -webkit-box; -webkit-line-clamp: 4; line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+.line-clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+.line-clamp-none { display: block; -webkit-line-clamp: unset; line-clamp: unset; -webkit-box-orient: initial; overflow: visible; }
+.min-h-40vh { min-height: 40vh; }
+.line-clamp-6 { display: -webkit-box; -webkit-line-clamp: 6; line-clamp: 6; -webkit-box-orient: vertical; overflow: hidden; }
 
 @property --tw-translate-x {
   syntax: "*";
