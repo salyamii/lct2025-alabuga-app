@@ -127,28 +127,6 @@ export function ArtifactsHub() {
       }
     ];
   
-    // const handleExportBadges = () => {
-    //   const earnedBadges = badges.filter(badge => badge.earned);
-    //   const dataStr = JSON.stringify(earnedBadges, null, 2);
-    //   const dataBlob = new Blob([dataStr], { type: 'application/json' });
-    //   const url = URL.createObjectURL(dataBlob);
-    //   const link = document.createElement('a');
-    //   link.href = url;
-    //   link.download = 'cosmic-artifacts.json';
-    //   link.click();
-    //   URL.revokeObjectURL(url);
-      
-    //   toast.success("Cosmic artifacts exported successfully! ✨", {
-    //     description: "Your stellar achievements have been downloaded"
-    //   });
-    // };
-  
-    // const handleViewBadgeDetails = (badge: any) => {
-    //   toast.info(`Cosmic Artifact: ${badge.title}`, {
-    //     description: badge.description
-    //   });
-    // };
-  
     const getRarityColor = (rarity: ArtifactRarityEnum) => {
       switch (rarity) {
         case ArtifactRarityEnum.LEGENDARY: return "from-yellow-400 via-rewards-amber to-yellow-600";
@@ -201,19 +179,19 @@ export function ArtifactsHub() {
   
     return (
       <div className="max-w-7xl mx-auto px-4 py-6 min-w-0">
-        <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4 min-w-0">
+        <div className="mb-6 space-y-4 min-w-0">
           <div className="min-w-0">
-            <h2 className="text-xl md:text-2xl font-bold mb-2 flex items-center gap-3 text-wrap">
+            <h2 className="text-xl md:text-2xl font-bold mb-2 flex items-center gap-3">
               <Gem className="w-6 h-6 text-primary stellar-pulse" />
               Коллекция артефактов
             </h2>
-            <p className="text-muted-foreground text-sm md:text-base text-wrap">
+            <p className="text-muted-foreground text-sm md:text-base">
               Ваш сундук с легендарными артефактами и звездными достижениями
             </p>
           </div>
           <Button 
             onClick={() => { /* TODO export artifacts */ }}
-            className="bg-primary hover:bg-primary-600 text-white h-12 w-full md:w-auto"
+            className="bg-primary hover:bg-primary-600 text-white h-12 w-full"
           >
             <Download className="w-4 h-4 mr-2" />
             <span className="hidden sm:inline">Экспорт артефактов</span>

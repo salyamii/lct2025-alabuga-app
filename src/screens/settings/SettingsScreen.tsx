@@ -122,13 +122,13 @@ interface SettingsScreenProps {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-center justify-between gap-3 min-w-0">
-                <div className="min-w-0 text-wrap">
+              <div className="space-y-3 min-w-0">
+                <div className="min-w-0">
                   <Label>Режим темы</Label>
                   <p className="text-sm text-muted-foreground">Выберите предпочитаемую тему</p>
                 </div>
                 <Select defaultValue="system">
-                  <SelectTrigger className="w-full sm:w-40 shrink-0">
+                  <SelectTrigger className="w-full">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
