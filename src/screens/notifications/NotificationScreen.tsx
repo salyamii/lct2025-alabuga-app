@@ -137,10 +137,10 @@ export function NotificationsScreen({ onBack }: NotificationsScreenProps) {
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-6">
+    <div className="max-w-4xl mx-auto px-4 py-6 min-w-0">
       {/* Header */}
       <div className="mb-6">
-        <div className="flex items-center gap-4 mb-4">
+        <div className="flex items-center gap-4 mb-4 min-w-0">
           <Button variant="ghost" size="sm" onClick={onBack} className="p-2">
             <ArrowLeft className="w-4 h-4" />
           </Button>
@@ -149,11 +149,11 @@ export function NotificationsScreen({ onBack }: NotificationsScreenProps) {
             <div className="w-10 h-10 bg-gradient-to-br from-primary to-info rounded-lg flex items-center justify-center">
               <Bell className="w-5 h-5 text-white" />
             </div>
-            <div>
-              <h1 className="text-xl md:text-2xl font-bold">
+            <div className="min-w-0">
+              <h1 className="text-xl md:text-2xl font-bold text-wrap">
                 Центр управления
               </h1>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-muted-foreground text-wrap">
                 {unreadCount > 0
                   ? `${unreadCount} непрочитанных уведомлений`
                   : "Все актуально!"}
@@ -168,7 +168,7 @@ export function NotificationsScreen({ onBack }: NotificationsScreenProps) {
             <Button
               size="sm"
               onClick={handleMarkAllAsRead}
-              className="bg-primary hover:bg-primary-600 text-white"
+              className="bg-primary hover:bg-primary-600 text-white h-12"
             >
               <Check className="w-4 h-4 mr-2" />
               Отметить все прочитанными
@@ -208,9 +208,9 @@ export function NotificationsScreen({ onBack }: NotificationsScreenProps) {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
+                        <div className="flex items-center gap-2 mb-1 min-w-0">
                           <h3
-                            className={`font-semibold text-sm md:text-base ${
+                            className={`font-semibold text-sm md:text-base text-wrap line-clamp-2 ${
                               !notification.read ? "" : "text-muted-foreground"
                             }`}
                           >
@@ -221,7 +221,7 @@ export function NotificationsScreen({ onBack }: NotificationsScreenProps) {
                           )}
                         </div>
                         <p
-                          className={`text-sm leading-relaxed ${
+                          className={`text-sm leading-relaxed text-wrap ${
                             !notification.read
                               ? "text-foreground"
                               : "text-muted-foreground"
