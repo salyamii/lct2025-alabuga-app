@@ -282,6 +282,7 @@ export interface RankResponse {
   id: number;
   name: string;
   requiredXp: number;
+  imageUrl: string;
   requiredMissions?: MissionResponse[];
   requiredCompetencies?: RankCompetencyRequirementResponse[];
 }
@@ -289,11 +290,13 @@ export interface RankResponse {
 export interface RankCreateRequest {
   name: string;
   requiredXp: number; // minimum: 0
+  imageUrl: string;
 }
 
 export interface RankUpdateRequest {
   name: string;
   requiredXp: number; // minimum: 0
+  imageUrl: string;
 }
 
 export interface RanksResponse {
@@ -448,18 +451,21 @@ export interface StoreItemResponse {
   title: string;
   price: number;
   stock: number;
+  imageUrl: string;
 }
 
 export interface StoreItemCreateRequest {
   title: string;
   price: number; // minimum: 0
   stock: number; // minimum: 0
+  imageUrl: string;
 }
 
 export interface StoreItemUpdateRequest {
   title: string;
   price: number; // minimum: 0
   stock: number; // minimum: 0
+  imageUrl: string;
 }
 
 export interface StoreItemsResponse {

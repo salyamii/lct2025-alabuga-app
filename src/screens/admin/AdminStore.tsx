@@ -1,4 +1,4 @@
-import { Plus, Search, Filter, ShoppingBag } from "lucide-react";
+import { Plus, Search, Filter, ShoppingBag, HelpCircle } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { Card, CardHeader, CardContent } from "../../components/ui/card";
 import { Input } from "../../components/ui/input";
@@ -7,6 +7,7 @@ import { Edit, Trash2 } from "lucide-react";
 import { useStoreStore } from "../../stores/useStoreStore";
 import { useEffect, useState } from "react";
 import { StoreItem } from "../../domain/store";
+import { mediaService } from "../../api/services/mediaService";
 
 interface AdminStoreProps {
   handleFetchStoreItems: () => Promise<void>;
@@ -25,10 +26,42 @@ export function AdminStore({
 }: AdminStoreProps) {
   const { items, isLoading } = useStoreStore();
   const [searchQuery, setSearchQuery] = useState("");
+  const [itemImages, setItemImages] = useState<Record<number, string>>({});
 
   useEffect(() => {
     handleFetchStoreItems();
   }, []);
+
+  // Загружаем изображения товаров
+  useEffect(() => {
+    const loadItemImages = async () => {
+      if (items.length === 0) return;
+      
+      const imagePromises = items.map(async (item) => {
+        if (item.imageUrl) {
+          try {
+            const imageUrl = await mediaService.loadImageWithAuth(item.imageUrl);
+            return { id: item.id, url: imageUrl };
+          } catch (error) {
+            console.error(`Ошибка загрузки изображения для товара ${item.id}:`, error);
+            return { id: item.id, url: '' };
+          }
+        }
+        return { id: item.id, url: '' };
+      });
+
+      const loadedImages = await Promise.all(imagePromises);
+      const imagesMap: Record<number, string> = {};
+      loadedImages.forEach(({ id, url }) => {
+        if (url) imagesMap[id] = url;
+      });
+      setItemImages(imagesMap);
+    };
+
+    if (items.length > 0) {
+      loadItemImages();
+    }
+  }, [items]);
 
   // Фильтрация товаров по поисковому запросу
   const filteredItems = items.filter(item => 
@@ -70,8 +103,16 @@ export function AdminStore({
                   <div key={item.id} className="admin-card p-4 rounded-lg">
                     <div className="flex items-start justify-between">
                       <div className="flex items-start gap-4 flex-1">
-                        <div className="w-12 h-12 bg-gradient-to-br from-primary to-info rounded-lg flex items-center justify-center">
-                          <ShoppingBag className="w-6 h-6 text-white" />
+                        <div className="w-12 h-12 bg-gradient-to-br from-primary to-info rounded-lg flex items-center justify-center overflow-hidden">
+                          {itemImages[item.id] ? (
+                            <img 
+                              src={itemImages[item.id]} 
+                              alt={item.title}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <HelpCircle className="w-6 h-6 text-white" />
+                          )}
                         </div>
                         <div className="space-y-2 flex-1">
                           <div>

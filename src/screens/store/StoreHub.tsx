@@ -1,11 +1,12 @@
-import { ShoppingCart, Star, Gem, Sparkles } from "lucide-react";
+import { ShoppingCart, Star, Gem, Sparkles, HelpCircle } from "lucide-react";
 import { Store } from "lucide-react";
 import { Card, CardContent } from "../../components/ui/card";
 import { Badge } from "../../components/ui/badge";
 import { Button } from "../../components/ui/button";
 import { useStoreStore } from "../../stores/useStoreStore";
 import { useUserStore } from "../../stores/useUserStore";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { mediaService } from "../../api/services/mediaService";
 
 interface StoreHubProps {
   onPurchase?: (itemId: number) => void;
@@ -14,6 +15,7 @@ interface StoreHubProps {
 export function StoreHub({ onPurchase }: StoreHubProps) {
     const { items, fetchItems, isLoading } = useStoreStore();
     const { user } = useUserStore();
+    const [itemImages, setItemImages] = useState<Record<number, string>>({});
 
     // Загружаем товары при монтировании
     useEffect(() => {
@@ -21,6 +23,37 @@ export function StoreHub({ onPurchase }: StoreHubProps) {
         fetchItems();
       }
     }, [items.length, fetchItems]);
+
+    // Загружаем изображения товаров
+    useEffect(() => {
+      const loadItemImages = async () => {
+        if (items.length === 0) return;
+        
+        const imagePromises = items.map(async (item) => {
+          if (item.imageUrl) {
+            try {
+              const imageUrl = await mediaService.loadImageWithAuth(item.imageUrl);
+              return { id: item.id, url: imageUrl };
+            } catch (error) {
+              console.error(`Ошибка загрузки изображения для товара ${item.id}:`, error);
+              return { id: item.id, url: '' };
+            }
+          }
+          return { id: item.id, url: '' };
+        });
+
+        const loadedImages = await Promise.all(imagePromises);
+        const imagesMap: Record<number, string> = {};
+        loadedImages.forEach(({ id, url }) => {
+          if (url) imagesMap[id] = url;
+        });
+        setItemImages(imagesMap);
+      };
+
+      if (items.length > 0) {
+        loadItemImages();
+      }
+    }, [items]);
 
     const userMana = user?.mana || 0;
   
@@ -64,8 +97,16 @@ export function StoreHub({ onPurchase }: StoreHubProps) {
                   <CardContent className="p-4 md:p-6 space-y-4">
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex items-start gap-3 flex-1 min-w-0">
-                        <div className="w-10 h-10 bg-gradient-to-br from-primary to-info rounded-lg flex items-center justify-center shrink-0">
-                          <Gem className="w-5 h-5 text-white" />
+                        <div className="w-10 h-10 bg-gradient-to-br from-primary to-info rounded-lg flex items-center justify-center shrink-0 overflow-hidden">
+                          {itemImages[item.id] ? (
+                            <img 
+                              src={itemImages[item.id]} 
+                              alt={item.title}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <HelpCircle className="w-5 h-5 text-white" />
+                          )}
                         </div>
                         <div className="flex-1 min-w-0">
                           <h3 className="font-semibold text-base leading-tight">{item.title}</h3>

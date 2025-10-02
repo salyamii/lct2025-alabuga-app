@@ -5,7 +5,8 @@ export class StoreItem {
     public readonly id: number,
     public readonly title: string,
     public readonly price: number,
-    public readonly stock: number
+    public readonly stock: number,
+    public readonly imageUrl: string
   ) {}
 
   static fromResponse(response: StoreItemResponse): StoreItem {
@@ -13,7 +14,8 @@ export class StoreItem {
       response.id,
       response.title,
       response.price,
-      response.stock
+      response.stock,
+      response.imageUrl
     );
   }
 
@@ -22,7 +24,8 @@ export class StoreItem {
       id: this.id,
       title: this.title,
       price: this.price,
-      stock: this.stock
+      stock: this.stock,
+      imageUrl: this.imageUrl
     };
   }
 

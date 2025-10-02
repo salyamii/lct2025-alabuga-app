@@ -1,6 +1,6 @@
 import { Button } from "../../components/ui/button";
 import { Card, CardContent } from "../../components/ui/card";
-import { Sparkles, Crown, Settings, Globe, Zap, Target, Rocket, Gem, Star, Moon, Users, Orbit, Compass, Trophy, Sun } from "lucide-react";
+import { Sparkles, Crown, Settings, Globe, Zap, Target, Rocket, Gem, Star, Moon, Users, Orbit, Compass, Trophy, Sun, HelpCircle } from "lucide-react";
 import { useUserStore } from "../../stores/useUserStore";
 import { useRankStore } from "../../stores/useRankStore";
 import { useState, useEffect } from "react";
@@ -10,6 +10,7 @@ export function UserProfileHub({ onMentorshipOpen, onSettingsOpen, onGuildProgre
     const { user } = useUserStore();
     const { ranks, fetchRanks } = useRankStore();
     const [artifactImages, setArtifactImages] = useState<Record<number, string>>({});
+    const [rankImage, setRankImage] = useState<string>("");
 
     // Загружаем ранги если их нет
     useEffect(() => {
@@ -17,6 +18,28 @@ export function UserProfileHub({ onMentorshipOpen, onSettingsOpen, onGuildProgre
             fetchRanks();
         }
     }, [ranks.length, fetchRanks]);
+
+    // Загружаем изображение ранга пользователя
+    useEffect(() => {
+        const loadRankImage = async () => {
+            if (!user?.rankId || !ranks.length) return;
+            
+            const userRank = ranks.find(r => r.id === user.rankId);
+            if (!userRank?.imageUrl) return;
+            
+            try {
+                const imageUrl = await mediaService.loadImageWithAuth(userRank.imageUrl);
+                setRankImage(imageUrl);
+            } catch (error) {
+                console.error(`Ошибка загрузки изображения ранга:`, error);
+                setRankImage("");
+            }
+        };
+
+        if (user?.rankId && ranks.length > 0) {
+            loadRankImage();
+        }
+    }, [user?.rankId, ranks]);
 
     // Загружаем изображения артефактов пользователя
     useEffect(() => {
@@ -97,8 +120,16 @@ export function UserProfileHub({ onMentorshipOpen, onSettingsOpen, onGuildProgre
           <Card className="orbital-border-enhanced">
             <CardContent className="p-4 md:p-6 text-center space-y-4">
               <div className="relative">
-                <div className="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-primary via-info to-soft-cyan rounded-full mx-auto flex items-center justify-center stellar-pulse">
-                  <Sparkles className="w-6 h-6 md:w-8 md:h-8 text-white" />
+                <div className="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-primary via-info to-soft-cyan rounded-full mx-auto flex items-center justify-center stellar-pulse overflow-hidden">
+                  {rankImage ? (
+                    <img 
+                      src={rankImage} 
+                      alt={userRankName}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <HelpCircle className="w-6 h-6 md:w-8 md:h-8 text-white" />
+                  )}
                 </div>
                 <div className="absolute -top-1 -right-1 w-4 h-4 bg-rewards-amber rounded-full flex items-center justify-center">
                   <Crown className="w-2 h-2 text-white" />

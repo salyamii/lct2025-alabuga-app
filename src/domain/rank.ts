@@ -7,6 +7,7 @@ export class Rank {
     public readonly id: number,
     public readonly name: string,
     public readonly requiredXp: number,
+    public readonly imageUrl: string,
     public readonly requiredMissions: Mission[] = [],
     public readonly requiredCompetencies: RankCompetencyRequirement[] = []
   ) {}
@@ -62,6 +63,7 @@ export class Rank {
       response.id,
       response.name,
       response.requiredXp,
+      response.imageUrl,
       response.requiredMissions?.map(mission => Mission.fromResponse(mission)) || [],
       response.requiredCompetencies?.map(comp => RankCompetencyRequirement.fromResponse(comp)) || []
     );

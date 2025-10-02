@@ -1,5 +1,5 @@
 // import { TabsContent } from "@radix-ui/react-tabs";
-import { Plus, Star, Search, Filter, Target, Users, X } from "lucide-react";
+import { Plus, Star, Search, Filter, Target, Users, X, HelpCircle } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { Card, CardHeader, CardContent } from "../../components/ui/card";
 import { Input } from "../../components/ui/input";
@@ -14,6 +14,7 @@ import { Mission } from "../../domain/mission";
 import { Competency } from "../../domain/competency";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select";
 import { toast } from "sonner";
+import { mediaService } from "../../api/services/mediaService";
 
 interface AdminRankProps {
   handleFetchRanks: () => Promise<void>;
@@ -48,12 +49,44 @@ export function AdminRank({
   const [selectedMission, setSelectedMission] = useState<string>("");
   const [selectedCompetency, setSelectedCompetency] = useState<string>("");
   const [competencyLevel, setCompetencyLevel] = useState<number>(1);
+  const [rankImages, setRankImages] = useState<Record<number, string>>({});
 
   useEffect(() => {
     handleFetchRanks();
     handleFetchMissions();
     handleFetchCompetencies();
   }, []);
+
+  // Загружаем изображения рангов
+  useEffect(() => {
+    const loadRankImages = async () => {
+      if (ranks.length === 0) return;
+      
+      const imagePromises = ranks.map(async (rank) => {
+        if (rank.imageUrl) {
+          try {
+            const imageUrl = await mediaService.loadImageWithAuth(rank.imageUrl);
+            return { id: rank.id, url: imageUrl };
+          } catch (error) {
+            console.error(`Ошибка загрузки изображения для ранга ${rank.id}:`, error);
+            return { id: rank.id, url: '' };
+          }
+        }
+        return { id: rank.id, url: '' };
+      });
+
+      const loadedImages = await Promise.all(imagePromises);
+      const imagesMap: Record<number, string> = {};
+      loadedImages.forEach(({ id, url }) => {
+        if (url) imagesMap[id] = url;
+      });
+      setRankImages(imagesMap);
+    };
+
+    if (ranks.length > 0) {
+      loadRankImages();
+    }
+  }, [ranks]);
 
   // Обработчик добавления миссии к рангу
   const handleAddMissionToRank = async (rankId: number, missionId: number) => {
@@ -143,8 +176,16 @@ export function AdminRank({
                   <div key={rank.id} className="admin-card p-4 rounded-lg">
                     <div className="flex items-start justify-between">
                       <div className="flex items-start gap-4 flex-1">
-                        <div className="w-12 h-12 bg-gradient-to-br from-primary to-info rounded-lg flex items-center justify-center">
-                          <Star className="w-6 h-6 text-white" />
+                        <div className="w-12 h-12 bg-gradient-to-br from-primary to-info rounded-lg flex items-center justify-center overflow-hidden">
+                          {rankImages[rank.id] ? (
+                            <img 
+                              src={rankImages[rank.id]} 
+                              alt={rank.name}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <HelpCircle className="w-6 h-6 text-white" />
+                          )}
                         </div>
                         <div className="space-y-2 flex-1">
                           <div>
