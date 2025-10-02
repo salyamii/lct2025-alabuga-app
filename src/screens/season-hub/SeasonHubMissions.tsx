@@ -69,7 +69,17 @@ export function SeasonHubMissions({ currentSeason, missions, userRankId, userMis
         }
 
         // Проверяем доступность по рангу согласно новой логике
-        return availableRanks.includes(mission.rankRequirement);
+        if (!availableRanks.includes(mission.rankRequirement)) {
+            return false;
+        }
+
+        // Исключаем миссию, если пользователь уже выполнил её
+        const userMission = userMissionsMap.get(mission.id);
+        if (userMission?.isCompleted) {
+            return false;
+        }
+
+        return true;
     });
 
     // Классифицируем миссии по статусу

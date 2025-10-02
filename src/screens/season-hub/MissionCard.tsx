@@ -122,7 +122,7 @@ export function MissionCard({ mission, userMission, seasonName, isCompleted = fa
       </CardHeader>
       
       <CardContent className="space-y-4 relative">
-        <p className="text-muted-foreground text-sm leading-relaxed text-wrap">{mission.description}</p>
+        <p className="text-muted-foreground text-sm leading-relaxed text-wrap line-clamp-4">{mission.description}</p>
         
         {/* Special notices for group missions */}
         {isGroupMission && (
@@ -187,12 +187,12 @@ export function MissionCard({ mission, userMission, seasonName, isCompleted = fa
         </div>
 
         {/* Actions */}
-        <div className="flex items-center justify-between pt-2 gap-3 min-w-0">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between pt-2 gap-3 min-w-0">
           <Button 
             variant="outline" 
             size="sm"
             onClick={() => onViewDetails(mission.id)}
-            className="text-sm text-muted-foreground border-border flex-1 sm:flex-none"
+            className="text-sm text-muted-foreground border-border flex-1 sm:flex-none h-12 md:h-9 w-full sm:w-auto"
           >
             {mission.tasks.length} шагов • {mission.tasks.length} доказательств
           </Button>
@@ -200,7 +200,7 @@ export function MissionCard({ mission, userMission, seasonName, isCompleted = fa
             <Button 
               onClick={() => onLaunch(mission.id)}
               size="sm"
-            className={`shrink-0 mission-launch-btn h-12 md:h-9 ${
+            className={`shrink-0 mission-launch-btn h-12 md:h-9 w-full sm:w-auto ${
                 isGroupMission 
                   ? 'bg-info hover:bg-info/80 text-white' 
                   : 'bg-primary hover:bg-primary-600 text-white'
@@ -219,7 +219,7 @@ export function MissionCard({ mission, userMission, seasonName, isCompleted = fa
             <Button 
               onClick={() => onViewDetails(mission.id)}
               size="sm"
-              className={`shrink-0 mission-launch-btn ${
+              className={`shrink-0 mission-launch-btn h-12 md:h-9 w-full sm:w-auto ${
                 isApproved 
                   ? 'bg-green-100 hover:bg-green-200 text-green-700 border border-green-300' 
                   : 'bg-orange-100 hover:bg-orange-200 text-orange-700 border border-orange-300'
@@ -229,13 +229,13 @@ export function MissionCard({ mission, userMission, seasonName, isCompleted = fa
                 <>
                   <CheckCircle className="w-4 h-4 mr-2" />
                   <span className="hidden sm:inline">Посмотреть детали</span>
-                  <span className="sm:hidden">Детали</span>
+                  <span className="sm:hidden">Посмотреть детали</span>
                 </>
               ) : (
                 <>
                   <Clock className="w-4 h-4 mr-2" />
                   <span className="hidden sm:inline">Ожидает проверки</span>
-                  <span className="sm:hidden">На проверке</span>
+                  <span className="sm:hidden">Ожидает проверки</span>
                 </>
               )}
             </Button>

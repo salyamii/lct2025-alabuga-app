@@ -146,12 +146,12 @@ interface MissionDetailScreenProps {
     const isGroupMission = mission.category === "Group";
     const isPairedMission = mission.category === "Paired";
   
-    return (
-      <div className="min-h-screen bg-background">
+  return (
+    <div className="min-h-screen-dvh bg-background">
         {/* Header */}
         <div className="sticky top-0 z-40 bg-card border-b border-border">
           <div className="max-w-4xl mx-auto px-4 py-4">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 min-w-0">
               <Button
                 variant="ghost"
                 size="sm"
@@ -161,7 +161,7 @@ interface MissionDetailScreenProps {
                 <ArrowLeft className="w-4 h-4" />
               </Button>
               <div className="flex-1 min-w-0">
-                <h1 className="text-lg md:text-xl font-semibold truncate">{mission.title}</h1>
+                <h1 className="text-lg md:text-xl font-semibold text-wrap line-clamp-2">{mission.title}</h1>
                 <div className="flex items-center gap-3 mt-1">
                   <Badge className="text-xs border bg-primary-200/60 text-primary-600 border-primary-200">
                     {requiredRank?.name || `Ранг ${mission.rankRequirement}`}
@@ -185,20 +185,21 @@ interface MissionDetailScreenProps {
                   )}
                 </div>
               </div>
-              <Button 
-                className="bg-primary hover:bg-primary-600 text-white"
-                disabled={userMission?.isCompleted}
-                onClick={handleStartMission}
-              >
-                <Play className="w-4 h-4 mr-2" />
-                {userMission?.isCompleted ? 'Завершено' : 'Начать миссию'}
-              </Button>
+              {!userMission?.isCompleted && (
+                <Button 
+                  className="bg-primary hover:bg-primary-600 text-white h-12 w-auto"
+                  onClick={handleStartMission}
+                >
+                  <Play className="w-4 h-4 mr-2" />
+                  Начать миссию
+                </Button>
+              )}
             </div>
           </div>
         </div>
   
         {/* Content */}
-        <div className="max-w-4xl mx-auto px-4 py-6">
+        <div className="max-w-4xl mx-auto px-4 py-6 min-w-0">
           <div className="space-y-6">
             {/* Mission Overview */}
             <Card className="orbital-border">
@@ -209,10 +210,10 @@ interface MissionDetailScreenProps {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <p className="text-muted-foreground leading-relaxed">{mission.description}</p>
+                <p className="text-muted-foreground leading-relaxed text-wrap">{mission.description}</p>
                 
                 {/* Mission Meta */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 py-4 border-t border-border">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 py-4 border-t border-border">
                   <div className="flex items-center gap-2 text-sm">
                     <Clock className="w-4 h-4 text-muted-foreground" />
                     <span>{mockData.timeEstimate}</span>
@@ -391,17 +392,18 @@ interface MissionDetailScreenProps {
             </Card>
 
             {/* Start Mission CTA */}
-            <div className="flex justify-center">
-              <Button 
-                size="lg" 
-                className="bg-primary hover:bg-primary-600 text-white px-8"
-                disabled={userMission?.isCompleted}
-                onClick={handleStartMission}
-              >
-                <Play className="w-5 h-5 mr-2" />
-                {userMission?.isCompleted ? 'Миссия завершена' : 'Начать миссию'}
-              </Button>
-            </div>
+            {!userMission?.isCompleted && (
+              <div className="flex justify-center">
+                <Button 
+                  size="lg" 
+                  className="bg-primary hover:bg-primary-600 text-white px-8"
+                  onClick={handleStartMission}
+                >
+                  <Play className="w-5 h-5 mr-2" />
+                  Начать миссию
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </div>

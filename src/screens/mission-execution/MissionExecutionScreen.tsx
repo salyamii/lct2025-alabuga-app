@@ -217,14 +217,14 @@ export function MissionExecutionScreen({ onBack }: MissionExecutionScreenProps) 
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen-dvh bg-background">
       {/* Cosmic Background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-10 right-10 w-64 h-64 bg-gradient-to-br from-soft-cyan/5 to-info/5 rounded-full blur-3xl"></div>
         <div className="absolute bottom-20 left-10 w-48 h-48 bg-gradient-to-br from-primary/5 to-navy-accent/5 rounded-full blur-2xl"></div>
       </div>
 
-      <div className="max-w-5xl mx-auto p-4 md:p-6 relative">
+      <div className="max-w-5xl mx-auto p-4 md:p-6 relative min-w-0">
         {/* Header */}
         <div className="mb-6">
           <Button
@@ -250,8 +250,8 @@ export function MissionExecutionScreen({ onBack }: MissionExecutionScreenProps) 
                       {statusLabels[missionStatus]}
                     </Badge>
                   </div>
-                  <h1 className="text-2xl md:text-3xl font-bold">{mission.title}</h1>
-                  <p className="text-white/80 mt-2">{mission.description}</p>
+                  <h1 className="text-2xl md:text-3xl font-bold text-wrap line-clamp-2">{mission.title}</h1>
+                  <p className="text-white/80 mt-2 text-wrap line-clamp-4">{mission.description}</p>
                 </div>
 
                 {/* Награды */}
@@ -366,15 +366,15 @@ export function MissionExecutionScreen({ onBack }: MissionExecutionScreenProps) 
                         <div className="flex-1 min-w-0 space-y-3">
                           <div>
                             <h4 className="font-medium text-sm mb-1">{task.title}</h4>
-                            <p className="text-xs text-muted-foreground">{task.description}</p>
+                            <p className="text-xs text-muted-foreground text-wrap line-clamp-4">{task.description}</p>
                           </div>
-                          <div className="flex items-center gap-2">
+                          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                             {!isTaskCompleted && (
                               <>
                                 <Button 
                                   variant="outline" 
                                   size="sm"
-                                  className={`${proofType.color}`}
+                                  className={`${proofType.color} w-full h-12 sm:h-9 sm:w-auto`}
                                 >
                                   <ProofIcon className="w-4 h-4 mr-2" />
                                   {proofType.title}
@@ -383,6 +383,7 @@ export function MissionExecutionScreen({ onBack }: MissionExecutionScreenProps) 
                                   variant="default"
                                   size="sm"
                                   onClick={() => handleCompleteTask(task.id)}
+                                  className="w-full h-12 sm:h-9 sm:w-auto"
                                 >
                                   <CheckCircle className="w-4 h-4 mr-2" />
                                   Выполнить задание
@@ -417,15 +418,15 @@ export function MissionExecutionScreen({ onBack }: MissionExecutionScreenProps) 
                 После выполнения всех заданий прикрепите финальные доказательства
               </p>
               <div className="flex flex-wrap gap-3">
-                <Button variant="outline" size="sm" disabled={!allTasksCompleted}>
+                <Button variant="outline" size="sm" disabled={!allTasksCompleted} className="h-12 w-full sm:w-auto">
                   <Camera className="w-4 h-4 mr-2 text-blue-500" />
                   Итоговое фото
                 </Button>
-                <Button variant="outline" size="sm" disabled={!allTasksCompleted}>
+                <Button variant="outline" size="sm" disabled={!allTasksCompleted} className="h-12 w-full sm:w-auto">
                   <Code className="w-4 h-4 mr-2 text-orange-500" />
                   Код проекта
                 </Button>
-                <Button variant="outline" size="sm" disabled={!allTasksCompleted}>
+                <Button variant="outline" size="sm" disabled={!allTasksCompleted} className="h-12 w-full sm:w-auto">
                   <Key className="w-4 h-4 mr-2 text-amber-500" />
                   Подтверждение ментора
                 </Button>
@@ -445,7 +446,7 @@ export function MissionExecutionScreen({ onBack }: MissionExecutionScreenProps) 
                     <span className="text-xs text-muted-foreground">
                       {completedTasksCount} из {totalTasksCount} заданий
                     </span>
-                    <Progress value={(completedTasksCount / totalTasksCount) * 100} className="h-2 w-48" />
+                    <Progress value={(completedTasksCount / totalTasksCount) * 100} className="h-2 w-full md:w-48" />
                   </div>
                 </div>
                 
