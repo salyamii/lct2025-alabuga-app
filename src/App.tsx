@@ -109,7 +109,7 @@ const UserContent: React.FC<{
           element={
             <ProgressHub
               onMissionDetails={(missionId) =>
-                navigate(`/mission/${missionId}`)
+              {}
               }
             />
           }

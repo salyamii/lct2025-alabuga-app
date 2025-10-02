@@ -363,7 +363,7 @@ interface ProgressHubProps {
     };
   
     return (
-      <div className="max-w-7xl mx-auto p-6 space-y-6">
+      <div className="max-w-7xl mx-auto p-6 space-y-6 min-w-0">
         
         <Tabs defaultValue="overview" className="space-y-6">
           <TabsList className="grid w-full grid-cols-3 max-w-md">
@@ -379,7 +379,7 @@ interface ProgressHubProps {
           {/* Rank Card */}
           <Card className="orbital-border">
             <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between min-w-0">
                 <Trophy className="w-8 h-8 text-rewards-amber" />
                 <Badge className="bg-primary-200 text-primary-600">Текущий</Badge>
               </div>
@@ -400,7 +400,7 @@ interface ProgressHubProps {
           {/* Mana Card */}
           <Card className="orbital-border">
             <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between min-w-0">
                 <Zap className="w-8 h-8 text-soft-cyan" />
                 <Badge variant="outline">Баланс</Badge>
               </div>
@@ -419,7 +419,7 @@ interface ProgressHubProps {
           {/* Missions Card */}
           <Card className="orbital-border">
             <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between min-w-0">
                 <Target className="w-8 h-8 text-primary" />
                 <Badge variant="outline">Выполнено</Badge>
               </div>
@@ -438,7 +438,7 @@ interface ProgressHubProps {
           {/* Artifacts Card */}
           <Card className="orbital-border">
             <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between min-w-0">
                 <Award className="w-8 h-8 text-navy-accent" />
                 <Badge variant="outline">Получено</Badge>
               </div>
@@ -516,7 +516,7 @@ interface ProgressHubProps {
             </div>
   
             {/* Percentiles */}
-            <div className="grid grid-cols-2 gap-4 pt-4 border-t border-border">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-border">
               <div>
                 <h5 className="font-medium text-sm mb-2">vs Эскадрилья</h5>
                 <div className="space-y-1">
@@ -568,7 +568,7 @@ interface ProgressHubProps {
         {/* Recent Actions */}
         <Card>
           <CardHeader>
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between min-w-0">
               <CardTitle className="flex items-center gap-2">
                 <Calendar className="w-5 h-5 text-text-icon" />
                 Недавняя активность полетов
@@ -594,9 +594,9 @@ interface ProgressHubProps {
                     'bg-rewards-amber'
                   }`}></div>
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between">
-                      <h4 className="font-medium truncate">{action.title}</h4>
-                      <span className="text-xs text-muted-foreground flex-shrink-0">
+                    <div className="min-w-0">
+                      <h4 className="font-medium text-wrap line-clamp-2">{action.title}</h4>
+                      <span className="text-xs text-muted-foreground">
                         {action.timestamp}
                       </span>
                     </div>
