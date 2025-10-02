@@ -1357,6 +1357,15 @@ body {
     overflow-x: auto;
   }
 
+  /* Hide scrollbar cross-browser */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+
   .overflow-x-hidden {
     overflow-x: hidden;
   }

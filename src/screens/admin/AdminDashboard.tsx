@@ -71,24 +71,24 @@ export function AdminDashboard() {
   }));
 
   return (
-    <TabsContent value="dashboard" className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-            <h2 className="text-lg font-semibold">Панель управления</h2>
-            <p className="text-sm text-muted-foreground">
+    <TabsContent value="dashboard" className="space-y-4 md:space-y-6">
+      <div className="flex items-center justify-between min-w-0">
+        <div className="min-w-0">
+            <h2 className="text-lg font-semibold text-wrap">Панель управления</h2>
+            <p className="text-sm text-muted-foreground text-wrap">
               Обзор статистики и активности платформы
             </p>
           </div>
         </div>
 
         {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
           <Card className="card-enhanced">
-            <CardContent className="p-6 text-center">
-              <div className="w-12 h-12 bg-blue-500/10 rounded-lg mx-auto flex items-center justify-center mb-3">
-                <Users className="w-6 h-6 text-blue-500" />
+            <CardContent className="p-4 md:p-6 text-center">
+              <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-500/10 rounded-lg mx-auto flex items-center justify-center mb-2 md:mb-3">
+                <Users className="w-5 h-5 md:w-6 md:h-6 text-blue-500" />
               </div>
-              <div className="text-2xl font-bold text-foreground mb-1">
+              <div className="text-xl md:text-2xl font-bold text-foreground mb-1">
                 {dashboardStats.totalUsers.toLocaleString()}
               </div>
               <div className="text-sm text-muted-foreground">
@@ -98,11 +98,11 @@ export function AdminDashboard() {
           </Card>
 
           <Card className="card-enhanced">
-            <CardContent className="p-6 text-center">
-              <div className="w-12 h-12 bg-green-500/10 rounded-lg mx-auto flex items-center justify-center mb-3">
-                <Target className="w-6 h-6 text-green-500" />
+            <CardContent className="p-4 md:p-6 text-center">
+              <div className="w-10 h-10 md:w-12 md:h-12 bg-green-500/10 rounded-lg mx-auto flex items-center justify-center mb-2 md:mb-3">
+                <Target className="w-5 h-5 md:w-6 md:h-6 text-green-500" />
               </div>
-              <div className="text-2xl font-bold text-foreground mb-1">
+              <div className="text-xl md:text-2xl font-bold text-foreground mb-1">
                 {dashboardStats.activeMissions}
               </div>
               <div className="text-sm text-muted-foreground">
@@ -112,11 +112,11 @@ export function AdminDashboard() {
           </Card>
 
           <Card className="card-enhanced">
-            <CardContent className="p-6 text-center">
-              <div className="w-12 h-12 bg-purple-500/10 rounded-lg mx-auto flex items-center justify-center mb-3">
-                <TrendingUp className="w-6 h-6 text-purple-500" />
+            <CardContent className="p-4 md:p-6 text-center">
+              <div className="w-10 h-10 md:w-12 md:h-12 bg-purple-500/10 rounded-lg mx-auto flex items-center justify-center mb-2 md:mb-3">
+                <TrendingUp className="w-5 h-5 md:w-6 md:h-6 text-purple-500" />
               </div>
-              <div className="text-2xl font-bold text-foreground mb-1">
+              <div className="text-xl md:text-2xl font-bold text-foreground mb-1">
                 {dashboardStats.completionRate}%
               </div>
               <div className="text-sm text-muted-foreground">
@@ -126,11 +126,11 @@ export function AdminDashboard() {
           </Card>
 
           <Card className="card-enhanced">
-            <CardContent className="p-6 text-center">
-              <div className="w-12 h-12 bg-amber-500/10 rounded-lg mx-auto flex items-center justify-center mb-3">
-                <Zap className="w-6 h-6 text-amber-500" />
+            <CardContent className="p-4 md:p-6 text-center">
+              <div className="w-10 h-10 md:w-12 md:h-12 bg-amber-500/10 rounded-lg mx-auto flex items-center justify-center mb-2 md:mb-3">
+                <Zap className="w-5 h-5 md:w-6 md:h-6 text-amber-500" />
               </div>
-              <div className="text-2xl font-bold text-foreground mb-1">
+              <div className="text-xl md:text-2xl font-bold text-foreground mb-1">
                 {dashboardStats.totalMana.toLocaleString()}
               </div>
               <div className="text-sm text-muted-foreground">Всего маны</div>
@@ -139,13 +139,13 @@ export function AdminDashboard() {
         </div>
 
         {/* Additional Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
           <Card className="card-enhanced">
-            <CardContent className="p-6 text-center">
-              <div className="w-12 h-12 bg-orange-500/10 rounded-lg mx-auto flex items-center justify-center mb-3">
-                <Award className="w-6 h-6 text-orange-500" />
+            <CardContent className="p-4 md:p-6 text-center">
+              <div className="w-10 h-10 md:w-12 md:h-12 bg-orange-500/10 rounded-lg mx-auto flex items-center justify-center mb-2 md:mb-3">
+                <Award className="w-5 h-5 md:w-6 md:h-6 text-orange-500" />
               </div>
-              <div className="text-2xl font-bold text-foreground mb-1">
+              <div className="text-xl md:text-2xl font-bold text-foreground mb-1">
                 {dashboardStats.totalXp.toLocaleString()}
               </div>
               <div className="text-sm text-muted-foreground">Всего опыта</div>
@@ -153,11 +153,11 @@ export function AdminDashboard() {
           </Card>
 
           <Card className="card-enhanced">
-            <CardContent className="p-6 text-center">
-              <div className="w-12 h-12 bg-indigo-500/10 rounded-lg mx-auto flex items-center justify-center mb-3">
-                <BookOpen className="w-6 h-6 text-indigo-500" />
+            <CardContent className="p-4 md:p-6 text-center">
+              <div className="w-10 h-10 md:w-12 md:h-12 bg-indigo-500/10 rounded-lg mx-auto flex items-center justify-center mb-2 md:mb-3">
+                <BookOpen className="w-5 h-5 md:w-6 md:h-6 text-indigo-500" />
               </div>
-              <div className="text-2xl font-bold text-foreground mb-1">
+              <div className="text-xl md:text-2xl font-bold text-foreground mb-1">
                 {dashboardStats.totalTasks}
               </div>
               <div className="text-sm text-muted-foreground">Всего заданий</div>
@@ -165,11 +165,11 @@ export function AdminDashboard() {
           </Card>
 
           <Card className="card-enhanced">
-            <CardContent className="p-6 text-center">
-              <div className="w-12 h-12 bg-pink-500/10 rounded-lg mx-auto flex items-center justify-center mb-3">
-                <Trophy className="w-6 h-6 text-pink-500" />
+            <CardContent className="p-4 md:p-6 text-center">
+              <div className="w-10 h-10 md:w-12 md:h-12 bg-pink-500/10 rounded-lg mx-auto flex items-center justify-center mb-2 md:mb-3">
+                <Trophy className="w-5 h-5 md:w-6 md:h-6 text-pink-500" />
               </div>
-              <div className="text-2xl font-bold text-foreground mb-1">
+              <div className="text-xl md:text-2xl font-bold text-foreground mb-1">
                 {dashboardStats.totalArtifacts + dashboardStats.totalCompetencies + dashboardStats.totalSkills}
               </div>
               <div className="text-sm text-muted-foreground">Всего наград</div>
@@ -177,11 +177,11 @@ export function AdminDashboard() {
           </Card>
 
           <Card className="card-enhanced">
-            <CardContent className="p-6 text-center">
-              <div className="w-12 h-12 bg-teal-500/10 rounded-lg mx-auto flex items-center justify-center mb-3">
-                <Calendar className="w-6 h-6 text-teal-500" />
+            <CardContent className="p-4 md:p-6 text-center">
+              <div className="w-10 h-10 md:w-12 md:h-12 bg-teal-500/10 rounded-lg mx-auto flex items-center justify-center mb-2 md:mb-3">
+                <Calendar className="w-5 h-5 md:w-6 md:h-6 text-teal-500" />
               </div>
-              <div className="text-2xl font-bold text-foreground mb-1">
+              <div className="text-xl md:text-2xl font-bold text-foreground mb-1">
                 {seasons.length}
               </div>
               <div className="text-sm text-muted-foreground">Сезонов</div>
@@ -204,15 +204,15 @@ export function AdminDashboard() {
                 {recentMissions.map((mission) => (
                   <div
                     key={mission.id}
-                    className="flex items-center justify-between p-4 rounded-lg border border-border"
+                    className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-lg border border-border"
                   >
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-blue-500 rounded-lg flex items-center justify-center">
-                        <Target className="w-6 h-6 text-white" />
+                    <div className="flex items-center gap-4 min-w-0">
+                      <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-green-500 to-blue-500 rounded-lg flex items-center justify-center">
+                        <Target className="w-5 h-5 md:w-6 md:h-6 text-white" />
                       </div>
-                      <div className="flex-1">
-                        <h4 className="font-medium">{mission.title}</h4>
-                        <p className="text-sm text-muted-foreground line-clamp-2">
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-medium text-wrap line-clamp-2">{mission.title}</h4>
+                        <p className="text-sm text-muted-foreground line-clamp-2 text-wrap">
                           {mission.description}
                         </p>
                         <div className="flex items-center gap-4 mt-2">
@@ -226,27 +226,24 @@ export function AdminDashboard() {
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-6">
-                      <div className="text-center">
+                    <div className="flex items-center gap-4 sm:gap-6 w-full sm:w-auto justify-end">
+                      <div className="text-right">
                         <div className="flex items-center gap-1 text-sm font-medium text-orange-600">
-                          <Award className="w-4 h-4" />
+
                           {mission.rewardXp} XP
                         </div>
-                        <div className="text-xs text-muted-foreground">Опыт</div>
                       </div>
-                      <div className="text-center">
+                      <div className="text-right">
                         <div className="flex items-center gap-1 text-sm font-medium text-amber-600">
-                          <Zap className="w-4 h-4" />
-                          {mission.rewardMana} маны
+
+                          {mission.rewardMana} мана
                         </div>
-                        <div className="text-xs text-muted-foreground">Мана</div>
                       </div>
-                      <div className="text-center">
+                      <div className="text-right">
                         <div className="flex items-center gap-1 text-sm font-medium text-pink-600">
-                          <Trophy className="w-4 h-4" />
-                          {mission.artifactsCount + mission.competenciesCount + mission.skillsCount}
+
+                          {mission.artifactsCount + mission.competenciesCount + mission.skillsCount} наград
                         </div>
-                        <div className="text-xs text-muted-foreground">Наград</div>
                       </div>
                     </div>
                   </div>
