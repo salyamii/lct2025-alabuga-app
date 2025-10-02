@@ -101,30 +101,30 @@ export function UserProfileHub({ onMentorshipOpen, onSettingsOpen, onGuildProgre
         onArtifactsOpen();
     };
 
-    return (
-      <div className="max-w-7xl mx-auto px-4 py-6">
-        <div className="mb-6 flex items-center justify-between">
-          <div>
-            <h2 className="text-xl md:text-2xl font-bold mb-2 flex items-center gap-3">
+  return (
+      <div className="max-w-7xl mx-auto px-4 py-6 min-w-0">
+        <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 min-w-0">
+          <div className="min-w-0">
+            <h2 className="text-xl md:text-2xl font-bold mb-2 flex items-center gap-3 text-wrap">
               <Sparkles className="w-6 h-6 text-primary" />
               Профиль космического исследователя
             </h2>
-            <p className="text-muted-foreground text-sm md:text-base">
+            <p className="text-muted-foreground text-sm md:text-base text-wrap">
               Ваше путешествие через бесконечную вселенную знаний
             </p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 w-full sm:w-auto">
             <Button 
               onClick={onSettingsOpen}
               variant="outline" 
-              className="hidden md:flex"
+              className="hidden md:flex h-12"
             >
               <Settings className="w-4 h-4 mr-2" />
               Настройки
             </Button>
             <Button 
               onClick={onMentorshipOpen}
-              className="bg-primary hover:bg-primary-600 text-white hidden md:flex"
+              className="bg-primary hover:bg-primary-600 text-white hidden md:flex h-12"
             >
               <Crown className="w-4 h-4 mr-2" />
               Ментор-хаб
@@ -157,7 +157,7 @@ export function UserProfileHub({ onMentorshipOpen, onSettingsOpen, onGuildProgre
                   {userName}
                   <Star className="w-4 h-4 text-rewards-amber" />
                 </h3>
-                <p className="text-sm text-muted-foreground">{userRankName} • Уровень {user?.rankId || 0}</p>
+                <p className="text-sm text-muted-foreground">{userRankName}</p>
                 <p className="text-xs text-muted-foreground mt-1 flex items-center justify-center gap-1">
                   <Globe className="w-3 h-3" />
                   Эскадрилья Туманности • Станция Звездной кузницы
@@ -379,7 +379,7 @@ export function UserProfileHub({ onMentorshipOpen, onSettingsOpen, onGuildProgre
                 <Button 
                   variant="outline" 
                   size="sm" 
-                  className="text-xs"
+                  className="text-xs h-12"
                   onClick={handleViewArtifacts}
                 >
                   <Star className="w-3 h-3 mr-1" />
