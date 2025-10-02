@@ -200,20 +200,20 @@ export function ArtifactsHub() {
     };
   
     return (
-      <div className="max-w-7xl mx-auto px-4 py-6">
-        <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <h2 className="text-xl md:text-2xl font-bold mb-2 flex items-center gap-3">
+      <div className="max-w-7xl mx-auto px-4 py-6 min-w-0">
+        <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4 min-w-0">
+          <div className="min-w-0">
+            <h2 className="text-xl md:text-2xl font-bold mb-2 flex items-center gap-3 text-wrap">
               <Gem className="w-6 h-6 text-primary stellar-pulse" />
               Коллекция артефактов
             </h2>
-            <p className="text-muted-foreground text-sm md:text-base">
+            <p className="text-muted-foreground text-sm md:text-base text-wrap">
               Ваш сундук с легендарными артефактами и звездными достижениями
             </p>
           </div>
           <Button 
             onClick={() => { /* TODO export artifacts */ }}
-            className="bg-primary hover:bg-primary-600 text-white"
+            className="bg-primary hover:bg-primary-600 text-white h-12 w-full md:w-auto"
           >
             <Download className="w-4 h-4 mr-2" />
             <span className="hidden sm:inline">Экспорт артефактов</span>
@@ -288,7 +288,7 @@ export function ArtifactsHub() {
                 onClick={() => {/* TODO view artifact details */}}
               >
                 <CardContent className="p-4 md:p-6 space-y-4">
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between min-w-0">
                     <div 
                       className={`w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br ${
                         hasArtifact ? getRarityColor(artifact.rarity) : 'from-gray-400 to-gray-500'
@@ -328,13 +328,13 @@ export function ArtifactsHub() {
                     </Badge>
                   </div>
                   
-                  <div>
-                    <h3 className={`font-semibold text-base leading-tight ${
+                  <div className="min-w-0">
+                    <h3 className={`font-semibold text-base leading-tight text-wrap line-clamp-2 ${
                       hasArtifact ? '' : 'text-muted-foreground'
                     }`}>
                       {artifact.title}
                     </h3>
-                    <p className={`text-sm mt-1 leading-relaxed ${
+                    <p className={`text-sm mt-1 leading-relaxed text-wrap line-clamp-4 ${
                         hasArtifact ? 'text-muted-foreground' : 'text-muted-foreground/70'
                     }`}>
                       {artifact.description}
