@@ -1,5 +1,6 @@
 import { Button } from "../../components/ui/button";
 import { Card, CardContent } from "../../components/ui/card";
+import { Progress } from "../../components/ui/progress";
 import { Sparkles, Crown, Settings, Globe, Zap, Target, Rocket, Gem, Star, Moon, Users, Orbit, Compass, Trophy, Sun, HelpCircle } from "lucide-react";
 import { useUserStore } from "../../stores/useUserStore";
 import { useRankStore } from "../../stores/useRankStore";
@@ -97,6 +98,19 @@ export function UserProfileHub({ onMentorshipOpen, onSettingsOpen, onGuildProgre
     const userMissionsCount = user?.totalMissionsCount || 0;
     const userCompletedMissionsCount = user?.missions.filter(mission => mission.isCompleted).length || 0;
 
+    // Расчет XP и прогресса ранга
+    const userXp = user?.xp || 0;
+    const sortedRanks = [...ranks].sort((a, b) => a.requiredXp - b.requiredXp);
+    const currentRankXP = userRank?.requiredXp || 0;
+    const nextRank = sortedRanks.find(r => r.requiredXp > currentRankXP);
+    const currentRankIndex = sortedRanks.findIndex(r => r.id === user?.rankId);
+    const previousRank = currentRankIndex > 0 ? sortedRanks[currentRankIndex - 1] : null;
+    const nextRankXP = nextRank?.requiredXp || currentRankXP;
+    const xpInCurrentRank = userXp - currentRankXP;
+    const xpNeededForRank = nextRankXP - currentRankXP;
+    const xpProgress = xpNeededForRank > 0 ? Math.round((xpInCurrentRank / xpNeededForRank) * 100) : 100;
+    const xpToNextRank = Math.max(0, nextRankXP - userXp);
+
     const handleViewArtifacts = () => {
         onArtifactsOpen();
     };
@@ -161,6 +175,21 @@ export function UserProfileHub({ onMentorshipOpen, onSettingsOpen, onGuildProgre
                 </p>
               </div>
               <div className="space-y-2">
+                <div className="space-y-1 pb-2 border-b border-border">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">XP полёта</span>
+                    <span className="font-mono text-sm">
+                      {userXp.toLocaleString()} / {nextRankXP.toLocaleString()}
+                    </span>
+                  </div>
+                  <Progress value={xpProgress} className="h-2" />
+                  <p className="text-xs text-muted-foreground">
+                    {nextRank 
+                      ? `${xpToNextRank.toLocaleString()} XP до ${nextRank.name}`
+                      : "Максимальный ранг достигнут!"
+                    }
+                  </p>
+                </div>
                 <div className="flex justify-between text-sm">
                   <span className="flex items-center gap-1">
                     <Zap className="w-3 h-3 text-primary" />
@@ -304,7 +333,7 @@ export function UserProfileHub({ onMentorshipOpen, onSettingsOpen, onGuildProgre
   
         {/* Extended Profile Sections */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mt-6">
-          <Card className="orbital-border cosmic-float">
+          <Card className="orbital-border">
             <CardContent className="p-4 md:p-6 space-y-4">
               <h3 className="font-semibold flex items-center gap-2 text-base">
                 <Orbit className="w-5 h-5 text-primary stellar-pulse" />
@@ -332,14 +361,14 @@ export function UserProfileHub({ onMentorshipOpen, onSettingsOpen, onGuildProgre
                     <span>75%</span>
                   </div>
                   <div className="w-full bg-muted rounded-full h-2">
-                    <div className="bg-gradient-to-r from-primary to-info h-2 rounded-full transition-all stellar-pulse" style={{ width: '75%' }} />
+                    <div className="bg-gradient-to-r from-primary to-info h-2 rounded-full transition-all" style={{ width: '75%' }} />
                   </div>
                 </div>
               </div>
             </CardContent>
           </Card>
   
-          <Card className="orbital-border cosmic-float">
+          <Card className="orbital-border">
             <CardContent className="p-4 md:p-6 space-y-4">
               <h3 className="font-semibold flex items-center gap-2 text-base">
                 <Gem className="w-5 h-5 text-rewards-amber stellar-pulse" />
