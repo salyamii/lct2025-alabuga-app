@@ -25,8 +25,6 @@ import { GitBranch } from "lucide-react";
 import { Shield } from "lucide-react";
 import { Star } from "lucide-react";
 import { SeasonHubInfo } from "./SeasonHubInfo";
-import { SeasonHubActiveEvents } from "./SeasonActiveEvents";
-import { MissionChainCard } from "./MissionChainCard";
 import { MissionCard } from "./MissionCard";
 import { MissionChainOverlay } from "./MissionChainOverlay";
 import { useSeasonStore } from "../../stores/useSeasonStore";
@@ -124,12 +122,15 @@ export function SeasonHub({
     sortedSeasons.find((season) => season.endDate >= now) || null;
   const activeSeasonId = activeSeason?.id || 0;
 
-  // Остальные сезоны (следующие сезоны)
+  // Следующий самый ранний сезон
   const upcomingSeasons = sortedSeasons.filter((season) =>
     activeSeason
       ? season.id !== activeSeason.id && season.startDate > now
       : season.startDate > now
   );
+  
+  // Выбираем только самый ранний следующий сезон
+  const nextSeason = upcomingSeasons.length > 0 ? upcomingSeasons[0] : null;
 
   // Миссии текущего активного сезона
   const seasonMissions = activeSeason
@@ -235,10 +236,7 @@ export function SeasonHub({
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-4 md:space-y-6 min-w-0">
             {/* Season Hero - Enhanced Cosmic Design */}
-            {displayedSeason && <SeasonHubInfo season={displayedSeason} />}
-
-            {/* Mock Active Events */}
-            <SeasonHubActiveEvents cosmicEvents={cosmicEvents} />
+            {displayedSeason && <SeasonHubInfo season={displayedSeason} cosmicEvents={cosmicEvents} />}
 
             {/* Real Mission Chains */}
             {missionChains.length > 0 && (
@@ -259,33 +257,6 @@ export function SeasonHub({
               onMissionLaunch={onMissionLaunch}
               onMissionDetails={onMissionDetails}
             />
-
-            {/* Upcoming Seasons */}
-            {upcomingSeasons.map((upcomingSeason) => (
-              <Card
-                key={upcomingSeason.id}
-                className="border-dashed border-2 border-primary/30 bg-primary/5"
-              >
-                <CardContent className="p-6 md:p-8 text-center space-y-3">
-                  <div className="w-12 h-12 bg-primary/20 rounded-lg mx-auto flex items-center justify-center">
-                    <Shield className="w-6 h-6 text-primary" />
-                  </div>
-                  <h4 className="font-medium">
-                    Следующий сезон: {upcomingSeason.name}
-                  </h4>
-                  <p className="text-sm text-muted-foreground">
-                    Начало:{" "}
-                    {upcomingSeason.startDate.toLocaleDateString("ru-RU")}
-                  </p>
-                  <div className="flex justify-center">
-                    <Badge variant="outline">
-                      <Star className="w-3 h-3 mr-1" />
-                      Требуется ранг Навигатора
-                    </Badge>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
           </div>
 
           <SeasonHubRightRail 
@@ -295,6 +266,32 @@ export function SeasonHub({
             onShipLogOpen={onShipLogOpen}
           />
         </div>
+
+        {/* Next Season - Always at the bottom */}
+        {nextSeason && (
+          <div className="mt-6 min-w-0">
+            <Card className="border-dashed border-2 border-primary/30 bg-primary/5">
+              <CardContent className="p-6 md:p-8 text-center space-y-3">
+                <div className="w-12 h-12 bg-primary/20 rounded-lg mx-auto flex items-center justify-center">
+                  <Shield className="w-6 h-6 text-primary" />
+                </div>
+                <h4 className="font-medium">
+                  Следующий сезон: {nextSeason.name}
+                </h4>
+                <p className="text-sm text-muted-foreground">
+                  Начало:{" "}
+                  {nextSeason.startDate.toLocaleDateString("ru-RU")}
+                </p>
+                <div className="flex justify-center">
+                  <Badge variant="outline">
+                    <Star className="w-3 h-3 mr-1" />
+                    Требуется ранг Навигатора
+                  </Badge>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
       </div>
 
       {/* Mission Chain Overlay */}
