@@ -1322,16 +1322,7 @@
   }
 
   @media (max-width: 480px) {
-    /* Remove animations on mobile for performance */
-    .cosmic-bg-space,
-    .cosmic-bg-nebula,
-    .cosmic-bg-galaxy,
-    .cosmic-bg-planet,
-    .cosmic-bg-aurora,
-    .cosmic-starfield-bg {
-      animation: none;
-    }
-
+    /* Keep background animations on mobile, only disable hover effects */
     .mission-card:hover,
     .store-card:hover,
     .badge-card:hover {
@@ -1344,20 +1335,23 @@
     }
   }
 
-  @media (max-width: 360px) {
-    /* Ultra-minimal backgrounds for very small screens */
-    .cosmic-bg-space,
-    .cosmic-bg-nebula,
-    .cosmic-bg-galaxy,
-    .cosmic-bg-planet,
-    .cosmic-bg-aurora,
-    .cosmic-starfield-bg {
-      background-image: 
-        radial-gradient(ellipse 120% 80% at 10% 20%, rgba(139, 92, 246, 0.12) 0%, transparent 50%),
-        radial-gradient(ellipse 100% 90% at 90% 80%, rgba(255, 0, 110, 0.08) 0%, transparent 50%),
-        radial-gradient(1px 1px at 20% 30%, rgba(255, 255, 255, 0.6), transparent),
-        radial-gradient(1px 1px at 60% 70%, rgba(255, 255, 255, 0.5), transparent);
-      background-color: var(--background);
+  /* Removed ultra-minimal backgrounds restriction - animations now work on all screen sizes */
+
+  /* Wide dialog for detailed views */
+  .dialog-wide {
+    width: 95vw !important;
+    max-width: 1024px !important;
+  }
+
+  @media (min-width: 640px) {
+    .dialog-wide {
+      width: 90vw !important;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .dialog-wide {
+      width: 85vw !important;
     }
   }
 }

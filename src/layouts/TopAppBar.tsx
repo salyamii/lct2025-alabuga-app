@@ -35,7 +35,7 @@ export function TopAppBar({
 
   return (
     <div
-      className={`cosmic-gradient text-white px-4 py-3 md:px-6 md:py-4 ${className}`}
+      className={`bg-transparent text-white px-4 py-3 md:px-6 md:py-4 backdrop-blur-sm ${className}`}
     >
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between">

@@ -54,7 +54,7 @@ export default function AppLayout() {
   return (
     <div className="min-h-screen flex flex-col cosmic-bg-space">
       {/* TopAppBar - всегда видимый на всех устройствах */}
-      <div className="cosmic-gradient">
+      <div className="bg-transparent backdrop-blur-sm">
         <TopAppBar
           onNotificationsOpen={handleNotificationsOpen}
           onSettingsOpen={handleSettingsOpen}

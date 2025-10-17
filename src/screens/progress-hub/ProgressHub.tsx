@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Lightbulb, MessageSquare, Users, BookOpen, Palette, Target, Shield, Briefcase, BarChart3, Trophy, Zap, Award, TrendingUp, Flame, Calendar, TreePine, ChevronRight, Play, ArrowUp, Code, Star, X } from "lucide-react";
+import { Lightbulb, MessageSquare, Users, BookOpen, Palette, Target, Shield, Briefcase, BarChart3, Trophy, Zap, Award, TrendingUp, Flame, Calendar, TreePine, ChevronRight, Play, ArrowUp, Code, Star } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "../../components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 import { Progress } from "../../components/ui/progress";
@@ -363,9 +363,9 @@ interface ProgressHubProps {
     };
   
     return (
-      <div className="max-w-7xl mx-auto p-6 space-y-6 min-w-0">
+      <div className="max-w-7xl mx-auto p-4 md:p-6 space-y-6 min-w-0 overflow-hidden">
         
-        <Tabs defaultValue="overview" className="space-y-6">
+        <Tabs defaultValue="overview" className="space-y-6 min-w-0">
           <TabsList className="grid w-full grid-cols-3 max-w-md">
             <TabsTrigger value="overview">Обзор</TabsTrigger>
             <TabsTrigger value="core-competencies">Компетенции</TabsTrigger>
@@ -670,29 +670,29 @@ interface ProgressHubProps {
             </div>
           </TabsContent>
   
-          <TabsContent value="career-paths" className="space-y-6">
+          <TabsContent value="career-paths" className="space-y-6 overflow-hidden">
             {/* Track Selection */}
-            <div className="flex gap-2 flex-wrap">
+            <div className="flex gap-2 flex-wrap min-w-0">
               {Object.keys(careerTracks).map((track) => (
                 <Button
                   key={track}
                   variant={selectedCareerTrack === track ? "default" : "outline"}
                   size="sm"
                   onClick={() => setSelectedCareerTrack(track as keyof typeof careerTracks)}
-                  className="text-sm"
+                  className="text-xs md:text-sm"
                 >
                   {track}
                 </Button>
               ))}
             </div>
-  
+
             {/* Track Content */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 min-w-0">
               {/* Left: Subskill List */}
-              <div className="space-y-4">
-                <div>
-                  <h3 className="font-semibold text-lg">{careerTracks[selectedCareerTrack].name}</h3>
-                  <p className="text-sm text-muted-foreground">{careerTracks[selectedCareerTrack].description}</p>
+              <div className="space-y-4 min-w-0">
+                <div className="min-w-0">
+                  <h3 className="font-semibold text-base md:text-lg break-words">{careerTracks[selectedCareerTrack].name}</h3>
+                  <p className="text-xs md:text-sm text-muted-foreground break-words">{careerTracks[selectedCareerTrack].description}</p>
                 </div>
                 
                 <div className="space-y-3">
@@ -703,31 +703,31 @@ interface ProgressHubProps {
                     return (
                     <Card 
                       key={subskill.id} 
-                      className={`${glowClass} cursor-pointer transition-all`}
+                      className={`${glowClass} cursor-pointer transition-all min-w-0`}
                       onClick={() => handleSubskillClick(subskill, selectedCareerTrack)}
                     >
-                      <CardContent className="p-4">
-                        <div className="flex items-center justify-between">
+                      <CardContent className="p-3 md:p-4 min-w-0">
+                        <div className="flex items-center justify-between gap-2 min-w-0">
                           <div className="flex-1 min-w-0">
-                            <h4 className="font-medium text-sm">{subskill.name}</h4>
-                            <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
-                              <span>L{subskill.currentLevel}/{subskill.maxLevel}</span>
-                              <span>•</span>
-                              <span>{subskill.completions} выполнений</span>
-                              <span>•</span>
-                              <span>{subskill.squadronPercentile}-й процентиль</span>
+                            <h4 className="font-medium text-sm break-words pr-1">{subskill.name}</h4>
+                            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-1 text-xs text-muted-foreground">
+                              <span className="whitespace-nowrap">L{subskill.currentLevel}/{subskill.maxLevel}</span>
+                              <span className="hidden sm:inline">•</span>
+                              <span className="whitespace-nowrap">{subskill.completions} вып.</span>
+                              <span className="hidden md:inline">•</span>
+                              <span className="whitespace-nowrap hidden md:inline">{subskill.squadronPercentile}-й %</span>
                             </div>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <Badge variant="outline" className="text-xs">
+                          <div className="flex items-center gap-1 md:gap-2 flex-shrink-0">
+                            <Badge variant="outline" className="text-xs whitespace-nowrap">
                               <ArrowUp className="w-3 h-3 mr-1 text-success" />
                               {subskill.personalProgress}
                             </Badge>
-                            <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                            <ChevronRight className="w-4 h-4 text-muted-foreground hidden sm:block" />
                           </div>
                         </div>
                         
-                        <div className="mt-2">
+                        <div className="mt-2 min-w-0">
                           <div className="flex gap-0.5">
                             {Array.from({ length: subskill.maxLevel }).map((_, index) => (
                               <div
@@ -772,105 +772,97 @@ interface ProgressHubProps {
   
         {/* Subskill Sheet Modal */}
         <Dialog open={subskillModalOpen} onOpenChange={setSubskillModalOpen}>
-          <DialogContent className="w-[90vw] max-w-[720px] h-[90vh] max-h-[600px] p-0">
+          <DialogContent 
+            className="dialog-wide h-[90vh] max-h-[600px] p-0 overflow-hidden"
+          >
             {selectedSubskill && (
               <>
-                <DialogHeader className="border-b border-border bg-gradient-to-r from-card to-primary/5 p-6 pb-4">
-                  <div className="flex items-start justify-between">
-                    <div className="space-y-2">
-                      <DialogTitle className="text-xl font-semibold">
-                        {selectedSubskill.track} / {selectedSubskill.name}
-                      </DialogTitle>
-                      
-                      <div className="flex items-center gap-4 text-sm">
-                        <div className="flex items-center gap-2">
-                          <span className="text-muted-foreground">Level:</span>
-                          <Badge className="bg-primary text-white">
-                            L{selectedSubskill.currentLevel}/{selectedSubskill.maxLevel}
-                          </Badge>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-muted-foreground">Squadron:</span>
-                          <span className="font-medium">{selectedSubskill.squadronPercentile}th percentile</span>
-                        </div>
+                <DialogHeader className="border-b border-border bg-gradient-to-r from-card to-primary/5 p-4 md:p-6 pb-3 md:pb-4">
+                  <div className="space-y-2 min-w-0">
+                    <DialogTitle className="text-base md:text-xl font-semibold break-words pr-8">
+                      {selectedSubskill.track} / {selectedSubskill.name}
+                    </DialogTitle>
+                    
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm">
+                      <div className="flex items-center gap-2">
+                        <span className="text-muted-foreground text-xs sm:text-sm">Level:</span>
+                        <Badge className="bg-primary text-white text-xs">
+                          L{selectedSubskill.currentLevel}/{selectedSubskill.maxLevel}
+                        </Badge>
                       </div>
-                      
-                      <div className="flex gap-1 max-w-xs">
-                        {Array.from({ length: selectedSubskill.maxLevel }).map((_, index) => (
-                          <div
-                            key={index}
-                            className={`h-2 flex-1 rounded-full ${
-                              index < selectedSubskill.currentLevel
-                                ? 'bg-primary'
-                                : 'bg-muted'
-                            }`}
-                          />
-                        ))}
+                      <div className="flex items-center gap-2">
+                        <span className="text-muted-foreground text-xs sm:text-sm">Squadron:</span>
+                        <span className="font-medium text-xs sm:text-sm">{selectedSubskill.squadronPercentile}th</span>
                       </div>
                     </div>
                     
-                    <Button 
-                      variant="ghost" 
-                      size="sm"
-                      onClick={() => setSubskillModalOpen(false)}
-                    >
-                      <X className="w-4 h-4" />
-                    </Button>
+                    <div className="flex gap-1 max-w-xs">
+                      {Array.from({ length: selectedSubskill.maxLevel }).map((_, index) => (
+                        <div
+                          key={index}
+                          className={`h-2 flex-1 rounded-full ${
+                            index < selectedSubskill.currentLevel
+                              ? 'bg-primary'
+                              : 'bg-muted'
+                          }`}
+                        />
+                      ))}
+                    </div>
                   </div>
                 </DialogHeader>
   
-                <div className="flex-1 overflow-y-auto p-6 space-y-6">
+                <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 min-w-0">
                   {/* Stats */}
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
+                  <div className="grid grid-cols-2 gap-4 min-w-0">
+                    <div className="min-w-0">
                       <h4 className="font-medium text-sm text-muted-foreground">Выполнения</h4>
-                      <div className="text-2xl font-bold">{selectedSubskill.completions}</div>
+                      <div className="text-xl md:text-2xl font-bold">{selectedSubskill.completions}</div>
                     </div>
-                    <div>
-                      <h4 className="font-medium text-sm text-muted-foreground">Последняя активность</h4>
-                      <div className="text-sm">{selectedSubskill.lastActivity}</div>
+                    <div className="min-w-0">
+                      <h4 className="font-medium text-xs md:text-sm text-muted-foreground">Последняя активность</h4>
+                      <div className="text-xs md:text-sm break-words">{selectedSubskill.lastActivity}</div>
                     </div>
                   </div>
                   
                   {/* Next Level Gates */}
                   {selectedSubskill.currentLevel < selectedSubskill.maxLevel && (
-                    <div className="bg-primary/5 rounded-lg p-4">
-                      <h4 className="font-medium mb-2">Следующий уровень: L{selectedSubskill.currentLevel + 1}</h4>
-                      <p className="text-sm text-muted-foreground">
+                    <div className="bg-primary/5 rounded-lg p-3 md:p-4 min-w-0">
+                      <h4 className="font-medium mb-2 text-sm md:text-base break-words">Следующий уровень: L{selectedSubskill.currentLevel + 1}</h4>
+                      <p className="text-xs md:text-sm text-muted-foreground break-words">
                         Выполните ЛЮБЫЕ 2 миссии ниже для продвижения
                       </p>
                     </div>
                   )}
                   
                   {/* Recommended Missions */}
-                  <div className="space-y-3">
-                    <h4 className="font-medium">Рекомендуемые миссии</h4>
-                    <div className="space-y-3">
+                  <div className="space-y-3 min-w-0">
+                    <h4 className="font-medium text-sm md:text-base">Рекомендуемые миссии</h4>
+                    <div className="space-y-3 min-w-0">
                       {selectedSubskill.recommendedMissions.map((mission: any) => (
-                        <Card key={mission.id} className="orbital-border cursor-pointer hover:elevation-cosmic transition-all"
+                        <Card key={mission.id} className="orbital-border cursor-pointer hover:elevation-cosmic transition-all min-w-0"
                               onClick={() => onMissionDetails(mission.id)}>
-                          <CardContent className="p-4">
-                            <div className="flex items-start justify-between">
-                              <div className="flex-1 min-w-0">
-                                <h5 className="font-medium text-sm">{mission.title}</h5>
-                                <div className="flex items-center gap-3 mt-2">
-                                  <Badge variant="outline" className="text-xs">
+                          <CardContent className="p-3 md:p-4 min-w-0">
+                            <div className="flex items-start justify-between gap-2 min-w-0">
+                              <div className="flex-1 min-w-0 space-y-2">
+                                <h5 className="font-medium text-sm break-words pr-1">{mission.title}</h5>
+                                <div className="flex flex-wrap items-center gap-2">
+                                  <Badge variant="outline" className="text-xs whitespace-nowrap">
                                     <Star className="w-3 h-3 mr-1" />
                                     {mission.xp} XP
                                   </Badge>
-                                  <Badge variant="outline" className="text-xs text-rewards-amber border-rewards-amber/20">
+                                  <Badge variant="outline" className="text-xs text-rewards-amber border-rewards-amber/20 whitespace-nowrap">
                                     <Zap className="w-3 h-3 mr-1" />
                                     {mission.mana} Mana
                                   </Badge>
                                   {mission.artifacts.map((artifact: string) => (
-                                    <Badge key={artifact} variant="outline" className="text-xs">
-                                      <Award className="w-3 h-3 mr-1" />
-                                      {artifact}
+                                    <Badge key={artifact} variant="outline" className="text-xs break-words">
+                                      <Award className="w-3 h-3 mr-1 flex-shrink-0" />
+                                      <span className="truncate max-w-[120px]">{artifact}</span>
                                     </Badge>
                                   ))}
                                 </div>
                               </div>
-                              <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                              <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0 mt-1" />
                             </div>
                           </CardContent>
                         </Card>
@@ -879,26 +871,20 @@ interface ProgressHubProps {
                   </div>
                 </div>
   
-                <div className="border-t border-border bg-background p-6">
-                  <div className="flex items-center justify-between">
-                    <div className="text-sm text-muted-foreground">
+                <div className="border-t border-border bg-background p-3 md:p-6 min-w-0">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 min-w-0">
+                    <div className="text-xs md:text-sm text-muted-foreground break-words">
                       Личный прогресс: {selectedSubskill.personalProgress} vs прошлый месяц
                     </div>
-                    <div className="flex items-center gap-3">
-                      <Button 
-                        variant="ghost" 
-                        onClick={() => setSubskillModalOpen(false)}
-                      >
-                        Закрыть
-                      </Button>
-                      <Button 
-                        onClick={() => handleMissionsFilter(selectedSubskill.id)}
-                        className="bg-primary hover:bg-primary-600 text-white"
-                      >
-                        <Target className="w-4 h-4 mr-2" />
-                        Открыть миссии уровня
-                      </Button>
-                    </div>
+                    <Button 
+                      size="sm"
+                      onClick={() => handleMissionsFilter(selectedSubskill.id)}
+                      className="bg-primary hover:bg-primary-600 text-white w-full sm:w-auto"
+                    >
+                      <Target className="w-4 h-4 mr-2" />
+                      <span className="hidden sm:inline">Открыть миссии</span>
+                      <span className="sm:hidden">Миссии</span>
+                    </Button>
                   </div>
                 </div>
               </>
