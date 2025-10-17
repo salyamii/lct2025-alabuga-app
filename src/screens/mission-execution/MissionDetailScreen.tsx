@@ -163,22 +163,22 @@ interface MissionDetailScreenProps {
               <div className="flex-1 min-w-0">
                 <h1 className="text-lg md:text-xl font-semibold text-wrap line-clamp-2">{mission.title}</h1>
                 <div className="flex items-center gap-3 mt-1">
-                  <Badge className="text-xs border bg-primary-200/60 text-primary-600 border-primary-200">
+                  <Badge className="text-xs bg-primary/90 text-white border-primary">
                     {requiredRank?.name || `Ранг ${mission.rankRequirement}`}
                   </Badge>
                   {isPairedMission && (
-                    <Badge variant="outline" className="text-xs bg-soft-cyan/10 text-primary border-soft-cyan/30">
+                    <Badge variant="outline" className="text-xs bg-primary/20 text-primary border-primary/40 font-semibold">
                       <Users className="w-3 h-3 mr-1" />
                       Paired
                     </Badge>
                   )}
                   {isGroupMission && (
-                    <Badge variant="outline" className="text-xs bg-info/10 text-info border-info/30">
+                    <Badge variant="outline" className="text-xs bg-info/20 text-info border-info/40 font-semibold">
                       Группа
                     </Badge>
                   )}
                   {userMission?.isCompleted && (
-                    <Badge variant="outline" className="text-xs bg-success/10 text-success border-success/30">
+                    <Badge variant="outline" className="text-xs bg-success/20 text-success border-success/40 font-semibold">
                       <CheckCircle2 className="w-3 h-3 mr-1" />
                       Завершено
                     </Badge>
@@ -236,7 +236,7 @@ interface MissionDetailScreenProps {
                 {skillsFromRewards.length > 0 && (
                   <div className="flex flex-wrap gap-1.5">
                     {skillsFromRewards.map((skillName, index) => (
-                      <Badge key={index} variant="secondary" className="text-xs bg-primary-200/60 text-primary-600">
+                      <Badge key={index} variant="secondary" className="text-xs bg-primary/20 text-primary border-primary/30 font-semibold">
                         {skillName}
                       </Badge>
                     ))}
@@ -306,7 +306,7 @@ interface MissionDetailScreenProps {
                         {mission.rewardCompetencies.map((reward) => (
                           <div key={reward.competency.id} className="flex items-center justify-between">
                             <span className="text-sm">{reward.competency.name}</span>
-                            <Badge variant="outline" className="text-xs">
+                            <Badge variant="outline" className="text-xs bg-info/15 text-info border-info/40 font-semibold">
                               +{reward.levelIncrease} уровень
                             </Badge>
                           </div>
@@ -330,7 +330,7 @@ interface MissionDetailScreenProps {
                         {mission.rewardSkills.map((reward) => (
                           <div key={reward.skill.id} className="flex items-center justify-between">
                             <span className="text-sm">{reward.skill.name}</span>
-                            <Badge variant="outline" className="text-xs">
+                            <Badge variant="outline" className="text-xs bg-primary/15 text-primary border-primary/40 font-semibold">
                               +{reward.levelIncrease} уровень
                             </Badge>
                           </div>
@@ -354,7 +354,7 @@ interface MissionDetailScreenProps {
                 <CardContent>
                   <div className="flex flex-wrap gap-2">
                     {mission.rewardArtifacts.map((artifact) => (
-                      <Badge key={artifact.id} variant="outline" className="text-sm">
+                      <Badge key={artifact.id} variant="outline" className="text-sm bg-accent-yellow/15 text-accent-yellow border-accent-yellow/40 font-semibold">
                         {artifact.title}
                       </Badge>
                     ))}

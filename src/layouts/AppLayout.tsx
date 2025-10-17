@@ -52,7 +52,7 @@ export default function AppLayout() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col cosmic-bg-space">
       {/* TopAppBar - всегда видимый на всех устройствах */}
       <div className="cosmic-gradient">
         <TopAppBar
@@ -67,7 +67,7 @@ export default function AppLayout() {
           />
         )}
       </div>
-      <main className={`flex-1 ${isMobile ? 'pb-16' : ''}`}>
+      <main className={`flex-1 bg-transparent ${isMobile ? 'pb-16' : ''}`}>
         <Outlet />
         {isMobile && (
           <div

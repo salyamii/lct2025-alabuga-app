@@ -1,116 +1,135 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Original Alabuga Cosmos Colors */
-  --primary: #005DAC; /* Alabuga Blue */
-  --primary-600: #004A8A;
-  --primary-200: #6BA3E5;
-  --navy-accent: #283A97; /* Deep Navy */
-  --info: #00AEEF; /* Sky Blue */
-  --soft-cyan: #6ACFF6; /* Soft Cyan */
+  /* Dark Cosmic Theme - Default */
+  --background: #0A0E1A; /* Deep Space */
+  --surface-dark: #0F1419; /* Dark Surface */
+  --surface-elevated: #1A1F2E; /* Elevated Surface */
+  --card: #151B28; /* Card Background */
+  --card-elevated: #1E2535; /* Elevated Card */
   
-  /* Status Colors - Professional */
-  --rewards-amber: #F5B342; /* Professional Amber */
-  --success: #16A34A; /* Professional Green */
-  --warning: #F59E0B; /* Amber Warning */
-  --danger: #DC2626; /* Professional Red */
+  --foreground: #F0F4FA; /* Light Text */
+  --text-primary: #FFFFFF; /* Pure White */
+  --text-secondary: #B8C5DB; /* Muted Light Blue */
+  --text-muted: #7B8BA8; /* Muted Gray-Blue */
   
-  /* Surface Colors - Light Cosmic */
-  --surface-light: #F8FAFE; /* Light Cosmic Blue */
-  --card: #FFFFFF; /* Pure White */
-  --elevated: #FEFEFF; /* Ultra Light Blue */
-  --border: #E1ECF7; /* Light Cosmic Border */
+  /* Vibrant Cosmic Colors */
+  --primary: #00D9FF; /* Bright Cyan */
+  --primary-light: #4DFFFF; /* Light Cyan */
+  --primary-dark: #00A8CC; /* Dark Cyan */
+  --primary-600: #00A8CC;
+  --primary-200: #4DFFFF;
   
-  /* Text Colors - Professional */
-  --text-primary: #1E293B; /* Dark Slate */
-  --text-secondary: #64748B; /* Slate Gray */
-  --text-icon: #475569; /* Icon Gray */
+  --secondary: #8B5CF6; /* Vibrant Purple */
+  --secondary-light: #A78BFA; /* Light Purple */
+  --secondary-dark: #7C3AED; /* Dark Purple */
+  
+  --accent-pink: #FF006E; /* Vibrant Pink */
+  --accent-orange: #FF5D00; /* Vibrant Orange */
+  --accent-yellow: #FFD600; /* Bright Yellow */
+  --accent-green: #00FF88; /* Neon Green */
+  --accent-blue: #0066FF; /* Electric Blue */
+  
+  /* Status Colors - Vibrant */
+  --success: #00FF88; /* Neon Green */
+  --warning: #FFD600; /* Bright Yellow */
+  --danger: #FF006E; /* Vibrant Pink */
+  --info: #00D9FF; /* Bright Cyan */
+  
+  /* Special Effects */
+  --glow-cyan: rgba(0, 217, 255, 0.4);
+  --glow-purple: rgba(139, 92, 246, 0.4);
+  --glow-pink: rgba(255, 0, 110, 0.4);
+  --glow-green: rgba(0, 255, 136, 0.4);
+  
+  /* Borders */
+  --border: #2A3447; /* Subtle Border */
+  --border-bright: #3D4A63; /* Bright Border */
   
   /* Legacy compatibility */
   --font-size: 16px;
-  --background: var(--surface-light);
-  --foreground: var(--text-primary);
+  --min-screen-width: 320px;
   --card-foreground: var(--text-primary);
-  --popover: var(--card);
+  --popover: var(--card-elevated);
   --popover-foreground: var(--text-primary);
-  --primary-foreground: #ffffff;
-  --secondary: var(--navy-accent);
-  --secondary-foreground: var(--text-primary);
-  --muted: #F0F6FC;
+  --primary-foreground: #0A0E1A;
+  --secondary-foreground: #FFFFFF;
+  --muted: #1E2535;
   --muted-foreground: var(--text-secondary);
-  --accent: var(--info);
-  --accent-foreground: var(--text-primary);
+  --accent: var(--primary);
+  --accent-foreground: var(--background);
   --destructive: var(--danger);
-  --destructive-foreground: #ffffff;
-  --input: #ffffff;
+  --destructive-foreground: #FFFFFF;
+  --input: var(--card);
   --input-background: var(--card);
-  --switch-background: #E2E8F0;
+  --switch-background: #2A3447;
   --font-weight-medium: 500;
   --font-weight-normal: 400;
   --ring: var(--primary);
   --chart-1: var(--primary);
-  --chart-2: var(--info);
-  --chart-3: var(--soft-cyan);
-  --chart-4: var(--rewards-amber);
+  --chart-2: var(--secondary);
+  --chart-3: var(--accent-pink);
+  --chart-4: var(--accent-yellow);
   --chart-5: var(--success);
   --radius: 0.75rem;
   --sidebar: var(--card);
   --sidebar-foreground: var(--text-primary);
   --sidebar-primary: var(--primary);
-  --sidebar-primary-foreground: #ffffff;
+  --sidebar-primary-foreground: var(--primary-foreground);
   --sidebar-accent: var(--muted);
   --sidebar-accent-foreground: var(--text-primary);
   --sidebar-border: var(--border);
   --sidebar-ring: var(--primary);
+  
+  /* Alabuga legacy compatibility */
+  --rewards-amber: var(--accent-yellow);
+  --navy-accent: var(--secondary-dark);
+  --soft-cyan: var(--primary-light);
+  --text-icon: var(--text-secondary);
+  --elevated: var(--card-elevated);
+  --surface-light: var(--card);
 }
 
-.dark {
-  /* Professional dark mode */
-  --background: #0F172A; /* Dark Slate */
-  --foreground: #F8FAFC; /* Light Text */
-  --card: #1E293B; /* Dark Card */
-  --card-foreground: #F8FAFC;
-  --popover: #1E293B;
-  --popover-foreground: #F8FAFC;
-  --primary: #3B82F6; /* Bright Blue */
-  --primary-foreground: #ffffff;
-  --secondary: #475569;
-  --secondary-foreground: #F8FAFC;
-  --muted: #334155;
-  --muted-foreground: #94A3B8;
-  --accent: #0EA5E9;
-  --accent-foreground: #ffffff;
-  --destructive: #EF4444;
-  --destructive-foreground: #ffffff;
-  --border: #334155;
-  --input: #1E293B;
-  --ring: var(--primary);
-  --sidebar: #1E293B;
-  --sidebar-foreground: #F8FAFC;
-  --sidebar-primary: #3B82F6;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #334155;
-  --sidebar-accent-foreground: #F8FAFC;
-  --sidebar-border: #334155;
-  --sidebar-ring: #3B82F6;
+.light {
+  /* Optional light mode */
+  --background: #F8FAFE;
+  --surface-light: #F8FAFE;
+  --card: #FFFFFF;
+  --elevated: #FEFEFF;
+  --border: #E1ECF7;
+  --text-primary: #1E293B;
+  --text-secondary: #475569;
+  --text-icon: #374151;
+  --foreground: var(--text-primary);
+  --card-foreground: var(--text-primary);
+  --muted: #F0F6FC;
+  --muted-foreground: #374151;
 }
 
 @theme inline {
   --color-primary: var(--primary);
+  --color-primary-light: var(--primary-light);
+  --color-primary-dark: var(--primary-dark);
   --color-primary-600: var(--primary-600);
   --color-primary-200: var(--primary-200);
-  --color-navy-accent: var(--navy-accent);
-  --color-info: var(--info);
-  --color-soft-cyan: var(--soft-cyan);
-  --color-rewards-amber: var(--rewards-amber);
+  --color-secondary: var(--secondary);
+  --color-secondary-light: var(--secondary-light);
+  --color-secondary-dark: var(--secondary-dark);
+  --color-accent-pink: var(--accent-pink);
+  --color-accent-orange: var(--accent-orange);
+  --color-accent-yellow: var(--accent-yellow);
+  --color-accent-green: var(--accent-green);
+  --color-accent-blue: var(--accent-blue);
   --color-success: var(--success);
   --color-warning: var(--warning);
   --color-danger: var(--danger);
-  --color-surface-light: var(--surface-light);
-  --color-elevated: var(--elevated);
+  --color-info: var(--info);
+  --color-surface-dark: var(--surface-dark);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-card-elevated: var(--card-elevated);
   --color-text-primary: var(--text-primary);
   --color-text-secondary: var(--text-secondary);
-  --color-text-icon: var(--text-icon);
+  --color-text-muted: var(--text-muted);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -118,7 +137,6 @@
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
   --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
@@ -127,6 +145,7 @@
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
+  --color-border-bright: var(--border-bright);
   --color-input: var(--input);
   --color-input-background: var(--input-background);
   --color-switch-background: var(--switch-background);
@@ -148,6 +167,14 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  
+  /* Legacy compatibility */
+  --color-rewards-amber: var(--rewards-amber);
+  --color-navy-accent: var(--navy-accent);
+  --color-soft-cyan: var(--soft-cyan);
+  --color-text-icon: var(--text-icon);
+  --color-elevated: var(--elevated);
+  --color-surface-light: var(--surface-light);
 }
 
 @layer base {
@@ -156,15 +183,15 @@
   }
 
   body {
-    @apply text-foreground;
+    @apply bg-background text-foreground;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
     min-height: 100vh;
+    min-width: var(--min-screen-width);
   }
 
-  /* Mobile optimization */
-  @media (max-width: 768px) {
+  @media (max-width: 480px) {
     body {
-      /* Clean mobile design */
+      min-width: 320px;
     }
   }
 }
@@ -241,97 +268,198 @@
 }
 
 /**
- * Cosmic Theme Utilities
+ * Cosmic Backgrounds - Different for each screen
  */
 @layer utilities {
-  /* Light Cosmic Background - Beautiful Starfield */
-  .cosmic-starfield-bg {
-    background: 
-      /* Enhanced nebula clouds - more visible */
-      radial-gradient(ellipse 800px 600px at 20% 40%, rgba(106, 207, 246, 0.15) 0%, transparent 60%),
-      radial-gradient(ellipse 600px 800px at 80% 20%, rgba(0, 174, 240, 0.12) 0%, transparent 60%),
-      radial-gradient(ellipse 1000px 400px at 50% 80%, rgba(0, 93, 172, 0.08) 0%, transparent 60%),
-      radial-gradient(ellipse 400px 600px at 70% 10%, rgba(106, 207, 246, 0.06) 0%, transparent 50%),
-      
-      /* Scattered stars pattern - more prominent */
-      radial-gradient(circle at 15% 15%, rgba(255, 255, 255, 0.9) 1.5px, transparent 1.5px),
-      radial-gradient(circle at 85% 25%, rgba(255, 255, 255, 0.7) 1px, transparent 1px),
-      radial-gradient(circle at 70% 60%, rgba(255, 255, 255, 0.8) 1.2px, transparent 1.2px),
-      radial-gradient(circle at 25% 75%, rgba(255, 255, 255, 0.6) 1px, transparent 1px),
-      radial-gradient(circle at 95% 85%, rgba(255, 255, 255, 0.9) 1.5px, transparent 1.5px),
-      radial-gradient(circle at 45% 35%, rgba(255, 255, 255, 0.5) 0.8px, transparent 0.8px),
-      radial-gradient(circle at 5% 90%, rgba(255, 255, 255, 0.7) 1.2px, transparent 1.2px),
-      radial-gradient(circle at 90% 5%, rgba(255, 255, 255, 0.6) 1px, transparent 1px),
-      
-      /* Additional twinkling cosmic stars - enhanced */
-      radial-gradient(circle at 35% 20%, rgba(106, 207, 246, 1) 0.8px, transparent 0.8px),
-      radial-gradient(circle at 65% 80%, rgba(0, 174, 240, 0.9) 0.6px, transparent 0.6px),
-      radial-gradient(circle at 80% 40%, rgba(255, 255, 255, 1) 0.8px, transparent 0.8px),
-      radial-gradient(circle at 20% 70%, rgba(106, 207, 246, 0.8) 0.6px, transparent 0.6px),
-      radial-gradient(circle at 60% 30%, rgba(0, 174, 240, 0.7) 0.5px, transparent 0.5px),
-      radial-gradient(circle at 30% 60%, rgba(106, 207, 246, 0.6) 0.5px, transparent 0.5px),
-      
-      /* Base enhanced cosmic gradient - more noticeable */
-      linear-gradient(135deg, 
-        #F0F8FF 0%, 
-        #F6FBFF 20%, 
-        #EBF6FF 40%, 
-        #F3F9FF 60%, 
-        #F8FCFF 80%, 
-        #F0F8FF 100%);
-        
-    /* Animated subtle particle effects */
-    animation: cosmic-drift 20s ease-in-out infinite alternate;
+  /* Main Space Background - Deep space with stars and cosmic elements */
+  .cosmic-bg-space, .cosmic-starfield-bg {
+    background-color: var(--background);
+    background-image: 
+      /* Cosmic glow overlays */
+      radial-gradient(ellipse 120% 80% at 10% 20%, rgba(139, 92, 246, 0.18) 0%, transparent 50%),
+      radial-gradient(ellipse 100% 90% at 90% 80%, rgba(255, 0, 110, 0.12) 0%, transparent 50%),
+      radial-gradient(ellipse 150% 100% at 50% 50%, rgba(0, 217, 255, 0.10) 0%, transparent 60%),
+      /* Stars - brighter and more visible */
+      radial-gradient(3px 3px at 20% 30%, rgba(255, 255, 255, 0.9), transparent),
+      radial-gradient(2px 2px at 60% 70%, rgba(255, 255, 255, 0.7), transparent),
+      radial-gradient(2px 2px at 50% 50%, rgba(255, 255, 255, 0.6), transparent),
+      radial-gradient(2px 2px at 80% 10%, rgba(255, 255, 255, 0.8), transparent),
+      radial-gradient(1px 1px at 90% 60%, rgba(255, 255, 255, 0.5), transparent),
+      radial-gradient(3px 3px at 33% 85%, rgba(0, 217, 255, 0.8), transparent),
+      radial-gradient(2px 2px at 15% 60%, rgba(139, 92, 246, 0.7), transparent),
+      radial-gradient(2px 2px at 45% 40%, rgba(255, 214, 0, 0.6), transparent);
+    background-size: 
+      100% 100%,
+      100% 100%,
+      100% 100%,
+      550px 550px,
+      350px 350px,
+      250px 250px,
+      450px 450px,
+      400px 400px,
+      300px 300px,
+      200px 200px,
+      320px 320px;
+    background-position: 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0;
+    background-repeat: no-repeat, no-repeat, no-repeat, repeat, repeat, repeat, repeat, repeat, repeat, repeat, repeat;
+    animation: starfield-move 120s linear infinite;
   }
 
-  @keyframes cosmic-drift {
-    0% {
-      background-position: 
-        20% 40%, 80% 20%, 50% 80%,
-        15% 15%, 85% 25%, 70% 60%, 25% 75%, 95% 85%, 45% 35%, 5% 90%, 90% 5%,
-        35% 20%, 65% 80%, 80% 40%, 20% 70%,
-        0% 0%;
-    }
-    100% {
-      background-position: 
-        22% 42%, 82% 22%, 52% 82%,
-        17% 17%, 87% 27%, 72% 62%, 27% 77%, 97% 87%, 47% 37%, 7% 92%, 92% 7%,
-        37% 22%, 67% 82%, 82% 42%, 22% 72%,
-        0% 0%;
-    }
+  /* Nebula Background - Purple and pink nebula */
+  .cosmic-bg-nebula {
+    background-color: var(--background);
+    background-image:
+      /* Color gradients */
+      radial-gradient(ellipse 140% 100% at 30% 40%, rgba(139, 92, 246, 0.30) 0%, transparent 60%),
+      radial-gradient(ellipse 130% 90% at 70% 60%, rgba(255, 0, 110, 0.22) 0%, transparent 60%),
+      radial-gradient(ellipse 160% 110% at 50% 30%, rgba(0, 217, 255, 0.15) 0%, transparent 70%),
+      /* Stars */
+      radial-gradient(3px 3px at 25% 25%, rgba(255, 255, 255, 0.8), transparent),
+      radial-gradient(2px 2px at 75% 75%, rgba(255, 255, 255, 0.7), transparent),
+      radial-gradient(2px 2px at 40% 80%, rgba(139, 92, 246, 0.8), transparent),
+      radial-gradient(2px 2px at 90% 20%, rgba(255, 0, 110, 0.7), transparent),
+      radial-gradient(2px 2px at 55% 45%, rgba(0, 217, 255, 0.6), transparent);
+    background-size: 
+      100% 100%,
+      100% 100%,
+      100% 100%,
+      400px 400px,
+      300px 300px,
+      200px 200px,
+      350px 350px,
+      280px 280px;
+    background-position: 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0;
+    background-repeat: no-repeat, no-repeat, no-repeat, repeat, repeat, repeat, repeat, repeat;
   }
 
-  /* Responsive cosmic background for mobile */
-  @media (max-width: 768px) {
-    .cosmic-starfield-bg {
-      animation: none; /* Disable animation on mobile for performance */
-      background: 
-        radial-gradient(ellipse 400px 300px at 20% 40%, rgba(106, 207, 246, 0.12) 0%, transparent 50%),
-        radial-gradient(ellipse 300px 400px at 80% 20%, rgba(0, 174, 240, 0.08) 0%, transparent 50%),
-        radial-gradient(circle at 15% 15%, rgba(255, 255, 255, 0.8) 1px, transparent 1px),
-        radial-gradient(circle at 85% 25%, rgba(255, 255, 255, 0.6) 1px, transparent 1px),
-        radial-gradient(circle at 70% 60%, rgba(255, 255, 255, 0.7) 1px, transparent 1px),
-        radial-gradient(circle at 25% 75%, rgba(255, 255, 255, 0.5) 1px, transparent 1px),
-        radial-gradient(circle at 35% 20%, rgba(106, 207, 246, 0.8) 0.6px, transparent 0.6px),
-        radial-gradient(circle at 65% 80%, rgba(0, 174, 240, 0.7) 0.5px, transparent 0.5px),
-        linear-gradient(135deg, #F0F8FF 0%, #F6FBFF 50%, #F0F8FF 100%);
-    }
+  /* Galaxy Background - Spiral galaxy */
+  .cosmic-bg-galaxy {
+    background-color: var(--background);
+    background-image:
+      /* Color gradients */
+      radial-gradient(ellipse 150% 120% at 50% 50%, rgba(0, 217, 255, 0.18) 0%, rgba(139, 92, 246, 0.15) 30%, transparent 60%),
+      radial-gradient(ellipse 110% 100% at 20% 70%, rgba(255, 0, 110, 0.15) 0%, transparent 50%),
+      radial-gradient(ellipse 100% 90% at 80% 30%, rgba(255, 214, 0, 0.12) 0%, transparent 50%),
+      /* Stars */
+      radial-gradient(2px 2px at 20% 20%, rgba(255, 255, 255, 0.8), transparent),
+      radial-gradient(2px 2px at 80% 80%, rgba(255, 255, 255, 0.7), transparent),
+      radial-gradient(3px 3px at 50% 50%, rgba(0, 217, 255, 1), transparent),
+      radial-gradient(2px 2px at 30% 60%, rgba(255, 214, 0, 0.8), transparent),
+      radial-gradient(2px 2px at 65% 35%, rgba(139, 92, 246, 0.7), transparent);
+    background-size:
+      100% 100%,
+      100% 100%,
+      100% 100%,
+      350px 350px,
+      250px 250px,
+      150px 150px,
+      300px 300px,
+      270px 270px;
+    background-position: 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0;
+    background-repeat: no-repeat, no-repeat, no-repeat, repeat, repeat, repeat, repeat, repeat;
   }
 
+  /* Planet Background - With visible planets */
+  .cosmic-bg-planet {
+    background-color: var(--background);
+    background-image:
+      /* Pink planet glow */
+      radial-gradient(circle 25% at 15% 25%, rgba(255, 0, 110, 0.40) 0%, rgba(255, 0, 110, 0.15) 40%, transparent 50%),
+      /* Cyan planet glow */
+      radial-gradient(circle 30% at 85% 70%, rgba(0, 217, 255, 0.35) 0%, rgba(0, 217, 255, 0.12) 45%, transparent 55%),
+      /* Purple nebula */
+      radial-gradient(ellipse 120% 80% at 40% 80%, rgba(139, 92, 246, 0.18) 0%, transparent 60%),
+      /* Stars */
+      radial-gradient(3px 3px at 50% 20%, rgba(255, 255, 255, 0.9), transparent),
+      radial-gradient(2px 2px at 30% 50%, rgba(255, 255, 255, 0.7), transparent),
+      radial-gradient(2px 2px at 70% 60%, rgba(0, 217, 255, 0.8), transparent),
+      radial-gradient(2px 2px at 85% 40%, rgba(255, 0, 110, 0.7), transparent);
+    background-size:
+      100% 100%,
+      100% 100%,
+      100% 100%,
+      300px 300px,
+      200px 200px,
+      250px 250px,
+      220px 220px;
+    background-position: 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0;
+    background-repeat: no-repeat, no-repeat, no-repeat, repeat, repeat, repeat, repeat;
+  }
+
+  /* Aurora Background - Northern lights */
+  .cosmic-bg-aurora {
+    background-color: var(--background);
+    background-image:
+      /* Aurora waves */
+      linear-gradient(180deg, transparent 0%, rgba(0, 217, 255, 0.15) 40%, rgba(139, 92, 246, 0.22) 60%, transparent 100%),
+      linear-gradient(135deg, transparent 0%, rgba(255, 0, 110, 0.12) 50%, transparent 100%),
+      linear-gradient(225deg, transparent 0%, rgba(0, 217, 255, 0.10) 50%, transparent 100%),
+      /* Stars */
+      radial-gradient(2px 2px at 25% 35%, rgba(255, 255, 255, 0.8), transparent),
+      radial-gradient(2px 2px at 75% 65%, rgba(255, 255, 255, 0.7), transparent),
+      radial-gradient(3px 3px at 45% 15%, rgba(0, 217, 255, 0.9), transparent),
+      radial-gradient(2px 2px at 60% 50%, rgba(139, 92, 246, 0.7), transparent);
+    background-size:
+      100% 100%,
+      100% 100%,
+      100% 100%,
+      250px 250px,
+      200px 200px,
+      180px 180px,
+      230px 230px;
+    background-position: 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0;
+    background-repeat: no-repeat, no-repeat, no-repeat, repeat, repeat, repeat, repeat;
+  }
+
+  /* Cosmic glow effects */
+  .cosmic-glow-cyan {
+    box-shadow: 0 0 20px var(--glow-cyan), 0 0 40px var(--glow-cyan);
+  }
+
+  .cosmic-glow-purple {
+    box-shadow: 0 0 20px var(--glow-purple), 0 0 40px var(--glow-purple);
+  }
+
+  .cosmic-glow-pink {
+    box-shadow: 0 0 20px var(--glow-pink), 0 0 40px var(--glow-pink);
+  }
+
+  .cosmic-glow-green {
+    box-shadow: 0 0 20px var(--glow-green), 0 0 40px var(--glow-green);
+  }
+
+  /* Gradient utilities */
   .cosmic-gradient {
-    background: linear-gradient(135deg, var(--navy-accent) 0%, var(--primary) 50%, var(--info) 100%);
-  }
-  
-  .cosmic-gradient-subtle {
-    background: linear-gradient(135deg, rgba(40, 58, 151, 0.05) 0%, rgba(0, 93, 172, 0.08) 50%, rgba(0, 174, 240, 0.05) 100%);
+    background: linear-gradient(135deg, var(--surface-elevated) 0%, var(--card-elevated) 100%);
   }
 
+  .cosmic-gradient-subtle {
+    background: linear-gradient(135deg, rgba(0, 217, 255, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
+  }
+
+  .cosmic-gradient-cyan {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+  }
+
+  .cosmic-gradient-purple {
+    background: linear-gradient(135deg, var(--secondary) 0%, var(--secondary-light) 100%);
+  }
+
+  .cosmic-gradient-pink {
+    background: linear-gradient(135deg, var(--accent-pink) 0%, var(--accent-orange) 100%);
+  }
+
+  .cosmic-gradient-multi {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 50%, var(--accent-pink) 100%);
+  }
+
+  /* Legacy cosmic backdrop for compatibility */
   .cosmic-backdrop {
-    background: radial-gradient(ellipse at center, rgba(0, 93, 172, 0.1) 0%, rgba(40, 58, 151, 0.05) 50%, transparent 100%);
+    background: radial-gradient(ellipse at center, rgba(0, 217, 255, 0.1) 0%, rgba(139, 92, 246, 0.05) 50%, transparent 100%);
   }
 
   .stellar-glow {
-    box-shadow: 0 0 20px rgba(106, 207, 246, 0.3), 0 0 40px rgba(0, 174, 240, 0.2);
+    box-shadow: 0 0 20px var(--glow-cyan), 0 0 40px var(--glow-cyan);
   }
 
   .nebula-border {
@@ -340,76 +468,38 @@
                 linear-gradient(135deg, var(--soft-cyan), var(--info), var(--primary)) border-box;
   }
   
+  /* Enhanced orbital border */
   .orbital-border {
     border: 1px solid var(--border);
     position: relative;
     background: var(--card);
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.08), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-  }
-  
-  .orbital-border::before {
-    content: '';
-    position: absolute;
-    inset: -1px;
-    padding: 1px;
-    background: linear-gradient(135deg, var(--soft-cyan), transparent, var(--info));
-    border-radius: inherit;
-    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    mask-composite: xor;
-    pointer-events: none;
-    opacity: 0.2;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   }
 
   .orbital-border-enhanced {
-    border: 1px solid var(--border);
+    border: 2px solid transparent;
     position: relative;
     background: var(--card);
-    box-shadow: 0 2px 8px rgba(0, 93, 172, 0.08), 0 1px 3px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    background-clip: padding-box;
   }
-  
+
   .orbital-border-enhanced::before {
     content: '';
     position: absolute;
-    inset: -1px;
-    padding: 1px;
-    background: linear-gradient(135deg, var(--soft-cyan), var(--info), var(--primary), transparent);
+    inset: -2px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary), var(--accent-pink));
     border-radius: inherit;
-    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    mask-composite: xor;
-    pointer-events: none;
-    opacity: 0.3;
-    animation: orbit-glow 6s ease-in-out infinite alternate;
+    opacity: 0.5;
+    z-index: -1;
   }
 
-  @keyframes orbit-glow {
-    0% { opacity: 0.2; }
-    100% { opacity: 0.4; }
-  }
-
-  @keyframes stellar-pulse {
-    0%, 100% { opacity: 0.5; }
-    50% { opacity: 1; }
-  }
-
-  @keyframes cosmic-float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-5px); }
-  }
-
-  .stellar-pulse {
-    animation: stellar-pulse 4s ease-in-out infinite;
-  }
-
-  .cosmic-float {
-    animation: cosmic-float 8s ease-in-out infinite;
-  }
-  
   .elevation-cosmic {
-    box-shadow: 0 4px 12px rgba(0, 93, 172, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2);
   }
 
   .elevation-cosmic-enhanced {
-    box-shadow: 0 8px 25px rgba(0, 93, 172, 0.12), 0 4px 8px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4), 0 4px 8px rgba(0, 0, 0, 0.3);
   }
   
   .cockpit-line {
@@ -427,26 +517,27 @@
     transform: translateY(-50%);
   }
 
-  /* Enhanced card readability - Improved backgrounds */
+  /* Enhanced card readability */
   .card-enhanced {
     background: var(--card);
     border: 1px solid var(--border);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     transition: all 0.2s ease;
   }
 
   .card-enhanced:hover {
-    box-shadow: 0 4px 12px rgba(0, 93, 172, 0.08), 0 2px 6px rgba(0, 0, 0, 0.08);
-    border-color: var(--border);
+    box-shadow: 0 4px 16px rgba(0, 217, 255, 0.2), 0 2px 8px rgba(0, 0, 0, 0.4);
+    border-color: var(--border-bright);
   }
 
-  /* Mission Cards - Enhanced cosmic design */
+  /* Mission Cards - Vibrant cosmic design */
   .mission-card {
     background: var(--card);
-    border: 1px solid var(--border);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    border: 2px solid transparent;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
     transition: all 0.3s ease;
     position: relative;
+    overflow: hidden;
   }
 
   .mission-card::before {
@@ -454,11 +545,9 @@
     position: absolute;
     inset: 0;
     background: linear-gradient(135deg, 
-      rgba(0, 93, 172, 0.02) 0%, 
-      transparent 30%, 
-      transparent 70%, 
-      rgba(0, 174, 240, 0.02) 100%);
-    pointer-events: none;
+      rgba(0, 217, 255, 0.1) 0%, 
+      rgba(139, 92, 246, 0.1) 50%,
+      rgba(255, 0, 110, 0.1) 100%);
     opacity: 0;
     transition: opacity 0.3s ease;
   }
@@ -468,16 +557,32 @@
   }
 
   .mission-card:hover {
-    box-shadow: 0 6px 16px rgba(0, 93, 172, 0.1), 0 2px 8px rgba(0, 0, 0, 0.08);
     border-color: var(--primary);
-    transform: translateY(-1px);
+    box-shadow: 0 8px 24px var(--glow-cyan), 0 4px 12px rgba(0, 0, 0, 0.4);
+    transform: translateY(-4px);
   }
 
-  /* Store Cards - Enhanced cosmic gradients */
+  /* Mission card variants */
+  .mission-card-active {
+    border-color: var(--primary);
+    box-shadow: 0 0 20px var(--glow-cyan);
+  }
+
+  .mission-card-epic {
+    border-color: var(--secondary);
+    box-shadow: 0 0 20px var(--glow-purple);
+  }
+
+  .mission-card-legendary {
+    border-color: var(--accent-yellow);
+    box-shadow: 0 0 20px rgba(255, 214, 0, 0.4);
+  }
+
+  /* Store Cards - Vibrant design */
   .store-card {
-    background: linear-gradient(135deg, var(--card) 0%, rgba(0, 93, 172, 0.02) 100%);
-    border: 1px solid var(--border);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+    background: linear-gradient(135deg, var(--card) 0%, rgba(139, 92, 246, 0.05) 100%);
+    border: 2px solid transparent;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
     transition: all 0.3s ease;
     position: relative;
   }
@@ -485,13 +590,15 @@
   .store-card::after {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--soft-cyan), transparent);
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border-radius: inherit;
     opacity: 0;
     transition: opacity 0.3s ease;
+    z-index: -1;
   }
 
   .store-card:hover::after {
@@ -499,48 +606,29 @@
   }
 
   .store-card:hover {
-    background: linear-gradient(135deg, var(--card) 0%, rgba(0, 93, 172, 0.04) 100%);
-    box-shadow: 0 6px 20px rgba(0, 93, 172, 0.1);
-    border-color: var(--primary);
-    transform: translateY(-2px);
+    box-shadow: 0 12px 30px var(--glow-purple);
+    transform: translateY(-4px) scale(1.02);
   }
 
-  /* Badge system improvements - Enhanced cosmic design */
+  /* Badge system improvements */
   .badge-card {
     background: var(--card);
     border: 2px solid var(--border);
-    box-shadow: 0 2px 8px rgba(0, 93, 172, 0.08);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
     transition: all 0.3s ease;
     position: relative;
-    overflow: hidden;
-  }
-
-  .badge-card::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: linear-gradient(45deg, transparent, rgba(106, 207, 246, 0.1), transparent);
-    transform: rotate(45deg);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-
-  .badge-card:hover::before {
-    opacity: 1;
   }
 
   .badge-card:hover {
     border-color: var(--primary);
-    box-shadow: 0 6px 20px rgba(0, 93, 172, 0.15);
+    box-shadow: 0 8px 20px var(--glow-cyan);
     transform: translateY(-2px);
   }
 
   .badge-earned {
-    background: linear-gradient(135deg, var(--card) 0%, rgba(0, 93, 172, 0.05) 100%);
+    background: linear-gradient(135deg, var(--card) 0%, rgba(0, 217, 255, 0.1) 100%);
     border-color: var(--primary);
+    box-shadow: 0 0 20px var(--glow-cyan);
   }
 
   .badge-earned::after {
@@ -555,16 +643,15 @@
   }
 
   .badge-locked {
-    background: var(--muted);
-    opacity: 0.6;
-    filter: grayscale(0.5);
+    opacity: 0.5;
+    filter: grayscale(0.6);
   }
 
-  /* Progress Cards - Enhanced cosmic theme */
+  /* Progress Cards */
   .progress-card {
-    background: linear-gradient(135deg, var(--card) 0%, rgba(0, 174, 240, 0.02) 100%);
+    background: linear-gradient(135deg, var(--card) 0%, rgba(0, 217, 255, 0.03) 100%);
     border: 1px solid var(--border);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     position: relative;
   }
 
@@ -574,7 +661,7 @@
     inset: 0;
     background: linear-gradient(135deg, 
       transparent 0%, 
-      rgba(0, 174, 240, 0.05) 50%, 
+      rgba(0, 217, 255, 0.08) 50%, 
       transparent 100%);
     opacity: 0;
     transition: opacity 0.3s ease;
@@ -585,15 +672,15 @@
   }
 
   .progress-card:hover {
-    background: linear-gradient(135deg, var(--card) 0%, rgba(0, 174, 240, 0.04) 100%);
-    box-shadow: 0 4px 12px rgba(0, 174, 240, 0.1);
+    background: linear-gradient(135deg, var(--card) 0%, rgba(0, 217, 255, 0.06) 100%);
+    box-shadow: 0 4px 12px rgba(0, 217, 255, 0.2);
   }
 
-  /* Admin Cards - Professional cosmic design */
+  /* Admin Cards */
   .admin-card {
     background: var(--card);
     border: 1px solid var(--border);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
     position: relative;
   }
 
@@ -614,11 +701,11 @@
   }
 
   .admin-card:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
     border-color: var(--primary);
   }
 
-  /* Mission launch animation - Enhanced */
+  /* Mission launch animation */
   .mission-launch-btn {
     transition: all 0.3s ease;
     position: relative;
@@ -632,7 +719,7 @@
     left: 50%;
     width: 0;
     height: 0;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(0, 217, 255, 0.4) 0%, transparent 70%);
     transition: all 0.3s ease;
     transform: translate(-50%, -50%);
   }
@@ -644,10 +731,10 @@
 
   .mission-launch-btn:hover {
     transform: scale(1.05);
-    box-shadow: 0 8px 25px rgba(0, 93, 172, 0.3);
+    box-shadow: 0 8px 25px var(--glow-cyan);
   }
 
-  /* Clean status indicators - Enhanced */
+  /* Status indicators */
   .status-indicator {
     display: inline-flex;
     align-items: center;
@@ -657,43 +744,28 @@
     font-size: 0.75rem;
     font-weight: 500;
     position: relative;
-    overflow: hidden;
-  }
-
-  .status-indicator::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: left 0.5s ease;
-  }
-
-  .status-indicator:hover::before {
-    left: 100%;
   }
 
   .status-active {
-    background: rgba(22, 163, 74, 0.1);
-    color: rgb(22, 163, 74);
-    border: 1px solid rgba(22, 163, 74, 0.2);
+    background: rgba(0, 255, 136, 0.15);
+    color: var(--success);
+    border: 1px solid var(--success);
+    box-shadow: 0 0 10px var(--glow-green);
   }
 
   .status-pending {
-    background: rgba(245, 158, 11, 0.1);
-    color: rgb(245, 158, 11);
-    border: 1px solid rgba(245, 158, 11, 0.2);
+    background: rgba(255, 214, 0, 0.15);
+    color: var(--warning);
+    border: 1px solid var(--warning);
   }
 
   .status-inactive {
-    background: rgba(107, 114, 128, 0.1);
-    color: rgb(107, 114, 128);
-    border: 1px solid rgba(107, 114, 128, 0.2);
+    background: rgba(123, 139, 168, 0.15);
+    color: var(--text-muted);
+    border: 1px solid var(--border);
   }
 
-  /* Skill tree visual improvements - Enhanced cosmic */
+  /* Skill tree visual improvements */
   .skill-tree-node {
     background: var(--card);
     border: 2px solid var(--border);
@@ -714,12 +786,12 @@
   }
 
   .skill-tree-node:hover::before {
-    opacity: 0.2;
+    opacity: 0.3;
   }
 
   .skill-tree-node:hover {
     border-color: var(--primary);
-    box-shadow: 0 4px 12px rgba(0, 93, 172, 0.15);
+    box-shadow: 0 4px 12px var(--glow-cyan);
     transform: translateY(-2px);
   }
 
@@ -748,7 +820,7 @@
   /* Enhanced cosmic backgrounds for special elements */
   .cosmic-hero {
     background: linear-gradient(135deg, 
-      var(--navy-accent) 0%,
+      var(--secondary-dark) 0%,
       var(--primary) 30%,
       var(--info) 70%,
       var(--soft-cyan) 100%);
@@ -764,8 +836,8 @@
   }
 
   .cosmic-event-card {
-    background: linear-gradient(135deg, var(--card) 0%, rgba(106, 207, 246, 0.05) 100%);
-    border: 1px solid rgba(106, 207, 246, 0.2);
+    background: linear-gradient(135deg, var(--card) 0%, rgba(0, 217, 255, 0.08) 100%);
+    border: 1px solid rgba(0, 217, 255, 0.2);
     position: relative;
     overflow: hidden;
   }
@@ -778,25 +850,459 @@
     width: 100%;
     height: 2px;
     background: linear-gradient(90deg, transparent, var(--soft-cyan), transparent);
-    animation: cosmic-sweep 6s ease-in-out infinite;
   }
 
-  @keyframes cosmic-sweep {
-    0% { left: -100%; }
-    50% { left: 100%; }
-    100% { left: -100%; }
+  /* Neon text effects */
+  .text-neon-cyan {
+    color: var(--primary);
+    text-shadow: 0 0 10px var(--glow-cyan);
   }
 
-  /* Mobile-first improvements - Enhanced */
+  .text-neon-purple {
+    color: var(--secondary);
+    text-shadow: 0 0 10px var(--glow-purple);
+  }
+
+  .text-neon-pink {
+    color: var(--accent-pink);
+    text-shadow: 0 0 10px var(--glow-pink);
+  }
+
+  /* Badge improvements for better text visibility */
+  .badge-on-gradient {
+    background: rgba(255, 255, 255, 0.35) !important;
+    color: var(--background) !important;
+    border: 1px solid rgba(255, 255, 255, 0.45) !important;
+    font-weight: 600 !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) !important;
+  }
+
+  .badge-on-dark {
+    background: rgba(255, 255, 255, 0.2) !important;
+    color: var(--text-primary) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    font-weight: 600 !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) !important;
+  }
+
+  /* Stat Cards with themed colors and glows */
+  .stat-card-amber {
+    background: var(--card);
+    border: 2px solid rgba(255, 214, 0, 0.3);
+    box-shadow: 
+      0 2px 8px rgba(0, 0, 0, 0.3),
+      0 0 20px rgba(255, 214, 0, 0.15);
+    transition: all 0.3s ease;
+  }
+
+  .stat-card-amber:hover {
+    border-color: rgba(255, 214, 0, 0.5);
+    box-shadow: 
+      0 4px 16px rgba(0, 0, 0, 0.4),
+      0 0 30px rgba(255, 214, 0, 0.3),
+      0 0 50px rgba(255, 214, 0, 0.2);
+    transform: translateY(-2px);
+  }
+
+  .stat-card-cyan {
+    background: var(--card);
+    border: 2px solid rgba(77, 255, 255, 0.3);
+    box-shadow: 
+      0 2px 8px rgba(0, 0, 0, 0.3),
+      0 0 20px rgba(77, 255, 255, 0.15);
+    transition: all 0.3s ease;
+  }
+
+  .stat-card-cyan:hover {
+    border-color: rgba(77, 255, 255, 0.5);
+    box-shadow: 
+      0 4px 16px rgba(0, 0, 0, 0.4),
+      0 0 30px rgba(77, 255, 255, 0.3),
+      0 0 50px rgba(77, 255, 255, 0.2);
+    transform: translateY(-2px);
+  }
+
+  .stat-card-primary {
+    background: var(--card);
+    border: 2px solid rgba(0, 217, 255, 0.3);
+    box-shadow: 
+      0 2px 8px rgba(0, 0, 0, 0.3),
+      0 0 20px rgba(0, 217, 255, 0.15);
+    transition: all 0.3s ease;
+  }
+
+  .stat-card-primary:hover {
+    border-color: rgba(0, 217, 255, 0.5);
+    box-shadow: 
+      0 4px 16px rgba(0, 0, 0, 0.4),
+      0 0 30px rgba(0, 217, 255, 0.3),
+      0 0 50px rgba(0, 217, 255, 0.2);
+    transform: translateY(-2px);
+  }
+
+  .stat-card-purple {
+    background: var(--card);
+    border: 2px solid rgba(124, 58, 237, 0.3);
+    box-shadow: 
+      0 2px 8px rgba(0, 0, 0, 0.3),
+      0 0 20px rgba(124, 58, 237, 0.15);
+    transition: all 0.3s ease;
+  }
+
+  .stat-card-purple:hover {
+    border-color: rgba(124, 58, 237, 0.5);
+    box-shadow: 
+      0 4px 16px rgba(0, 0, 0, 0.4),
+      0 0 30px rgba(124, 58, 237, 0.3),
+      0 0 50px rgba(124, 58, 237, 0.2);
+    transform: translateY(-2px);
+  }
+
+  /* Icon bounce animation - diagonal bounce */
+  @keyframes icon-bounce {
+    0%, 100% {
+      transform: translate(0, 0) rotate(0deg);
+    }
+    50% {
+      transform: translate(4px, -10px) rotate(5deg);
+    }
+  }
+
+  /* Shimmer animation for event cards */
+  @keyframes shimmer {
+    0% {
+      left: -100%;
+    }
+    50% {
+      left: 100%;
+    }
+    100% {
+      left: 100%;
+    }
+  }
+
+  /* Pulsing glow animation */
+  @keyframes glow-pulse {
+    0%, 100% {
+      opacity: 0.3;
+      filter: brightness(1);
+    }
+    50% {
+      opacity: 0.15;
+      filter: brightness(1.2);
+    }
+  }
+
+  /* Icon glow pulse animation */
+  @keyframes icon-glow-pulse {
+    0%, 100% {
+      opacity: 1;
+      filter: drop-shadow(0 0 2px currentColor) brightness(1);
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.7;
+      filter: drop-shadow(0 0 8px currentColor) brightness(1.3);
+      transform: scale(1.05);
+    }
+  }
+
+  .icon-glow-pulse {
+    animation: icon-glow-pulse 2s ease-in-out infinite;
+  }
+
+  /* Flowing glow animation - light flows across the icon */
+  @keyframes flowing-glow {
+    0% {
+      filter: 
+        drop-shadow(-6px -6px 8px rgba(0, 168, 204, 0.6))
+        drop-shadow(0 0 0px transparent);
+    }
+    25% {
+      filter: 
+        drop-shadow(0 -6px 8px rgba(0, 168, 204, 0.6))
+        drop-shadow(-6px -6px 4px rgba(0, 168, 204, 0.3));
+    }
+    50% {
+      filter: 
+        drop-shadow(6px -6px 8px rgba(0, 168, 204, 0.6))
+        drop-shadow(0 -6px 4px rgba(0, 168, 204, 0.3));
+    }
+    75% {
+      filter: 
+        drop-shadow(6px 6px 8px rgba(0, 168, 204, 0.6))
+        drop-shadow(6px -6px 4px rgba(0, 168, 204, 0.3));
+    }
+    100% {
+      filter: 
+        drop-shadow(-6px -6px 8px rgba(0, 168, 204, 0.6))
+        drop-shadow(6px 6px 4px rgba(0, 168, 204, 0.3));
+    }
+  }
+
+  .icon-flowing-glow {
+    animation: flowing-glow 4s ease-in-out infinite;
+  }
+
+  /* Icon rotation animation */
+  @keyframes icon-rotate {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  .icon-rotate {
+    animation: icon-rotate 10s linear infinite;
+  }
+
+  .event-card-shimmer {
+    position: relative;
+    overflow: hidden;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    transition: all 0.3s ease;
+  }
+
+  .event-card-shimmer:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+  }
+
+  .event-card-shimmer:hover .event-card-glow {
+    opacity: 0.5;
+  }
+
+  .event-card-shimmer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.2) 50%,
+      transparent 100%
+    );
+    animation: shimmer 4s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 20;
+    transform: skewX(-20deg);
+  }
+
+  /* Border shimmer effect */
+  @keyframes border-shimmer {
+    0%, 100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  .event-card-shimmer::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    background: linear-gradient(
+      120deg,
+      transparent,
+      currentColor,
+      transparent
+    );
+    background-size: 200% 100%;
+    animation: border-shimmer 3s ease-in-out infinite;
+    opacity: 0.4;
+    z-index: -1;
+  }
+
+  .event-card-glow {
+    animation: glow-pulse 2s ease-in-out infinite;
+  }
+
+  .stat-card-amber:hover .icon-bounce-on-hover,
+  .stat-card-cyan:hover .icon-bounce-on-hover,
+  .stat-card-primary:hover .icon-bounce-on-hover,
+  .stat-card-purple:hover .icon-bounce-on-hover,
+  .stat-card-neutral:hover .icon-bounce-on-hover {
+    animation: icon-bounce 0.6s ease-in-out;
+  }
+
+  /* Neutral stat cards with bottom glow - no hover effect */
+  .stat-card-neutral {
+    background: var(--card);
+    border: 2px solid var(--border);
+    box-shadow: 
+      0 2px 8px rgba(0, 0, 0, 0.3),
+      0 8px 20px rgba(0, 217, 255, 0.1);
+    position: relative;
+    transition: none;
+  }
+
+  .stat-card-neutral::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, 
+      transparent 0%, 
+      rgba(0, 217, 255, 0.4) 25%,
+      rgba(139, 92, 246, 0.4) 50%,
+      rgba(0, 217, 255, 0.4) 75%,
+      transparent 100%);
+    border-radius: 0 0 0.75rem 0.75rem;
+    opacity: 0.6;
+  }
+
+  /* Additional glow variants for competencies and skills */
+  .glow-green {
+    border: 2px solid rgba(0, 255, 136, 0.25);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), 0 0 15px rgba(0, 255, 136, 0.15);
+    transition: all 0.3s ease;
+  }
+
+  .glow-green:hover {
+    border-color: rgba(0, 255, 136, 0.4);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), 0 0 25px rgba(0, 255, 136, 0.25);
+  }
+
+  .glow-orange {
+    border: 2px solid rgba(255, 93, 0, 0.25);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), 0 0 15px rgba(255, 93, 0, 0.15);
+    transition: all 0.3s ease;
+  }
+
+  .glow-orange:hover {
+    border-color: rgba(255, 93, 0, 0.4);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), 0 0 25px rgba(255, 93, 0, 0.25);
+  }
+
+  .glow-pink {
+    border: 2px solid rgba(255, 0, 110, 0.25);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), 0 0 15px rgba(255, 0, 110, 0.15);
+    transition: all 0.3s ease;
+  }
+
+  .glow-pink:hover {
+    border-color: rgba(255, 0, 110, 0.4);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), 0 0 25px rgba(255, 0, 110, 0.25);
+  }
+
+  .glow-blue {
+    border: 2px solid rgba(0, 102, 255, 0.25);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), 0 0 15px rgba(0, 102, 255, 0.15);
+    transition: all 0.3s ease;
+  }
+
+  .glow-blue:hover {
+    border-color: rgba(0, 102, 255, 0.4);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), 0 0 25px rgba(0, 102, 255, 0.25);
+  }
+
+  .glow-yellow {
+    border: 2px solid rgba(255, 214, 0, 0.25);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), 0 0 15px rgba(255, 214, 0, 0.15);
+    transition: all 0.3s ease;
+  }
+
+  .glow-yellow:hover {
+    border-color: rgba(255, 214, 0, 0.4);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), 0 0 25px rgba(255, 214, 0, 0.25);
+  }
+
+  .glow-teal {
+    border: 2px solid rgba(20, 184, 166, 0.25);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), 0 0 15px rgba(20, 184, 166, 0.15);
+    transition: all 0.3s ease;
+  }
+
+  .glow-teal:hover {
+    border-color: rgba(20, 184, 166, 0.4);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), 0 0 25px rgba(20, 184, 166, 0.25);
+  }
+
+  /* Stellar pulse animation */
+  @keyframes stellar-pulse {
+    0%, 100% { 
+      opacity: 0.6;
+      transform: scale(1);
+    }
+    50% { 
+      opacity: 1;
+      transform: scale(1.05);
+    }
+  }
+
+  .stellar-pulse {
+    animation: stellar-pulse 2s ease-in-out infinite;
+  }
+
+  /* Cosmic float animation */
+  @keyframes cosmic-float {
+    0%, 100% { 
+      transform: translateY(0px) rotate(0deg);
+      filter: brightness(1);
+    }
+    50% { 
+      transform: translateY(-10px) rotate(2deg);
+      filter: brightness(1.2);
+    }
+  }
+
+  .cosmic-float {
+    animation: cosmic-float 4s ease-in-out infinite;
+  }
+
+  /* Starfield movement animation - all stars move in same direction but at different speeds */
+  @keyframes starfield-move {
+    0% {
+      background-position: 
+        0 0,
+        0 0,
+        0 0,
+        0 0,
+        0 0,
+        0 0,
+        0 0,
+        0 0,
+        0 0,
+        0 0,
+        0 0;
+    }
+    100% {
+      background-position: 
+        0 0,
+        0 0,
+        0 0,
+        1100px 1100px,    /* Fastest - bright white star */
+        700px 700px,      /* Fast - white star */
+        500px 500px,      /* Medium-fast - white star */
+        900px 900px,      /* Fast - white star */
+        800px 800px,      /* Medium-fast - white star */
+        600px 600px,      /* Medium - cyan star */
+        400px 400px,      /* Medium-slow - purple star */
+        640px 640px;      /* Medium - yellow star */
+    }
+  }
+
+  /* Mobile-first improvements */
   @media (max-width: 768px) {
     .orbital-border::before,
     .orbital-border-enhanced::before {
-      opacity: 0.1;
+      opacity: 0.3;
     }
     
     .orbital-border,
     .orbital-border-enhanced {
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
     }
 
     .side-sheet-content {
@@ -807,46 +1313,52 @@
     .mission-card:hover,
     .store-card:hover,
     .badge-card:hover {
-      transform: none;
+      transform: translateY(-2px);
     }
 
     .mission-launch-btn:hover {
       transform: scale(1.02);
     }
+  }
 
-    /* Reduced animations on mobile */
-    .cosmic-float,
-    .stellar-pulse {
+  @media (max-width: 480px) {
+    /* Remove animations on mobile for performance */
+    .cosmic-bg-space,
+    .cosmic-bg-nebula,
+    .cosmic-bg-galaxy,
+    .cosmic-bg-planet,
+    .cosmic-bg-aurora,
+    .cosmic-starfield-bg {
+      animation: none;
+    }
+
+    .mission-card:hover,
+    .store-card:hover,
+    .badge-card:hover {
+      transform: none;
+    }
+
+    .stellar-pulse,
+    .cosmic-float {
       animation: none;
     }
   }
 
-  /* Dark mode adjustments - Enhanced */
-  .dark .card-enhanced {
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
-  }
-
-  .dark .card-enhanced:hover {
-    box-shadow: 0 4px 12px rgba(0, 174, 240, 0.15), 0 2px 6px rgba(0, 0, 0, 0.2);
-  }
-
-  .dark .mission-card {
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-    background: linear-gradient(135deg, var(--card) 0%, rgba(0, 174, 240, 0.02) 100%);
-  }
-
-  .dark .mission-card:hover {
-    box-shadow: 0 6px 16px rgba(0, 174, 240, 0.2), 0 2px 8px rgba(0, 0, 0, 0.3);
-  }
-
-  .dark .cosmic-gradient {
-    background: linear-gradient(135deg, var(--navy-accent) 0%, var(--soft-cyan) 50%, var(--info) 100%);
-  }
-
-  .dark .orbital-border::before,
-  .dark .orbital-border-enhanced::before {
-    background: linear-gradient(135deg, var(--soft-cyan), transparent, var(--info));
-    opacity: 0.3;
+  @media (max-width: 360px) {
+    /* Ultra-minimal backgrounds for very small screens */
+    .cosmic-bg-space,
+    .cosmic-bg-nebula,
+    .cosmic-bg-galaxy,
+    .cosmic-bg-planet,
+    .cosmic-bg-aurora,
+    .cosmic-starfield-bg {
+      background-image: 
+        radial-gradient(ellipse 120% 80% at 10% 20%, rgba(139, 92, 246, 0.12) 0%, transparent 50%),
+        radial-gradient(ellipse 100% 90% at 90% 80%, rgba(255, 0, 110, 0.08) 0%, transparent 50%),
+        radial-gradient(1px 1px at 20% 30%, rgba(255, 255, 255, 0.6), transparent),
+        radial-gradient(1px 1px at 60% 70%, rgba(255, 255, 255, 0.5), transparent);
+      background-color: var(--background);
+    }
   }
 }
 

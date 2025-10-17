@@ -121,7 +121,7 @@ export function SeasonHubMissions({ currentSeason, missions, userRankId, userMis
                             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 w-full">
                                 <div className="flex items-center gap-2">
                                     <Target className="w-5 h-5 text-muted-foreground" />
-                                    <h3 className="text-lg md:text-xl font-semibold">Доступные миссии</h3>
+                                    <h3 className="text-lg md:text-xl font-semibold text-white">Доступные миссии</h3>
                                     {isAvailableOpen ? (
                                         <ChevronDown className="w-4 h-4 text-muted-foreground" />
                                     ) : (
@@ -169,15 +169,15 @@ export function SeasonHubMissions({ currentSeason, missions, userRankId, userMis
                         <Button variant="ghost" className="w-full p-0 h-auto hover:bg-muted/50">
                             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 w-full">
                                 <div className="flex items-center gap-2">
-                                    <Clock className="w-5 h-5 text-orange-500" />
-                                    <h3 className="text-lg md:text-xl font-semibold text-orange-600">На проверке</h3>
+                                    <Clock className="w-5 h-5 text-white" />
+                                    <h3 className="text-lg md:text-xl font-semibold text-white">На проверке</h3>
                                     {isPendingReviewOpen ? (
                                         <ChevronDown className="w-4 h-4 text-muted-foreground" />
                                     ) : (
                                         <ChevronRight className="w-4 h-4 text-muted-foreground" />
                                     )}
                                 </div>
-                                <Badge variant="outline" className="text-sm w-fit bg-orange-50 text-orange-600 border-orange-200">
+                                <Badge variant="outline" className="text-sm w-fit text-white">
                                     {missionsByStatus.pendingReview.length} {missionsByStatus.pendingReview.length === 1 ? 'миссия' : 'миссий'}
                                 </Badge>
                             </div>
@@ -219,15 +219,15 @@ export function SeasonHubMissions({ currentSeason, missions, userRankId, userMis
                         <Button variant="ghost" className="w-full p-0 h-auto hover:bg-muted/50">
                             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 w-full">
                                 <div className="flex items-center gap-2">
-                                    <CheckCircle className="w-5 h-5 text-green-500" />
-                                    <h3 className="text-lg md:text-xl font-semibold text-green-600">Завершенные миссии</h3>
+                                    <CheckCircle className="w-5 h-5 text-white" />
+                                    <h3 className="text-lg md:text-xl font-semibold text-white">Завершенные миссии</h3>
                                     {isCompletedOpen ? (
                                         <ChevronDown className="w-4 h-4 text-muted-foreground" />
                                     ) : (
                                         <ChevronRight className="w-4 h-4 text-muted-foreground" />
                                     )}
                                 </div>
-                                <Badge variant="outline" className="text-sm w-fit bg-green-50 text-green-600 border-green-200">
+                                <Badge variant="outline" className="text-sm w-fit text-white">
                                     {missionsByStatus.completed.length} {missionsByStatus.completed.length === 1 ? 'миссия' : 'миссий'}
                                 </Badge>
                             </div>

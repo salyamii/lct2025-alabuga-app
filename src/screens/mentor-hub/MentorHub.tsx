@@ -123,7 +123,7 @@ interface MentorshipScreenProps {
     ];
   
     return (
-      <div className="min-h-screen-dvh bg-background">
+      <div className="min-h-screen-dvh">
         {/* Header */}
         <div className="border-b border-border bg-card/50 backdrop-blur">
           <div className="max-w-7xl mx-auto px-4 py-4">

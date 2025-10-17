@@ -243,7 +243,7 @@ export function MissionExecutionScreen({ onBack }: MissionExecutionScreenProps) 
               <div className="space-y-4">
                 <div>
                   <div className="flex items-center gap-2 mb-3">
-                    <Badge className="bg-white/20 text-white border-white/30">
+                    <Badge className="badge-on-gradient">
                       {getCategoryLabel(mission.category)}
                     </Badge>
                     <Badge variant="outline" className={`${statusColors[missionStatus]} border`}>
@@ -257,16 +257,16 @@ export function MissionExecutionScreen({ onBack }: MissionExecutionScreenProps) 
                 {/* Награды */}
                 <div className="space-y-3">
                   <div className="flex items-center gap-3 flex-wrap">
-                    <Badge className="bg-white/20 text-white border-white/30">
+                    <Badge className="badge-on-gradient">
                       <Star className="w-3 h-3 mr-1" />
                       {mission.rewardXp} XP
                     </Badge>
-                    <Badge className="bg-white/20 text-white border-white/30">
+                    <Badge className="badge-on-gradient">
                       <Zap className="w-3 h-3 mr-1" />
                       {mission.rewardMana} Мана
                     </Badge>
                     {mission.rewardArtifacts.length > 0 && (
-                      <Badge className="bg-white/20 text-white border-white/30">
+                      <Badge className="badge-on-gradient">
                         <Award className="w-3 h-3 mr-1" />
                         {mission.rewardArtifacts.length} {mission.rewardArtifacts.length === 1 ? 'Артефакт' : 'Артефактов'}
                       </Badge>

@@ -26,15 +26,24 @@ export function SeasonHubActiveEvents({ cosmicEvents }: SeasonHubActiveEventsPro
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-2 min-w-0">
-        <Zap className="w-5 h-5 text-rewards-amber" />
+        <Zap className="w-5 h-5 text-rewards-amber icon-glow-pulse" />
         <h3 className="text-lg font-semibold text-wrap">Активные космические ивенты</h3>
-        <Badge variant="secondary" className="animate-pulse">Активен</Badge>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {cosmicEvents.map((event) => (
-          <Card key={event.id} className="orbital-border relative overflow-hidden">
+          <Card key={event.id} className="event-card-shimmer relative overflow-hidden" style={{border: 'none'}}>
+            {/* Animated border gradient */}
+            <div 
+              className={`absolute inset-0 bg-gradient-to-r ${event.gradient} opacity-30 event-card-glow`}
+              style={{
+                borderRadius: 'inherit'
+              }}
+            ></div>
+            {/* Card background */}
+            <div className="absolute inset-[2px] bg-card rounded-lg z-0"></div>
+            {/* Background gradient glow */}
             <div className={`absolute inset-0 bg-gradient-to-r ${event.gradient} opacity-5`}></div>
-            <CardContent className="p-4 relative">
+            <CardContent className="p-4 relative z-10">
               <div className="flex items-start gap-3">
                 <div className={`w-10 h-10 bg-gradient-to-r ${event.gradient} rounded-lg flex items-center justify-center`}>
                   <event.icon className="w-5 h-5 text-white" />

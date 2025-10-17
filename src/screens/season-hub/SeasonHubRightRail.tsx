@@ -130,10 +130,6 @@ export function SeasonHubRightRail({ userXp, userMana, userRankId, onShipLogOpen
                           4.8
                         </span>
                       </div>
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">Глобальный ранг</span>
-                        <span className="text-success">#23 / 847</span>
-                      </div>
                     </div>
                     
                     <Button 

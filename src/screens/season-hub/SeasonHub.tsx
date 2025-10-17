@@ -222,7 +222,7 @@ export function SeasonHub({
   };
 
   return (
-    <div className="min-h-screen-dvh bg-background relative">
+    <div className="min-h-screen-dvh relative">
       {/* Cosmic Background Elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-10 right-10 w-64 h-64 bg-gradient-to-br from-soft-cyan/5 to-info/5 rounded-full blur-3xl"></div>
