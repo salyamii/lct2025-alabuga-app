@@ -125,7 +125,7 @@ interface MentorshipScreenProps {
     return (
       <div className="min-h-screen-dvh">
         {/* Header */}
-        <div className="border-b border-border bg-card/50 backdrop-blur">
+
           <div className="max-w-7xl mx-auto px-4 py-4">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 min-w-0">
               <div className="w-12 h-12 bg-gradient-to-br from-primary to-info rounded-xl flex items-center justify-center shadow-lg">
@@ -143,15 +143,15 @@ interface MentorshipScreenProps {
               </Button>
             </div>
           </div>
-        </div>
+
   
         {/* Main Content */}
         <div className="max-w-7xl mx-auto px-4 py-6 min-w-0">
           <Tabs value={activeTab} onValueChange={setActiveTab}>
             <TabsList className="grid w-full grid-cols-3 max-w-md">
               <TabsTrigger value="my-pairs">
-                <span className="hidden sm:inline">Мое наставничество</span>
-                <span className="sm:hidden">Мое</span>
+                <span className="hidden sm:inline">Моё</span>
+                <span className="sm:hidden">Моё</span>
               </TabsTrigger>
               <TabsTrigger value="mentors">
                 <span className="hidden sm:inline">Найти наставников</span>

@@ -102,13 +102,14 @@ export function AdminModeration({
 
       // Фильтруем только кандидатов
       const candidates = allUsers.filter(
-        (user) => user.role.toLowerCase() === "candidate"
+        (user) => user.role.toLowerCase() !== "hr" && user.role.toLowerCase() !== "admin"
       );
 
       // Загружаем миссии для каждого кандидата
       const missionsWithUsers: Array<{ mission: UserMission; user: User }> = [];
 
       for (const candidate of candidates) {
+        console.log('🔍 Candidate:', candidate.login, candidate.role);
         try {
           const userMissions = await handleFetchUserMissionsByLogin(
             candidate.login

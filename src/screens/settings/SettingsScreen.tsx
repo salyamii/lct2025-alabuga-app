@@ -40,9 +40,9 @@ interface SettingsScreenProps {
     };
   
     return (
-      <div className="min-h-screen-dvh bg-background">
+      <div className="min-h-screen-dvh">
         {/* Header */}
-        <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm border-b border-border">
+        <div className="sticky top-0 z-10 backdrop-blur-sm">
           <div className="max-w-4xl mx-auto px-4 py-4">
             <div className="flex items-center gap-4 min-w-0">
               <Button 
@@ -59,6 +59,14 @@ interface SettingsScreenProps {
                   Настройте свой опыт и предпочтения
                 </p>
               </div>
+              <Button 
+                    variant="outline" 
+                    onClick={handleLogout}
+                    className="flex-1 sm:flex-none h-12"
+                  >
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Выйти из системы
+                  </Button>
             </div>
           </div>
         </div>
@@ -327,7 +335,7 @@ interface SettingsScreenProps {
                   <Button 
                     variant="outline" 
                     onClick={handleLogout}
-                    className="flex-1 sm:flex-none h-12 border-orange-200 text-orange-600 hover:bg-orange-50 hover:border-orange-300"
+                    className="flex-1 sm:flex-none h-12"
                   >
                     <LogOut className="w-4 h-4 mr-2" />
                     Выйти из системы
