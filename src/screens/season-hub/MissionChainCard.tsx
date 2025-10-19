@@ -20,7 +20,7 @@ export function MissionChainCard({ missionChain, userMissions, onOpenChain }: Mi
   // Вычисляем количество завершенных миссий в цепочке
   const completedMissionsCount = missionChain.missions.filter(mission => {
     const userMission = userMissions?.find(um => um.id === mission.id);
-    return userMission?.isCompleted && userMission?.isApproved || false;
+    return userMission?.isCompleted || false;
   }).length;
 
   const totalMissionsCount = missionChain.missions.length;
