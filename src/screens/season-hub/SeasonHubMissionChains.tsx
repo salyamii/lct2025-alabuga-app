@@ -119,10 +119,10 @@ export function SeasonHubMissionChains({ missionChains, userRankId, userMissions
         <div className="space-y-4 mt-8">
           <div className="flex items-center gap-2 min-w-0">
             <GitBranch className="w-5 h-5 text-info" />
-            <h3 className="text-lg font-semibold text-wrap">Цепочки заданий этого сезона</h3>
+            <h3 className="text-lg font-semibold text-wrap">Цепочки миссий</h3>
           </div>
           <p className="text-sm text-muted-foreground text-wrap">
-            Связанные цепочки заданий. Завершите все или только необходимые.
+            Связанные цепочки миссий. Завершите все или только необходимые.
           </p>
           
           {filteredChains.length > 0 ? (

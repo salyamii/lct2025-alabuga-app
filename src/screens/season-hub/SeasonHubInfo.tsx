@@ -1,7 +1,8 @@
 import { Card, CardContent } from "../../components/ui/card";
-import { Stars, Calendar, Users, Orbit, Zap, Clock } from "lucide-react";
+import { Stars, Calendar, Users, Orbit, Zap, Clock, ChevronDown, ChevronRight } from "lucide-react";
 import { Badge } from "../../components/ui/badge";
 import { Progress } from "../../components/ui/progress";
+import { useState } from "react";
 
 interface CosmicEvent {
   id: string;
@@ -29,6 +30,8 @@ interface SeasonHubInfoProps {
 }
 
 export function SeasonHubInfo({ season, cosmicEvents = [] }: SeasonHubInfoProps) {
+  const [isEventsExpanded, setIsEventsExpanded] = useState(false);
+
   return (
     <Card className="cosmic-gradient text-white overflow-hidden relative">
       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-50"></div>
@@ -77,14 +80,28 @@ export function SeasonHubInfo({ season, cosmicEvents = [] }: SeasonHubInfoProps)
         {/* Cosmic Events */}
         {cosmicEvents.length > 0 && (
           <div className="mt-4 pt-4 border-t border-white/20">
-            <div className="flex items-center gap-2 mb-3">
-              <Zap className="w-4 h-4 text-rewards-amber icon-glow-pulse" />
-              <h3 className="text-sm font-semibold">Активные космические ивенты</h3>
+            <div 
+              className="flex items-center justify-between gap-2 mb-3 cursor-pointer"
+              onClick={() => setIsEventsExpanded(!isEventsExpanded)}
+            >
+              <div className="flex items-center gap-2">
+                <Zap className="w-4 h-4 text-rewards-amber icon-glow-pulse" />
+                <h3 className="text-sm font-semibold">Активные космические ивенты</h3>
+              </div>
+              <button className="p-0.5 hover:bg-white/10 rounded transition-colors">
+                {isEventsExpanded ? (
+                  <ChevronDown className="w-4 h-4" />
+                ) : (
+                  <ChevronRight className="w-4 h-4" />
+                )}
+              </button>
             </div>
-            <p className="text-xs text-white/70 mb-3">
-              Специальные события с бонусами • Успей принять участие
-            </p>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+            {isEventsExpanded && (
+              <>
+                <p className="text-xs text-white/70 mb-3">
+                  Специальные события с бонусами • Успей принять участие
+                </p>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
               {cosmicEvents.map((event) => (
                 <Card key={event.id} className="event-card-shimmer relative overflow-hidden cursor-pointer hover:scale-[1.02] transition-transform" style={{border: 'none'}}>
                   {/* Animated border gradient */}
@@ -129,7 +146,9 @@ export function SeasonHubInfo({ season, cosmicEvents = [] }: SeasonHubInfoProps)
                   </CardContent>
                 </Card>
               ))}
-            </div>
+                </div>
+              </>
+            )}
           </div>
         )}
       </CardContent>
