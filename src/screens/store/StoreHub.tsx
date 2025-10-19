@@ -97,7 +97,7 @@ export function StoreHub({ onPurchase }: StoreHubProps) {
                   <CardContent className="p-4 md:p-6 space-y-4">
                     <div className="flex items-start justify-between gap-3 min-w-0">
                       <div className="flex items-start gap-3 flex-1 min-w-0">
-                        <div className="w-10 h-10 bg-gradient-to-br from-primary to-info rounded-lg flex items-center justify-center shrink-0 overflow-hidden">
+                        <div className="w-20 h-20 bg-gradient-to-br from-primary to-info rounded-lg flex items-center justify-center shrink-0 overflow-hidden">
                           {itemImages[item.id] ? (
                             <img 
                               src={itemImages[item.id]} 

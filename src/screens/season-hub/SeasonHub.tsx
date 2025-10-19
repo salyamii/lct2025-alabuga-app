@@ -79,7 +79,7 @@ export function SeasonHub({
 
       try {
         isPollingRef.current = true;
-        console.log('🔄 SeasonHub: обновляем данные...');
+        console.log("🔄 SeasonHub: обновляем данные...");
 
         // Обновляем данные параллельно
         await Promise.all([
@@ -89,9 +89,9 @@ export function SeasonHub({
           fetchUserProfile(),
         ]);
 
-        console.log('✅ SeasonHub: данные обновлены');
+        console.log("✅ SeasonHub: данные обновлены");
       } catch (error) {
-        console.error('❌ SeasonHub: ошибка обновления данных:', error);
+        console.error("❌ SeasonHub: ошибка обновления данных:", error);
       } finally {
         isPollingRef.current = false;
       }
@@ -128,7 +128,7 @@ export function SeasonHub({
       ? season.id !== activeSeason.id && season.startDate > now
       : season.startDate > now
   );
-  
+
   // Выбираем только самый ранний следующий сезон
   const nextSeason = upcomingSeasons.length > 0 ? upcomingSeasons[0] : null;
 
@@ -138,14 +138,14 @@ export function SeasonHub({
     : [];
 
   // Получаем активные миссии пользователя в этом сезоне
-  const userMissions = user?.missions?.filter((m) => m.seasonId === activeSeasonId) || [];
+  const userMissions =
+    user?.missions?.filter((m) => m.seasonId === activeSeasonId) || [];
   const finishedUserMissions = userMissions.filter((m) => m.isCompleted);
   const approvedUserMissions = finishedUserMissions.filter((m) => m.isApproved);
-  
 
   const chainedMissions = missionChains
-    .flatMap(chain => chain.missions || [])
-    .map(mission => mission.id);
+    .flatMap((chain) => chain.missions || [])
+    .map((mission) => mission.id);
 
   // Фильтруем миссии по активному сезону
   const seasonUserMissions = activeSeason
@@ -236,15 +236,10 @@ export function SeasonHub({
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-4 md:space-y-6 min-w-0">
             {/* Season Hero - Enhanced Cosmic Design */}
-            {displayedSeason && <SeasonHubInfo season={displayedSeason} cosmicEvents={cosmicEvents} />}
-
-            {/* Real Mission Chains */}
-            {missionChains.length > 0 && (
-              <SeasonHubMissionChains
-                missionChains={missionChains}
-                userRankId={user?.rankId || 0}
-                userMissions={user?.missions || null}
-                onMissionChainOpen={handleMissionChainOpen}
+            {displayedSeason && (
+              <SeasonHubInfo
+                season={displayedSeason}
+                cosmicEvents={cosmicEvents}
               />
             )}
 
@@ -257,9 +252,20 @@ export function SeasonHub({
               onMissionLaunch={onMissionLaunch}
               onMissionDetails={onMissionDetails}
             />
+            
+            {/* Real Mission Chains */}
+            {missionChains.length > 0 && (
+              <SeasonHubMissionChains
+                missionChains={missionChains}
+                userRankId={user?.rankId || 0}
+                userMissions={user?.missions || null}
+                onMissionChainOpen={handleMissionChainOpen}
+              />
+            )}
+
           </div>
 
-          <SeasonHubRightRail 
+          <SeasonHubRightRail
             userMana={user?.mana || 0}
             userRankId={user?.rankId || 0}
             onShipLogOpen={onShipLogOpen}
@@ -278,8 +284,7 @@ export function SeasonHub({
                   Следующий сезон: {nextSeason.name}
                 </h4>
                 <p className="text-sm text-muted-foreground">
-                  Начало:{" "}
-                  {nextSeason.startDate.toLocaleDateString("ru-RU")}
+                  Начало: {nextSeason.startDate.toLocaleDateString("ru-RU")}
                 </p>
                 <div className="flex justify-center">
                   <Badge variant="outline">

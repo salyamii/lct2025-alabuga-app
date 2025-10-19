@@ -33,7 +33,7 @@ interface MissionDetailScreenProps {
     const { missionId } = useParams<{ missionId: string }>();
     const navigate = useNavigate();
     const { missions, fetchMissionById, isLoading } = useMissionStore();
-    const { user } = useUserStore();
+    const { user, fetchUserMission } = useUserStore();
     const { ranks, fetchRanks } = useRankStore();
 
     // Загружаем данные
@@ -45,6 +45,17 @@ interface MissionDetailScreenProps {
         fetchRanks();
       }
     }, [missionId]);
+
+    // Загружаем UserMission с сервера, если её еще нет у пользователя
+    useEffect(() => {
+      if (missionId && user) {
+        const userMission = user.getMissionById(parseInt(missionId, 10));
+        if (!userMission) {
+          console.log('📥 Loading user mission from server:', missionId);
+          fetchUserMission(parseInt(missionId, 10));
+        }
+      }
+    }, [missionId, user, fetchUserMission]);
 
     // Обработчик начала миссии
     const handleStartMission = () => {

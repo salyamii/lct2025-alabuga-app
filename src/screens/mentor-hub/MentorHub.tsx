@@ -154,7 +154,7 @@ interface MentorshipScreenProps {
                 <span className="sm:hidden">Моё</span>
               </TabsTrigger>
               <TabsTrigger value="mentors">
-                <span className="hidden sm:inline">Найти наставников</span>
+                <span className="hidden sm:inline">Наставники</span>
                 <span className="sm:hidden">Наставники</span>
               </TabsTrigger>
               <TabsTrigger value="programs">
@@ -167,8 +167,8 @@ interface MentorshipScreenProps {
             <TabsContent value="my-pairs" className="space-y-6">
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Stats Overview */}
-                <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-4 gap-4">
-                  <Card className="orbital-border">
+                <div className="lg:col-span-3 grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <Card className="stat-card-primary cursor-pointer hover:elevation-cosmic transition-all">
                     <CardContent className="p-4 text-center">
                       <div className="w-8 h-8 bg-primary/20 rounded-lg mx-auto mb-2 flex items-center justify-center">
                         <Users className="w-4 h-4 text-primary" />
@@ -177,7 +177,7 @@ interface MentorshipScreenProps {
                       <p className="text-xs text-muted-foreground">Активные пары</p>
                     </CardContent>
                   </Card>
-                  <Card className="orbital-border">
+                  <Card className="glow-green cursor-pointer hover:elevation-cosmic transition-all">
                     <CardContent className="p-4 text-center">
                       <div className="w-8 h-8 bg-success/20 rounded-lg mx-auto mb-2 flex items-center justify-center">
                         <CheckCircle className="w-4 h-4 text-success" />
@@ -186,19 +186,19 @@ interface MentorshipScreenProps {
                       <p className="text-xs text-muted-foreground">Сессий завершено</p>
                     </CardContent>
                   </Card>
-                  <Card className="orbital-border">
+                  <Card className="stat-card-amber cursor-pointer hover:elevation-cosmic transition-all">
                     <CardContent className="p-4 text-center">
-                      <div className="w-8 h-8 bg-info/20 rounded-lg mx-auto mb-2 flex items-center justify-center">
-                        <Star className="w-4 h-4 text-info" />
+                      <div className="w-8 h-8 bg-rewards-amber/20 rounded-lg mx-auto mb-2 flex items-center justify-center">
+                        <Star className="w-4 h-4 text-rewards-amber" />
                       </div>
                       <p className="text-2xl font-mono">4.7</p>
                       <p className="text-xs text-muted-foreground">Средний рейтинг</p>
                     </CardContent>
                   </Card>
-                  <Card className="orbital-border">
+                  <Card className="stat-card-cyan cursor-pointer hover:elevation-cosmic transition-all">
                     <CardContent className="p-4 text-center">
-                      <div className="w-8 h-8 bg-rewards-amber/20 rounded-lg mx-auto mb-2 flex items-center justify-center">
-                        <TrendingUp className="w-4 h-4 text-rewards-amber" />
+                      <div className="w-8 h-8 bg-soft-cyan/20 rounded-lg mx-auto mb-2 flex items-center justify-center">
+                        <TrendingUp className="w-4 h-4 text-soft-cyan" />
                       </div>
                       <p className="text-2xl font-mono">73%</p>
                       <p className="text-xs text-muted-foreground">Средний прогресс</p>
@@ -216,10 +216,14 @@ interface MentorshipScreenProps {
                     </Button>
                   </div>
                   
-                  {myPairs.map((pair) => (
+                  {myPairs.map((pair, index) => {
+                    const glowColors = ['glow-blue', 'glow-pink', 'glow-teal'];
+                    const glowClass = glowColors[index % glowColors.length];
+                    
+                    return (
                     <Card 
                       key={pair.id} 
-                      className="orbital-border cursor-pointer hover:elevation-cosmic transition-all"
+                      className={`${glowClass} cursor-pointer hover:elevation-cosmic transition-all`}
                       onClick={() => onPairSelect?.(pair.id)}
                     >
                       <CardContent className="p-6">
@@ -297,7 +301,8 @@ interface MentorshipScreenProps {
                         </div>
                       </CardContent>
                     </Card>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             </TabsContent>
@@ -305,8 +310,12 @@ interface MentorshipScreenProps {
             {/* Find Mentors */}
             <TabsContent value="mentors" className="space-y-6">
               <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-                {availableMentors.map((mentor) => (
-                  <Card key={mentor.id} className="orbital-border hover:elevation-cosmic transition-all">
+                {availableMentors.map((mentor, index) => {
+                  const glowColors = ['glow-orange', 'glow-blue', 'glow-pink'];
+                  const glowClass = glowColors[index % glowColors.length];
+                  
+                  return (
+                  <Card key={mentor.id} className={`${glowClass} hover:elevation-cosmic transition-all`}>
                     <CardContent className="p-6 space-y-4">
                       <div className="flex items-center gap-4">
                         <Avatar className="w-12 h-12">
@@ -349,15 +358,20 @@ interface MentorshipScreenProps {
                       </Button>
                     </CardContent>
                   </Card>
-                ))}
+                  );
+                })}
               </div>
             </TabsContent>
   
             {/* Programs */}
             <TabsContent value="programs" className="space-y-6">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {programs.map((program) => (
-                  <Card key={program.id} className="orbital-border hover:elevation-cosmic transition-all">
+                {programs.map((program, index) => {
+                  const glowColors = ['glow-green', 'glow-yellow', 'glow-teal'];
+                  const glowClass = glowColors[index % glowColors.length];
+                  
+                  return (
+                  <Card key={program.id} className={`${glowClass} hover:elevation-cosmic transition-all`}>
                     <CardContent className="p-6 space-y-4">
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
@@ -396,7 +410,8 @@ interface MentorshipScreenProps {
                       </div>
                     </CardContent>
                   </Card>
-                ))}
+                  );
+                })}
               </div>
             </TabsContent>
           </Tabs>

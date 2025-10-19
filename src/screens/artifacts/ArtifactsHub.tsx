@@ -71,61 +71,6 @@ export function ArtifactsHub() {
         loadArtifactImages();
       }
     }, [artifacts]);
-
-    const badges = [
-      {
-        id: "badge-1",
-        title: "Quantum React Voyager",
-        description: "Mastered React fundamentals across the cosmic web",
-        earnedDate: "2024-03-15",
-        category: "Cosmic Tech",
-        earned: true,
-        rarity: "Epic",
-        icon: Zap
-      },
-      {
-        id: "badge-2",
-        title: "Galactic Mentor Guardian", 
-        description: "Successfully guided 5 cosmic apprentices",
-        earnedDate: "2024-03-10",
-        category: "Leadership",
-        earned: true,
-        rarity: "Legendary",
-        icon: Crown
-      },
-      {
-        id: "badge-3",
-        title: "Quantum Speed Particle",
-        description: "Completed quest at light-speed velocity",
-        earnedDate: "2024-03-08", 
-        category: "Achievement",
-        earned: true,
-        rarity: "Rare",
-        icon: Rocket
-      },
-      {
-        id: "badge-4",
-        title: "Code Constellation Master",
-        description: "Complete 50 cosmic coding challenges",
-        earnedDate: null,
-        category: "Cosmic Tech", 
-        earned: false,
-        rarity: "Epic",
-        progress: 32,
-        icon: Star
-      },
-      {
-        id: "badge-5",
-        title: "Squadron Commander",
-        description: "Lead a stellar squadron to galactic victory",
-        earnedDate: null,
-        category: "Leadership",
-        earned: false,
-        rarity: "Legendary",
-        progress: 0,
-        icon: Globe
-      }
-    ];
   
     const getRarityColor = (rarity: ArtifactRarityEnum) => {
       switch (rarity) {
@@ -201,7 +146,7 @@ export function ArtifactsHub() {
   
         {/* Statistics */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <Card className="orbital-border">
+          <Card className="stat-card-primary cursor-pointer hover:elevation-cosmic transition-all">
             <CardContent className="p-4 text-center">
               <div className="text-2xl font-mono font-bold text-primary stellar-pulse">
                 {user?.artifactIds.length || 0}
@@ -212,7 +157,7 @@ export function ArtifactsHub() {
               </p>
             </CardContent>
           </Card>
-          <Card className="orbital-border">
+          <Card className="glow-teal cursor-pointer hover:elevation-cosmic transition-all">
             <CardContent className="p-4 text-center">
               <div className="text-2xl font-mono font-bold text-text-secondary">
                 {artifacts.length}
@@ -223,7 +168,7 @@ export function ArtifactsHub() {
               </p>
             </CardContent>
           </Card>
-          <Card className="orbital-border">
+          <Card className="stat-card-amber cursor-pointer hover:elevation-cosmic transition-all">
             <CardContent className="p-4 text-center">
               <div className="text-2xl font-mono font-bold text-rewards-amber stellar-pulse">
                 {artifacts.filter(a => a.rarity === ArtifactRarityEnum.LEGENDARY).length}
@@ -234,7 +179,7 @@ export function ArtifactsHub() {
               </p>
             </CardContent>
           </Card>
-          <Card className="orbital-border">
+          <Card className="glow-green cursor-pointer hover:elevation-cosmic transition-all">
             <CardContent className="p-4 text-center">
               <div className="text-2xl font-mono font-bold text-success">
                 {artifacts.length > 0
@@ -268,11 +213,9 @@ export function ArtifactsHub() {
                 <CardContent className="p-4 md:p-6 space-y-4">
                   <div className="flex items-center justify-between min-w-0">
                     <div 
-                      className={`w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br ${
+                      className={`w-20 h-20 md:w-20 md:h-20 bg-gradient-to-br ${
                         hasArtifact ? getRarityColor(artifact.rarity) : 'from-gray-400 to-gray-500'
-                      } rounded-lg flex items-center justify-center relative overflow-hidden ${
-                        hasArtifact ? 'stellar-pulse' : ''
-                      }`}
+                      } rounded-lg flex items-center justify-center relative overflow-hidden`}
                     >
                       {imageUrl ? (
                         <img 
@@ -282,14 +225,6 @@ export function ArtifactsHub() {
                         />
                       ) : (
                         <Gem className="w-6 h-6 md:w-7 md:h-7 text-white" />
-                      )}
-                      {hasArtifact && (
-                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-success rounded-full flex items-center justify-center">
-                          <RarityIcon className="w-2 h-2 text-white" />
-                        </div>
-                      )}
-                      {!hasArtifact && (
-                        <div className="absolute inset-0 bg-black/40 rounded-lg" />
                       )}
                     </div>
                     <Badge 

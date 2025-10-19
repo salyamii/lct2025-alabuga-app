@@ -7,6 +7,7 @@ import { useRankStore } from "../../stores/useRankStore";
 import { useArtifactStore } from "../../stores/useArtifactStore";
 import { useState, useEffect } from "react";
 import mediaService from "../../api/services/mediaService";
+import { ArtifactRarityEnum } from "../../api/types/apiTypes";
 
 export function UserProfileHub({ onMentorshipOpen, onSettingsOpen, onGuildProgressOpen, onArtifactsOpen }: { onMentorshipOpen: () => void, onSettingsOpen: () => void, onGuildProgressOpen: () => void, onArtifactsOpen: () => void }) {
     const { user, fetchUserProfile } = useUserStore();
@@ -101,13 +102,14 @@ export function UserProfileHub({ onMentorshipOpen, onSettingsOpen, onGuildProgre
     // Расчет XP и прогресса ранга
     const userXp = user?.xp || 0;
     const sortedRanks = [...ranks].sort((a, b) => a.requiredXp - b.requiredXp);
-    const currentRankXP = userRank?.requiredXp || 0;
-    const nextRank = sortedRanks.find(r => r.requiredXp > currentRankXP);
     const currentRankIndex = sortedRanks.findIndex(r => r.id === user?.rankId);
     const previousRank = currentRankIndex > 0 ? sortedRanks[currentRankIndex - 1] : null;
+    const currentRankXP = userRank?.requiredXp || 0;
+    const previousRankXP = previousRank?.requiredXp || 0;
+    const nextRank = sortedRanks.find(r => r.requiredXp > currentRankXP);
     const nextRankXP = nextRank?.requiredXp || currentRankXP;
-    const xpInCurrentRank = userXp - currentRankXP;
-    const xpNeededForRank = nextRankXP - currentRankXP;
+    const xpInCurrentRank = userXp - previousRankXP;
+    const xpNeededForRank = nextRankXP - previousRankXP;
     const xpProgress = xpNeededForRank > 0 ? Math.round((xpInCurrentRank / xpNeededForRank) * 100) : 100;
     const xpToNextRank = Math.max(0, nextRankXP - userXp);
 
@@ -147,10 +149,10 @@ export function UserProfileHub({ onMentorshipOpen, onSettingsOpen, onGuildProgre
         </div>
   
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
-          <Card className="orbital-border-enhanced">
+          <Card className="stat-card-neutral">
             <CardContent className="p-4 md:p-6 text-center space-y-4">
               <div className="relative">
-                <div className="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-primary via-info to-soft-cyan rounded-full mx-auto flex items-center justify-center stellar-pulse overflow-hidden">
+                <div className="w-20 h-20 md:w-20 md:h-20 rounded-full mx-auto flex items-center justify-center stellar-pulse overflow-hidden">
                   {rankImage ? (
                     <img 
                       src={rankImage} 
@@ -171,7 +173,7 @@ export function UserProfileHub({ onMentorshipOpen, onSettingsOpen, onGuildProgre
                 <p className="text-sm text-muted-foreground">{userRankName}</p>
                 <p className="text-xs text-muted-foreground mt-1 flex items-center justify-center gap-1">
                   <Globe className="w-3 h-3" />
-                  Эскадрилья Туманности • Станция Звездной кузницы
+                  Эскадрилья Туманности • Звездная кузница
                 </p>
               </div>
               <div className="space-y-2">
@@ -179,7 +181,7 @@ export function UserProfileHub({ onMentorshipOpen, onSettingsOpen, onGuildProgre
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">XP полёта</span>
                     <span className="font-mono text-sm">
-                      {userXp.toLocaleString()} / {nextRankXP.toLocaleString()}
+                      {xpInCurrentRank.toLocaleString()} / {xpNeededForRank.toLocaleString()}
                     </span>
                   </div>
                   <Progress value={xpProgress} className="h-2" />
@@ -218,7 +220,7 @@ export function UserProfileHub({ onMentorshipOpen, onSettingsOpen, onGuildProgre
             </CardContent>
           </Card>
   
-          <Card className="orbital-border">
+          <Card className="stat-card-neutral">
             <CardContent className="p-4 md:p-6 space-y-4">
               <h3 className="font-semibold flex items-center gap-2 text-base">
                 <Trophy className="w-5 h-5 text-rewards-amber stellar-pulse" />
@@ -265,7 +267,7 @@ export function UserProfileHub({ onMentorshipOpen, onSettingsOpen, onGuildProgre
             </CardContent>
           </Card>
   
-          <Card className="orbital-border">
+          <Card className="stat-card-neutral">
             <CardContent className="p-4 md:p-6 space-y-4">
               <h3 className="font-semibold flex items-center gap-2 text-base">
                 <Compass className="w-5 h-5 text-text-icon" />
@@ -333,7 +335,7 @@ export function UserProfileHub({ onMentorshipOpen, onSettingsOpen, onGuildProgre
   
         {/* Extended Profile Sections */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mt-6">
-          <Card className="orbital-border">
+          <Card className="stat-card-neutral">
             <CardContent className="p-4 md:p-6 space-y-4">
               <h3 className="font-semibold flex items-center gap-2 text-base">
                 <Orbit className="w-5 h-5 text-primary stellar-pulse" />
@@ -368,7 +370,7 @@ export function UserProfileHub({ onMentorshipOpen, onSettingsOpen, onGuildProgre
             </CardContent>
           </Card>
   
-          <Card className="orbital-border">
+          <Card className="stat-card-neutral">
             <CardContent className="p-4 md:p-6 space-y-4">
               <h3 className="font-semibold flex items-center gap-2 text-base">
                 <Gem className="w-5 h-5 text-rewards-amber stellar-pulse" />
@@ -376,24 +378,27 @@ export function UserProfileHub({ onMentorshipOpen, onSettingsOpen, onGuildProgre
               </h3>
               <div className="flex items-center gap-3">
                 {user?.artifacts && user.artifacts.length > 0 ? (
-                  user.artifacts.slice(0, 3).map((artifact) => {
-                    const imageUrl = artifactImages[artifact.id];
-                    // Показываем артефакт только если есть изображение
-                    if (!imageUrl) return null;
-                    
-                    return (
-                      <div 
-                        key={artifact.id}
-                        className="w-10 h-10 bg-gradient-to-br from-yellow-400 to-rewards-amber rounded-lg flex items-center justify-center stellar-pulse relative overflow-hidden"
-                      >
-                        <img 
-                          src={imageUrl} 
-                          alt={artifact.title}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    );
-                  }).filter(Boolean) // Убираем null элементы
+                  user.artifacts
+                    .filter((artifact) => artifact.rarity === ArtifactRarityEnum.LEGENDARY)
+                    .slice(0, 3)
+                    .map((artifact) => {
+                      const imageUrl = artifactImages[artifact.id];
+                      // Показываем артефакт только если есть изображение
+                      if (!imageUrl) return null;
+                      
+                      return (
+                        <div 
+                          key={artifact.id}
+                          className="w-10 h-10 bg-gradient-to-br from-yellow-400 to-rewards-amber rounded-lg flex items-center justify-center stellar-pulse relative overflow-hidden"
+                        >
+                          <img 
+                            src={imageUrl} 
+                            alt={artifact.title}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      );
+                    }).filter(Boolean) // Убираем null элементы
                 ) : null}
                 <Button 
                   variant="outline" 

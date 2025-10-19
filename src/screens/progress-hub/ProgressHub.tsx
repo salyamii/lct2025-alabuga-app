@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Lightbulb, MessageSquare, Users, BookOpen, Palette, Target, Shield, Briefcase, BarChart3, Trophy, Zap, Award, TrendingUp, Flame, Calendar, TreePine, ChevronRight, Play, ArrowUp, Code, Star } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "../../components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
@@ -6,6 +6,8 @@ import { Progress } from "../../components/ui/progress";
 import { Button } from "../../components/ui/button";
 import { Badge } from "../../components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../components/ui/dialog";
+import { useUserStore } from "../../stores/useUserStore";
+import { useRankStore } from "../../stores/useRankStore";
 
 
 interface ProgressHubProps {
@@ -174,6 +176,43 @@ interface ProgressHubProps {
     const [selectedCareerTrack, setSelectedCareerTrack] = useState<keyof typeof careerTracks>("Technical");
     const [subskillModalOpen, setSubskillModalOpen] = useState(false);
     const [selectedSubskill, setSelectedSubskill] = useState<any>(null);
+    
+    // Получаем данные о пользователе и рангах
+    const { user, fetchUserProfile } = useUserStore();
+    const { ranks, fetchRanks } = useRankStore();
+
+    // Загружаем данные при монтировании
+    useEffect(() => {
+      const loadData = async () => {
+        try {
+          await Promise.all([
+            fetchUserProfile(),
+            fetchRanks(),
+          ]);
+        } catch (error) {
+          console.error('❌ ProgressHub: ошибка загрузки данных:', error);
+        }
+      };
+      loadData();
+    }, []);
+
+    // Получаем информацию о ранге пользователя
+    const userRank = ranks.find(r => r.id === user?.rankId);
+    const userRankName = userRank?.name || 'Загрузка...';
+    
+    // Расчет XP и прогресса ранга
+    const userXp = user?.xp || 0;
+    const sortedRanks = [...ranks].sort((a, b) => a.requiredXp - b.requiredXp);
+    const currentRankIndex = sortedRanks.findIndex(r => r.id === user?.rankId);
+    const previousRank = currentRankIndex > 0 ? sortedRanks[currentRankIndex - 1] : null;
+    const currentRankXP = userRank?.requiredXp || 0;
+    const previousRankXP = previousRank?.requiredXp || 0;
+    const nextRank = sortedRanks.find(r => r.requiredXp > currentRankXP);
+    const nextRankXP = nextRank?.requiredXp || currentRankXP;
+    const xpInCurrentRank = userXp - previousRankXP;
+    const xpNeededForRank = nextRankXP - previousRankXP;
+    const xpProgress = xpNeededForRank > 0 ? Math.round((xpInCurrentRank / xpNeededForRank) * 100) : 100;
+    const xpToNextRank = Math.max(0, nextRankXP - userXp);
     
     const recentActions = [
       {
@@ -374,7 +413,7 @@ interface ProgressHubProps {
   
           <TabsContent value="overview" className="space-y-6">
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           
           {/* Rank Card */}
           <Card className="stat-card-amber">
@@ -384,14 +423,14 @@ interface ProgressHubProps {
               </div>
             </CardHeader>
             <CardContent>
-              <h3 className="text-2xl font-bold">Навигатор</h3>
+              <h3 className="text-2xl font-bold">{userRankName}</h3>
               <p className="text-sm text-muted-foreground">Звание пилота</p>
               <div className="mt-4 space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span>Прогресс до Командира</span>
-                  <span>Нужно 550 XP</span>
+                <div className="text-sm space-y-1">
+                  <div>{nextRank ? `Прогресс до ${nextRank.name}` : 'Максимальный ранг'}</div>
+                  <div className="font-mono">{nextRank ? `${xpInCurrentRank.toLocaleString()} / ${xpNeededForRank.toLocaleString()} XP` : '—'}</div>
                 </div>
-                <Progress value={81.7} className="h-2" />
+                <Progress value={xpProgress} className="h-2" />
               </div>
             </CardContent>
           </Card>
@@ -404,7 +443,7 @@ interface ProgressHubProps {
               </div>
             </CardHeader>
             <CardContent>
-              <h3 className="text-2xl font-bold font-mono">1,250</h3>
+              <h3 className="text-2xl font-bold font-mono">{(user?.mana || 0).toLocaleString()}</h3>
               <p className="text-sm text-muted-foreground">Мана доступна</p>
               <div className="mt-4">
                 <p className="text-sm">
@@ -422,11 +461,11 @@ interface ProgressHubProps {
               </div>
             </CardHeader>
             <CardContent>
-              <h3 className="text-2xl font-bold">47</h3>
-              <p className="text-sm text-muted-foreground">Миссии</p>
+              <h3 className="text-2xl font-bold">{user?.missions?.filter(m => m.isCompleted).length || 0}</h3>
+              <p className="text-sm text-muted-foreground">Миссии завершено</p>
               <div className="mt-4">
                 <p className="text-sm">
-                  <span className="text-success">8</span> в этом месяце
+                  <span className="text-success">{user?.missions?.filter(m => m.isCompleted).length || 0}</span> в этом месяце
                 </p>
               </div>
             </CardContent>
@@ -440,11 +479,11 @@ interface ProgressHubProps {
               </div>
             </CardHeader>
             <CardContent>
-              <h3 className="text-2xl font-bold">23</h3>
+              <h3 className="text-2xl font-bold">{user?.artifacts?.length || 0}</h3>
               <p className="text-sm text-muted-foreground">Артефакты</p>
               <div className="mt-4">
                 <p className="text-sm">
-                  <span className="text-success">3</span> в этом сезоне
+                  <span className="text-success">{user?.artifacts?.length || 0}</span> в этом сезоне
                 </p>
               </div>
             </CardContent>

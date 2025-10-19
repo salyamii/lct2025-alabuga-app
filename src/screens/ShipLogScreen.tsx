@@ -114,9 +114,9 @@ interface ShipLogScreenProps {
     };
   
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen">
         {/* Header */}
-        <div className="sticky top-0 z-40 bg-card border-b border-border">
+        <div className="sticky top-0 z-40">
           <div className="max-w-6xl mx-auto px-4 py-4">
             <div className="flex items-center gap-4">
               <Button
@@ -144,7 +144,7 @@ interface ShipLogScreenProps {
         <div className="max-w-6xl mx-auto px-4 py-6">
           <Tabs defaultValue="activity" className="space-y-6">
             <TabsList className="grid w-full grid-cols-3 max-w-md">
-              <TabsTrigger value="activity">Журнал активности</TabsTrigger>
+              <TabsTrigger value="activity">Активность</TabsTrigger>
               <TabsTrigger value="stats">Статистика</TabsTrigger>
               <TabsTrigger value="achievements">Достижения</TabsTrigger>
             </TabsList>
@@ -160,29 +160,32 @@ interface ShipLogScreenProps {
                 <CardContent>
                   <div className="space-y-4">
                     {logEntries.map((entry) => (
-                      <div key={entry.id} className="flex items-start gap-4 p-4 rounded-lg border border-border hover:bg-muted/30 transition-colors">
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground min-w-0 shrink-0">
-                          <Calendar className="w-4 h-4" />
-                          <span className="hidden sm:inline">{entry.date}</span>
-                          <span className="sm:hidden">{entry.date.split('-')[2]}/{entry.date.split('-')[1]}</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground min-w-0 shrink-0">
-                          <Clock className="w-4 h-4" />
-                          <span>{entry.time}</span>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-2">
-                            {getStatusIcon(entry.status)}
-                            <Badge variant="outline" className="text-xs">
-                              {getTypeLabel(entry.type)}
-                            </Badge>
+                      <div key={entry.id} className="p-3 md:p-4 rounded-lg border border-border hover:bg-muted/30 transition-colors space-y-3">
+                        {/* Первая строка: дата, время, статус, бадж */}
+                        <div className="flex items-center gap-2 md:gap-3 text-xs md:text-sm text-muted-foreground flex-wrap">
+                          <div className="flex items-center gap-1.5">
+                            <Calendar className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                            <span className="hidden sm:inline">{entry.date}</span>
+                            <span className="sm:hidden">{entry.date.split('-')[2]}/{entry.date.split('-')[1]}</span>
                           </div>
+                          <div className="flex items-center gap-1.5">
+                            <Clock className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                            <span>{entry.time}</span>
+                          </div>
+                          {getStatusIcon(entry.status)}
+                          <Badge variant="outline" className="text-xs">
+                            {getTypeLabel(entry.type)}
+                          </Badge>
+                        </div>
+
+                        {/* Контент под первой строкой */}
+                        <div className="space-y-2">
                           <h4 className="font-medium text-sm md:text-base">{entry.title}</h4>
-                          <p className="text-sm text-muted-foreground mt-1">{entry.description}</p>
+                          <p className="text-xs md:text-sm text-muted-foreground leading-relaxed">{entry.description}</p>
                           {entry.rewards && (
-                            <div className="flex items-center gap-4 mt-2 text-xs">
-                              <span className="text-rewards-amber">+{entry.rewards.mana} Mana</span>
-                              <span className="text-info">+{entry.rewards.xp} XP</span>
+                            <div className="flex items-center gap-3 md:gap-4 text-xs">
+                              <span className="text-rewards-amber font-medium">+{entry.rewards.mana} Mana</span>
+                              <span className="text-info font-medium">+{entry.rewards.xp} XP</span>
                             </div>
                           )}
                         </div>
@@ -194,7 +197,7 @@ interface ShipLogScreenProps {
             </TabsContent>
   
             <TabsContent value="stats" className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <Card className="orbital-border">
                   <CardContent className="p-6 text-center">
                     <div className="w-12 h-12 bg-primary/10 rounded-lg mx-auto flex items-center justify-center mb-3">
